@@ -1,4 +1,4 @@
-----|| ATTENUATOR TILE ||--
+----|| AUDIO ATTENUVERTER TILE ||--
 -- v1.1
 
 
@@ -46,6 +46,7 @@ SIZE_S = 4
 SIZE_XS = 2
 
 TEXT_SMALL = 0.5
+TEXT_MEDIUM = 0.75
 TEXT_NORMAL = 1
 TEXT_LARGE = 2
 
@@ -148,45 +149,50 @@ end
 
 --// Module-specific functions //--
 
-function drawSineWaveBackground(x, y, size)
-    -- // Draws a muted gray sine wave
-    -- Define variables
-    brightness = 0.3
-    color = color_paint {brightness, brightness, brightness, 1}
+function drawAudioSineWaveBackground(x, y, size)
+	-- // Draws a muted two-color sine wave
+    -- Define variable
+	width = 1
 
     -- Save transform state
-    save()
+	save()
 
     -- Position
-    translate {x, y}
+	translate {x, y}
 
     -- Draw the two segments of the sine wave
-    stroke_bezier( {0, 0}, {0.25 * size , 1 * size}, {0.5 * size, 0}, width, color)
-    stroke_bezier( {0.5 * size, 0}, {0.75 * size , -1 * size}, {1 * size, 0}, width, color)
+	stroke_bezier( {0, 0}, {0.25 * size , 1 * size}, {0.5 * size, 0}, width, RED_DARK)
+	stroke_bezier( {0.5 * size, 0}, {0.75 * size , -1 * size}, {1 * size, 0}, width, BLUE_DARK)
 
     -- Restore transform state
-    restore()
+	restore()
 end
 
-function drawSineWaveLevelIcon(x, y, size, control)
-    -- // Draws a sine wave whose amplitude and orientation are responsive to a control input
-    -- Define variables
+function drawAtvertAudioSineWaveIcon(x, y, size, control)
+	-- // Draws a two-color sine wave whose amplitude and orientation are responsive to a control input
+	-- Define variables
     width = 1
-    color = GRAY_LIGHT
-
+	bipolarControl = (control - 0.5) * 2
+    
     -- Save transform state
-    save()
+	save()
 
     -- Position
-    translate {x, y}
+	translate {x, y}
 
-    -- Draw the two segments of the sine wave
-    stroke_bezier( {0, 0}, {0.25 * size , 1 * size * control}, {0.5 * size, 0}, width, color)
-    stroke_bezier( {0.5 * size, 0}, {0.75 * size , -1 * size * control}, {1 * size, 0}, width, color)
-
+    -- Draw sine wave and swap colors so that red is always on top and blue is always on bottom
+	if control > 0.5 then
+		stroke_bezier( {0, 0}, {0.25 * size , 1 * size * bipolarControl}, {0.5 * size, 0}, width, RED_LIGHT)
+		stroke_bezier( {0.5 * size, 0}, {0.75 * size , -1 * size * bipolarControl}, {1 * size, 0}, width, BLUE_LIGHT)
+	else
+		stroke_bezier( {0, 0}, {0.25 * size , 1 * size * bipolarControl}, {0.5 * size, 0}, width, BLUE_LIGHT)
+		stroke_bezier( {0.5 * size, 0}, {0.75 * size , -1 * size * bipolarControl}, {1 * size, 0}, width, RED_LIGHT)
+	end
+	
     -- Restore transform state
-    restore()
+	restore()
 end
+
 
 ----|| DEFINE VARIABLES ||----
 
@@ -201,13 +207,15 @@ out1Light = createLight(2, out1)
 
 --// Input //--
 ---- drawInput(x, y, type, light, textX, textY, textContent, textSize)
-drawInput( 10, 10, 2, in1Light, 7.7, 8, "→", TEXT_SMALL )
+drawInput( 10, 10, 2, in1Light, 7.9, 8, "A", TEXT_SMALL )
 
 --// Output //--
 ---- drawOutput(x, y, type, light, textX, textY, textContent, textSize)
-drawOutput( 50, 10, 2, out1Light, 47.7, 8, "→", TEXT_SMALL )
+drawOutput( 50, 10, 2, out1Light, 47.9, 8, "A", TEXT_SMALL)
 
---// Graphic //--
----- drawSineWaveLevelIcon(x, y, size, control)
-drawSineWaveBackground( 20, 60, 20)
-drawSineWaveLevelIcon( 20, 60, 20, knob1 )
+--// Graphics //--
+---- drawAudioSineWave(x, y, size, control)
+---- drawAtvertAudioSineWaveIcon(x, y, size, control)
+drawAudioSineWaveBackground(20, 60, 20)
+drawAtvertAudioSineWaveIcon(20, 60, 20, knob1)
+
