@@ -88,8 +88,32 @@ function drawText(x, y, string, options)
     restore()
 end
 
-
 function drawSquare(x, y, size, options)
+    --[[
+    Draws a square at a given position.
+
+    Arguments:
+    - x (number): x coordinate of square
+    - y (number): y coordinate of square
+    - size (number): size of square
+    - options (table): table of optional arguments with default values
+        - fill (boolean): whether to fill the square, defaults to true
+        - cornerRadius (number): radius of corners, defaults to 0
+        - proportionalRadius (boolean): whether to use a proportional
+            radius, defaults to false
+        - paint (paint): paint color of square, defaults to white
+        - origin (string): origin of square, defaults to "sw"
+        - rotation (number): rotation of square where 0 is no
+            rotation and 1 is a full rotation, defaults to 0.
+        - border (boolean): whether to draw a border, defaults to false
+        - borderWidth (number): width of border, defaults to size/50
+        - borderPaint (paint): paint color of border, defaults
+            to theme.text
+
+    Returns:
+    - None
+    ]]
+
     local function getSquareCoords(x, y, size, origin)
         local origins = {
             ["n"] = function() return {{x - size/2, y - size}, {x + size/2, y}} end,
@@ -122,14 +146,36 @@ function drawSquare(x, y, size, options)
         cornerRadius = cornerRadius * size * 0.01
     end
 
+    save()
     rotate(rotation * 2 * math.pi)
-
     if fill then fill_rect(coords[1], coords[2], cornerRadius, paint) end
-
     if border then stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint) end
+    restore()
 end
 
 function drawCircle(x, y, radius, options)
+    --[[
+    Draws a circle at a given position.
+
+    Arguments:
+    - x (number): x coordinate of circle
+    - y (number): y coordinate of circle
+    - radius (number): radius of circle
+    - options (table): table of optional arguments with default values
+        - fill (boolean): whether to fill the circle, defaults to true
+        - paint (paint): paint color of circle, defaults to white
+        - origin (string): origin of circle, defaults to "sw"
+        - rotation (number): rotation of circle where 0 is no
+            rotation and 1 is a full rotation, defaults to 0.
+        - border (boolean): whether to draw a border, defaults to false
+        - borderWidth (number): width of border, defaults to radius/50
+        - borderPaint (paint): paint color of border, defaults
+            to theme.text
+
+    Returns:
+    - None
+    ]]
+
     local function getCircleOrigin(radius, origin)
         local origins = {
             ["n"] = function() return {0, radius} end,
@@ -156,15 +202,10 @@ function drawCircle(x, y, radius, options)
     local borderWidth = options.borderWidth or radius/50
     local borderPaint = options.borderPaint or color_paint{theme.text[1], theme.text[2], theme.text[3], theme.text[4]}
 
-    rotate(rotation * 2 * math.pi)
-
     save()
-
+    rotate(rotation * 2 * math.pi)
     translate{coordOffset[1], coordOffset[2]}
-
     if fill then fill_circle({x, y}, radius, paint) end
-
     if border then stroke_circle({x, y}, radius, borderWidth, borderPaint) end
-
     restore()
 end
