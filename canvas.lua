@@ -105,18 +105,26 @@ function getSquareOrigins(x, y, size, origin)
 end
   
 function drawSquare(x, y, size, options)
-
     local options = options or {}
+    local fill = options.fill
+    if fill == nil then fill = true end
     local cornerRadius = options.cornerRadius or 0
     local proportionalRadius = options.proportionalRadius or false
     local paint = options.paint or color_paint{1, 1, 1, 1}
-    local origin = options.origin or "nw"
+    local origin = options.origin or "sw"
     local coords = getSquareOrigins(x, y, size, origin)
+    local rotation = options.rotation or 0
+    local border = options.border or false
+    local borderWidth = options.borderWidth or size/50
+    local borderPaint = options.borderPaint or color_paint{theme.text[1], theme.text[2], theme.text[3], theme.text[4]}
 
     if proportionalRadius then
         cornerRadius = cornerRadius * size * 0.01
     end
 
-    fill_rect(coords[1], coords[2], cornerRadius, paint)
+    rotate(rotation * 2 * math.pi)
+
+    if fill then fill_rect(coords[1], coords[2], cornerRadius, paint) end
+
+    if border then stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint) end
 end
-  
