@@ -73,7 +73,7 @@ function drawText(x, y, string, options)
     - None
     ]]
 
-    options = options or {}
+    local options = options or {}
     local rotation = options.rotation or 0
     local size = options.size or 1
     local width = options.widthFactor or 1
@@ -87,3 +87,36 @@ function drawText(x, y, string, options)
     text(string, color)
     restore()
 end
+
+function getSquareOrigins(x, y, size, origin)
+    local origins = {
+        ["n"] = function() return {{x - size/2, y - size}, {x + size/2, y}} end,
+        ["ne"] = function() return {{x - size, y - size}, {x, y}} end,
+        ["e"] = function() return {{x - size, y - size / 2}, {x, y + size / 2}} end,
+        ["se"] = function() return {{x - size, y}, {x, y + size}} end,
+        ["s"] = function() return {{x - size /2, y}, {x + size/2, y + size}} end,
+        ["sw"] = function() return {{x, y}, {x + size, y + size}} end,
+        ["w"] = function() return {{x, y - size/2}, {x + size, y + size/2}} end,
+        ["nw"] = function() return {{x, y - size}, {x + size, y}} end,
+        ["c"] = function() return {{x - size/2, y - size/2}, {x + size/2, y + size/2}} end,
+    }
+
+    return origins[origin]()
+end
+  
+function drawSquare(x, y, size, options)
+
+    local options = options or {}
+    local cornerRadius = options.cornerRadius or 0
+    local proportionalRadius = options.proportionalRadius or false
+    local paint = options.paint or color_paint{1, 1, 1, 1}
+    local origin = options.origin or "nw"
+    local coords = getSquareOrigins(x, y, size, origin)
+
+    if proportionalRadius then
+        cornerRadius = cornerRadius * size * 0.01
+    end
+
+    fill_rect(coords[1], coords[2], cornerRadius, paint)
+end
+  
