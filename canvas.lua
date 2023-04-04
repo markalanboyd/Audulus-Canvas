@@ -88,23 +88,23 @@ function drawText(x, y, string, options)
     restore()
 end
 
-function getSquareOrigins(x, y, size, origin)
-    local origins = {
-        ["n"] = function() return {{x - size/2, y - size}, {x + size/2, y}} end,
-        ["ne"] = function() return {{x - size, y - size}, {x, y}} end,
-        ["e"] = function() return {{x - size, y - size / 2}, {x, y + size / 2}} end,
-        ["se"] = function() return {{x - size, y}, {x, y + size}} end,
-        ["s"] = function() return {{x - size /2, y}, {x + size/2, y + size}} end,
-        ["sw"] = function() return {{x, y}, {x + size, y + size}} end,
-        ["w"] = function() return {{x, y - size/2}, {x + size, y + size/2}} end,
-        ["nw"] = function() return {{x, y - size}, {x + size, y}} end,
-        ["c"] = function() return {{x - size/2, y - size/2}, {x + size/2, y + size/2}} end,
-    }
 
-    return origins[origin]()
-end
-  
 function drawSquare(x, y, size, options)
+    local function getSquareCoords(x, y, size, origin)
+        local origins = {
+            ["n"] = function() return {{x - size/2, y - size}, {x + size/2, y}} end,
+            ["ne"] = function() return {{x - size, y - size}, {x, y}} end,
+            ["e"] = function() return {{x - size, y - size / 2}, {x, y + size / 2}} end,
+            ["se"] = function() return {{x - size, y}, {x, y + size}} end,
+            ["s"] = function() return {{x - size /2, y}, {x + size/2, y + size}} end,
+            ["sw"] = function() return {{x, y}, {x + size, y + size}} end,
+            ["w"] = function() return {{x, y - size/2}, {x + size, y + size/2}} end,
+            ["nw"] = function() return {{x, y - size}, {x + size, y}} end,
+            ["c"] = function() return {{x - size/2, y - size/2}, {x + size/2, y + size/2}} end,
+        }
+        return origins[origin]()
+    end
+
     local options = options or {}
     local fill = options.fill
     if fill == nil then fill = true end
@@ -112,8 +112,8 @@ function drawSquare(x, y, size, options)
     local proportionalRadius = options.proportionalRadius or false
     local paint = options.paint or color_paint{1, 1, 1, 1}
     local origin = options.origin or "sw"
-    local coords = getSquareOrigins(x, y, size, origin)
     local rotation = options.rotation or 0
+    local coords = getSquareCoords(x, y, size, origin)
     local border = options.border or false
     local borderWidth = options.borderWidth or size/50
     local borderPaint = options.borderPaint or color_paint{theme.text[1], theme.text[2], theme.text[3], theme.text[4]}
@@ -127,4 +127,44 @@ function drawSquare(x, y, size, options)
     if fill then fill_rect(coords[1], coords[2], cornerRadius, paint) end
 
     if border then stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint) end
+end
+
+function drawCircle(x, y, radius, options)
+    local function getCircleOrigin(radius, origin)
+        local origins = {
+            ["n"] = function() return {0, radius} end,
+            ["ne"] = function() return {radius, radius} end,
+            ["e"] = function() return {radius, 0} end,
+            ["se"] = function() return {radius, -radius} end,
+            ["s"] = function() return {0, -radius} end,
+            ["sw"] = function() return {-radius, -radius} end,
+            ["w"] = function() return {-radius, 0} end,
+            ["nw"] = function() return {-radius, radius} end,
+            ["c"] = function() return {0, 0} end,
+        }
+        return origins[origin]()
+    end
+
+    local options = options or {}
+    local fill = options.fill
+    if fill == nil then fill = true end
+    local paint = options.paint or color_paint{1, 1, 1, 1}
+    local origin = options.origin or "c"
+    local rotation = options.rotation or 0
+    local coordOffset = getCircleOrigin(radius, origin)
+    local border = options.border or false
+    local borderWidth = options.borderWidth or radius/50
+    local borderPaint = options.borderPaint or color_paint{theme.text[1], theme.text[2], theme.text[3], theme.text[4]}
+
+    rotate(rotation * 2 * math.pi)
+
+    save()
+
+    translate{coordOffset[1], coordOffset[2]}
+
+    if fill then fill_circle({x, y}, radius, paint) end
+
+    if border then stroke_circle({x, y}, radius, borderWidth, borderPaint) end
+
+    restore()
 end
