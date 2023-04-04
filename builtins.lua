@@ -1,3 +1,11 @@
+--[[
+    This file contains all of the built-in functions and variables that 
+    are available to the user in the Canvas node.
+
+    The functions in other files use and expand on these built-in
+    functions.
+]]
+
 paint = color_paint{r, g, b, a}
 paint = linear_gradient({start_x, start_y}, {end_x, end_y}, {r, g, b, a}, {r, g, b, a}) 
 
