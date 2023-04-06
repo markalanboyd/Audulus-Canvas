@@ -23,6 +23,12 @@ function drawTriangle(x, y, base, options)
             - only used if type is "isosceles" or "right"
         - vertex (table): coordinates of vertex, defaults to {200, 100}
             - only used if type is "scalene"
+        - rotation (number): normalized rotation of triangle, 
+            defaults to 0
+            - 0: no rotation
+            - 0.25: 90 degrees counter-clockwise
+            - 0.5: 180 degrees counter-clockwise
+            - 0.75: 270 degrees counter-clockwise
         - origin (string): origin of triangle, defaults to "sw"
             - "n": north
             - "ne": northeast
@@ -33,13 +39,7 @@ function drawTriangle(x, y, base, options)
             - "w": west
             - "nw": northwest
             - "c": center
-        - rotation (number): normalized rotation of triangle, 
-            defaults to 0
-            - 0: no rotation
-            - 0.25: 90 degrees counter-clockwise
-            - 0.5: 180 degrees counter-clockwise
-            - 0.75: 270 degrees counter-clockwise
-        
+
     Returns:
     - nil
     ]]
@@ -108,16 +108,20 @@ function drawTriangle(x, y, base, options)
     local height = options.height or base
     local vertex = options.vertex or {200, 100}
     local vertices = getVertices(triangleType, base, height, vertex)
+    local rotation = options.rotation or 0
     local origin = options.origin or "sw"
     local originOffset = getOriginOffset(origin, vertices, triangleType)
-    local rotation = options.rotation or 0
 
-    save()
-    translate(x + originOffset[1], y + originOffset[2])
-    rotate(rotation * 2 * math.pi)
-    lineToVertex(vertices)
-    fill(paint)
-    restore()
+    local function draw()
+        save()
+        rotate(rotation * 2 * math.pi)
+        translate{x + originOffset[1], y + originOffset[2]}
+        lineToVertex(vertices)
+        fill(paint)
+        restore()
+    end
+
+    draw()
 end
 
 function drawSquare(x, y, size, options)
@@ -136,6 +140,12 @@ function drawSquare(x, y, size, options)
         - borderWidth (number): width of border, defaults to size / 50
         - borderPaint (table): paint to draw the border with, 
             defaults to gray
+        - rotation (number): normalized rotation of square, 
+            defaults to 0
+            - 0: no rotation
+            - 0.25: 90 degrees counter-clockwise
+            - 0.5: 180 degrees counter-clockwise
+            - 0.75: 270 degrees counter-clockwise
         - origin (string): origin of square, defaults to "sw"
             - "n": north
             - "ne": northeast
@@ -146,30 +156,28 @@ function drawSquare(x, y, size, options)
             - "w": west
             - "nw": northwest
             - "c": center
-        - rotation (number): normalized rotation of square, 
-            defaults to 0
-            - 0: no rotation
-            - 0.25: 90 degrees counter-clockwise
-            - 0.5: 180 degrees counter-clockwise
-            - 0.75: 270 degrees counter-clockwise
 
     Returns:
     - None
     ]]
 
-    local function getSquareCoords(x, y, size, origin)
+    local function getOriginOffset(origin, size)
         local origins = {
-            ["n"] = function() return {{x - size/2, y - size}, {x + size/2, y}} end,
-            ["ne"] = function() return {{x - size, y - size}, {x, y}} end,
-            ["e"] = function() return {{x - size, y - size / 2}, {x, y + size / 2}} end,
-            ["se"] = function() return {{x - size, y}, {x, y + size}} end,
-            ["s"] = function() return {{x - size /2, y}, {x + size/2, y + size}} end,
-            ["sw"] = function() return {{x, y}, {x + size, y + size}} end,
-            ["w"] = function() return {{x, y - size/2}, {x + size, y + size/2}} end,
-            ["nw"] = function() return {{x, y - size}, {x + size, y}} end,
-            ["c"] = function() return {{x - size/2, y - size/2}, {x + size/2, y + size/2}} end,
+            ["n"] = function() return {-size / 2, -size} end,
+            ["ne"] = function() return {-size, -size} end,
+            ["e"] = function() return {-size, -size / 2} end,
+            ["se"] = function() return {-size, 0} end,
+            ["s"] = function() return {-size / 2, 0} end,
+            ["sw"] = function() return {0, 0} end,
+            ["w"] = function() return {0, -size / 2} end,
+            ["nw"] = function() return {0, -size} end,
+            ["c"] = function() return {-size / 2, -size / 2} end,
         }
         return origins[origin]()
+    end
+
+    local function getSquareCoords(size)
+        return {{0, 0}, {size, size}}
     end
 
     local options = options or {}
@@ -182,24 +190,30 @@ function drawSquare(x, y, size, options)
     local borderWidth = options.borderWidth or size / 50
     local borderPaint = options.borderPaint or color_paint{0.8, 0.8, 0.8, 1}
     local origin = options.origin or "sw"
-    local coords = getSquareCoords(x, y, size, origin)
+    local originOffset = getOriginOffset(origin, size)
+    local coords = getSquareCoords(size)
     local rotation = options.rotation or 0
 
     if proportionalRadius then
         cornerRadius = cornerRadius * size * 0.01
     end
 
-    save()
-    rotate(rotation * 2 * math.pi)
+    local function draw()
+        save()
+        rotate(rotation * 2 * math.pi)
+        translate{x + originOffset[1], y + originOffset[2]}
 
-    if fill then
-        fill_rect(coords[1], coords[2], cornerRadius, paint)
+        if fill then
+            fill_rect(coords[1], coords[2], cornerRadius, paint)
+        end
+        
+        if border then
+            stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint)
+        end
+        restore()
     end
-
-    if border then
-        stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint)
-    end
-    restore()
+    
+    draw()
 end
 
 function drawRectangle(x, y, width, height, options)
@@ -245,19 +259,18 @@ function drawRectangle(x, y, width, height, options)
         return origins[origin]()
     end
 
-
     local options = options or {}
+    local paint = options.paint or color_paint{1, 1, 1, 1}
     local fill = options.fill
     if fill == nil then fill = true end
     local cornerRadius = options.cornerRadius or 0
     local proportionalRadius = options.proportionalRadius or false
-    local paint = options.paint or color_paint{1, 1, 1, 1}
-    local origin = options.origin or "sw"
-    local rotation = options.rotation or 0
-    local coords = getRectangleCoords(x, y, width, height, origin)
     local border = options.border or false
     local borderWidth = options.borderWidth or width/50
     local borderPaint = options.borderPaint or color_paint{theme.text[1], theme.text[2], theme.text[3], theme.text[4]}
+    local origin = options.origin or "sw"
+    local coords = getRectangleCoords(x, y, width, height, origin)
+    local rotation = options.rotation or 0
 
     if proportionalRadius then
         cornerRadius = cornerRadius * width * 0.01
@@ -265,8 +278,14 @@ function drawRectangle(x, y, width, height, options)
 
     save()
     rotate(rotation * 2 * math.pi)
-    if fill then fill_rect(coords[1], coords[2], cornerRadius, paint) end
-    if border then stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint) end
+
+    if fill then
+        fill_rect(coords[1], coords[2], cornerRadius, paint)
+    end
+
+    if border then
+        stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint)
+    end
     restore()
 end
 
