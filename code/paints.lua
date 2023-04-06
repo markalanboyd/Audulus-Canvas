@@ -42,9 +42,9 @@ function hsl(h, s, l, options)
     color using the HSL color model.
 
     Arguments:
-    - h (number): hue value
-    - s (number): saturation value
-    - l (number): lightness value
+    - h (number): hue value (0-360 or 0-1)
+    - s (number): saturation value (0-100 or 0-1)
+    - l (number): lightness value (0-100 or 0-1)
     - options (table): table of optional arguments with default values
         - a (number): alpha value, defaults to 1
         - type (string): type of color, defaults to "paint"
@@ -56,42 +56,63 @@ function hsl(h, s, l, options)
     ]]
 
     local function hslToRGB(h, s, l)
-        local c = (1 - math.abs(2 * l - 1)) * s
-        local x = c * (1 - math.abs((h * 6) % 2 - 1))
-        local m = l - c / 2
-    
-        local lookupTable = {
-            [0] = {c, x, 0},
-            [1] = {x, c, 0},
-            [2] = {0, c, x},
-            [3] = {0, x, c},
-            [4] = {x, 0, c},
-            [5] = {c, 0, x}
-        }
-    
-        local index = math.floor(h * 6)
-        local rgb = lookupTable[(index % 6 + 1) % #lookupTable]
-    
-        return {rgb[1] + m, rgb[2] + m, rgb[3] + m}
+        if s == 0 then
+            return l, l, l
+        end
+
+        h = h % 360 / 360
+        s = s / 100
+        l = l / 100
+
+        local function hueToRGB(p, q, t)
+            if t < 0 then
+                t = t + 1
+            end
+            if t > 1 then
+                t = t - 1
+            end
+            if t < 1/6 then
+                return p + (q - p) * 6 * t
+            end
+            if t < 1/2 then
+                return q
+            end
+            if t < 2/3 then
+                return p + (q - p) * (2/3 - t) * 6
+            end
+            return p
+        end
+
+        local q = l < 0.5 and l * (1 + s) or l + s - l * s
+        local p = 2 * l - q
+        local r = hueToRGB(p, q, h + 1/3)
+        local g = hueToRGB(p, q, h)
+        local b = hueToRGB(p, q, h - 1/3)
+
+        return r, g, b
     end
 
     local options = options or {}
     local normalize = options.normalize or false
-    local h = normalize and h or h / 360
-    local s = normalize and s or s / 100
-    local l = normalize and l or l / 100
+
+    if normalize then
+        h = h * 360
+        s = s * 100
+        l = l * 100
+    end
+
     local a = options.a or 1
-    local type = options.type or "paint"
-    
-    local rgb = hslToRGB(h, s, l)
-    local r, g, b = rgb[1], rgb[2], rgb[3]
-    
-    if type == "paint" then
+    local paintType = options.type or "paint"
+
+    local r, g, b = hslToRGB(h, s, l)
+
+    if paintType == "paint" then
         return color_paint{r, g, b, a}
-    elseif type == "text" then
+    elseif paintType == "text" then
         return {r, g, b, a}
     end
 end
+
 
 function paintGradient(x1, y1, x2, y2, paint1, paint2)
     --[[

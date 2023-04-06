@@ -61,27 +61,26 @@ function drawTriangle(x, y, base, options)
             return error("Vertex coordinates cannot be negative", 3)
         end
 
-        local function getScaleneX()
-            if vertices[3][1] >= 0 then
-            	return math.max(vertices[2][1], vertices[3][1]) / 2
+        local function getScaleneCoords()
+            if vertices[3][1] <= 0 or vertices[3][2] <= 0 then
+                vertexError()
             else
-            	vertexError()
+                return {math.max(vertices[2][1], vertices[3][1]) / 2, vertices[3][2]}
             end
         end
 
-        local function getX()
-            local xValues = {
-                ["equilateral"] = function() return vertices[3][1] end,
-                ["isosceles"] = function() return vertices[3][1] end,
-                ["right"] = function() return vertices[2][1] / 2 end,
-                ["scalene"] = function() return getScaleneX() end,
-            }
-            return xValues[triangleType]()
+        local function getXY()
+            if triangleType == "equilateral" or triangleType == "isosceles" then
+                return vertices[3][1], vertices[3][2]
+            elseif triangleType == "right" then
+                return vertices[2][1] / 2, vertices[3][2]
+            elseif triangleType == "scalene" then
+                return getScaleneCoords()
+            end
         end
 
-        local x = getX()
-        local y = vertices[3][2] > 0 and vertices[3][2] or vertexError()
-        
+        local x, y = getXY()
+
         local origins = {
             ["n"] = function() return {-x, -y} end,
             ["ne"] = function() return {-x * 2, -y} end,
@@ -123,6 +122,7 @@ function drawTriangle(x, y, base, options)
 
     draw()
 end
+
 
 function drawSquare(x, y, size, options)
     --[[
