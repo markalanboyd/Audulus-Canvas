@@ -1,31 +1,38 @@
 -- Description: Contains functions for drawing basic shapes.
 
 function drawTriangle(x, y, base, options)
+    local function getVertices(triangleType, base, height, vertex)
+        local origin = {0, 0}
+        local baseLength = {base, 0}
+        local types = {
+            ["equilateral"] = function() return {origin, baseLength, {base/2, base}, origin} end,
+            ["right"] = function() return {origin, baseLength, {0, height}, origin} end,
+            ["isometric"] = function() return {origin, baseLength, {base/2, height}, origin} end,
+            ["scalene"] = function() return {origin, baseLength, vertex, origin} end,
+        }
+        return types[triangleType]()
+    end
+
     local function lineToVertex(verticesTable)
         for _, vertex in ipairs(verticesTable) do
             line_to(vertex)
         end
     end
     
-    local vertices
     local options = options or {}
     local paint = options.paint or color_paint{1, 1, 1, 1}
-    local type = options.type or "equil"
+    local triangleType = options.type or "equilateral"
     local height = options.height or base
-    
-    if type == "right" then
-        vertices = {{0, 0}, {0, height}, {base, 0}}
-    elseif type == "iso" then
-        vertices = {{0, 0}, {base, 0}, {base/2, height}}
-    else -- equilateral triangle by default
-        vertices = {{0, 0}, {base, 0}, {base/2, base}}
-    end
+    local vertex = options.vertex or {200, 100}
+    local vertices = getVertices(triangleType, base, height, vertex)
     
     save()
     lineToVertex(vertices)
     fill(paint)
     restore()
 end
+
+drawTriangle(0, 0, 50, {type="scalene", vertex={10, 10},height=100})
 
 function drawSquare(x, y, size, options)
     --[[
