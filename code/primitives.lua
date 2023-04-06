@@ -6,15 +6,43 @@ function drawTriangle(x, y, base, options)
         local baseLength = {base, 0}
         local types = {
             ["equilateral"] = function() return {origin, baseLength, {base/2, base}, origin} end,
+            ["isosceles"] = function() return {origin, baseLength, {base/2, height}, origin} end,
             ["right"] = function() return {origin, baseLength, {0, height}, origin} end,
-            ["isometric"] = function() return {origin, baseLength, {base/2, height}, origin} end,
             ["scalene"] = function() return {origin, baseLength, vertex, origin} end,
         }
         return types[triangleType]()
     end
 
-    local function lineToVertex(verticesTable)
-        for _, vertex in ipairs(verticesTable) do
+    local function getOriginOffset(origin, vertices, triangleType)
+        local function getX()
+            local xValues = {
+                ["equilateral"] = function() return vertices[3][1] end,
+                ["isosceles"] = function() return vertices[3][1] end,
+                ["right"] = function() return vertices[2][1] / 2 end,
+                ["scalene"] = function() return math.max(vertices[2][1], vertices[3][1]) / 2 end,
+            }
+            return xValues[triangleType]()
+        end
+
+        local x = getX()
+        local y = vertices[3][2]
+        
+        local origins = {
+            ["n"] = function() return {-x, -y} end,
+            ["ne"] = function() return {-x * 2, -y} end,
+            ["e"] = function() return {-x * 2, -y / 2} end,
+            ["se"] = function() return {-x * 2, 0} end,
+            ["s"] = function() return {-x, 0} end,
+            ["sw"] = function() return {0, 0} end,
+            ["w"] = function() return {0, -y / 2} end,
+            ["nw"] = function() return {0, -y} end,
+            ["c"] = function() return {-x, -y / 2} end,
+        }
+            return origins[origin]()
+    end
+
+    local function lineToVertex(vertices)
+        for _, vertex in ipairs(vertices) do
             line_to(vertex)
         end
     end
@@ -25,14 +53,19 @@ function drawTriangle(x, y, base, options)
     local height = options.height or base
     local vertex = options.vertex or {200, 100}
     local vertices = getVertices(triangleType, base, height, vertex)
-    
+    local origin = options.origin or "sw"
+    local originOffset = getOriginOffset(origin, vertices, triangleType)
+    local rotation = options.rotation or 0
+
     save()
+    translate(originOffset)
+    rotate(rotation * 2 * math.pi)
     lineToVertex(vertices)
     fill(paint)
     restore()
 end
 
-drawTriangle(0, 0, 50, {type="scalene", vertex={10, 10},height=100})
+
 
 function drawSquare(x, y, size, options)
     --[[
