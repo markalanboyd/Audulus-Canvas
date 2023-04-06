@@ -1,12 +1,55 @@
 -- Description: Contains functions for drawing basic shapes.
 
 function drawTriangle(x, y, base, options)
+    --[[
+    Draws a triangle at a given position.
+
+    Arguments:
+    - x (number): x coordinate of triangle
+    - y (number): y coordinate of triangle
+    - base (number): base length of triangle
+    - options (table): table of optional arguments with default values
+        - paint (table): paint to fill the triangle with,
+            defaults to white
+        - type (string): type of triangle, defaults to "equilateral".
+            - "equilateral": all sides are equal
+            - "isosceles": two sides are equal
+                - height argument defaults to base if not provided
+            - "right": one angle is 90 degrees
+                - height argument defaults to base if not provided
+            - "scalene": no sides are equal
+                - requires vertex argument
+        - height (number): height of triangle, defaults to base
+            - only used if type is "isosceles" or "right"
+        - vertex (table): coordinates of vertex, defaults to {200, 100}
+            - only used if type is "scalene"
+        - origin (string): origin of triangle, defaults to "sw"
+            - "n": north
+            - "ne": northeast
+            - "e": east
+            - "se": southeast
+            - "s": south
+            - "sw": southwest
+            - "w": west
+            - "nw": northwest
+            - "c": center
+        - rotation (number): normalized rotation of triangle, 
+            defaults to 0
+            - 0: no rotation
+            - 0.25: 90 degrees counter-clockwise
+            - 0.5: 180 degrees counter-clockwise
+            - 0.75: 270 degrees counter-clockwise
+        
+    Returns:
+    - nil
+    ]]
+
     local function getVertices(triangleType, base, height, vertex)
         local origin = {0, 0}
         local baseLength = {base, 0}
         local types = {
-            ["equilateral"] = function() return {origin, baseLength, {base/2, base}, origin} end,
-            ["isosceles"] = function() return {origin, baseLength, {base/2, height}, origin} end,
+            ["equilateral"] = function() return {origin, baseLength, {base / 2, base}, origin} end,
+            ["isosceles"] = function() return {origin, baseLength, {base / 2, height}, origin} end,
             ["right"] = function() return {origin, baseLength, {0, height}, origin} end,
             ["scalene"] = function() return {origin, baseLength, vertex, origin} end,
         }
@@ -70,7 +113,7 @@ function drawTriangle(x, y, base, options)
     local rotation = options.rotation or 0
 
     save()
-    translate(originOffset)
+    translate(x + originOffset[1], y + originOffset[2])
     rotate(rotation * 2 * math.pi)
     lineToVertex(vertices)
     fill(paint)
@@ -84,20 +127,31 @@ function drawSquare(x, y, size, options)
     Arguments:
     - x (number): x coordinate of square
     - y (number): y coordinate of square
-    - size (number): size of square
+    - size (number): length of square's sides
     - options (table): table of optional arguments with default values
-        - fill (boolean): whether to fill the square, defaults to true
-        - cornerRadius (number): radius of corners, defaults to 0
-        - proportionalRadius (boolean): whether to use a proportional
-            radius, defaults to false
-        - paint (paint): paint color of square, defaults to white
+        - paint (table): paint to fill the square with,
+            defaults to white
+        - border (boolean): whether or not to draw a border around 
+            the square, defaults to false
+        - borderWidth (number): width of border, defaults to size / 50
+        - borderPaint (table): paint to draw the border with, 
+            defaults to gray
         - origin (string): origin of square, defaults to "sw"
-        - rotation (number): rotation of square where 0 is no
-            rotation and 1 is a full rotation, defaults to 0.
-        - border (boolean): whether to draw a border, defaults to false
-        - borderWidth (number): width of border, defaults to size/50
-        - borderPaint (paint): paint color of border, defaults
-            to theme.text
+            - "n": north
+            - "ne": northeast
+            - "e": east
+            - "se": southeast
+            - "s": south
+            - "sw": southwest
+            - "w": west
+            - "nw": northwest
+            - "c": center
+        - rotation (number): normalized rotation of square, 
+            defaults to 0
+            - 0: no rotation
+            - 0.25: 90 degrees counter-clockwise
+            - 0.5: 180 degrees counter-clockwise
+            - 0.75: 270 degrees counter-clockwise
 
     Returns:
     - None
@@ -119,17 +173,17 @@ function drawSquare(x, y, size, options)
     end
 
     local options = options or {}
+    local paint = options.paint or color_paint{1, 1, 1, 1}
     local fill = options.fill
     if fill == nil then fill = true end
     local cornerRadius = options.cornerRadius or 0
     local proportionalRadius = options.proportionalRadius or false
-    local paint = options.paint or color_paint{1, 1, 1, 1}
-    local origin = options.origin or "sw"
-    local rotation = options.rotation or 0
-    local coords = getSquareCoords(x, y, size, origin)
     local border = options.border or false
-    local borderWidth = options.borderWidth or size/50
-    local borderPaint = options.borderPaint or color_paint{theme.text[1], theme.text[2], theme.text[3], theme.text[4]}
+    local borderWidth = options.borderWidth or size / 50
+    local borderPaint = options.borderPaint or color_paint{0.8, 0.8, 0.8, 1}
+    local origin = options.origin or "sw"
+    local coords = getSquareCoords(x, y, size, origin)
+    local rotation = options.rotation or 0
 
     if proportionalRadius then
         cornerRadius = cornerRadius * size * 0.01
@@ -137,8 +191,14 @@ function drawSquare(x, y, size, options)
 
     save()
     rotate(rotation * 2 * math.pi)
-    if fill then fill_rect(coords[1], coords[2], cornerRadius, paint) end
-    if border then stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint) end
+
+    if fill then
+        fill_rect(coords[1], coords[2], cornerRadius, paint)
+    end
+
+    if border then
+        stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint)
+    end
     restore()
 end
 
