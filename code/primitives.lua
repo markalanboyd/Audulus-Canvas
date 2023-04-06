@@ -14,12 +14,20 @@ function drawTriangle(x, y, base, options)
     end
 
     local function getOriginOffset(origin, vertices, triangleType)
+        local function getScaleneX()
+            if vertices[3][1] >= 0 then
+            	return math.max(vertices[2][1], vertices[3][1]) / 2
+            else
+            	return error("Vertex coordinates cannot be negative", 3)
+            end
+        end
+
         local function getX()
             local xValues = {
                 ["equilateral"] = function() return vertices[3][1] end,
                 ["isosceles"] = function() return vertices[3][1] end,
                 ["right"] = function() return vertices[2][1] / 2 end,
-                ["scalene"] = function() return math.max(vertices[2][1], vertices[3][1]) / 2 end,
+                ["scalene"] = function() return getScaleneX() end,
             }
             return xValues[triangleType]()
         end
@@ -57,6 +65,7 @@ function drawTriangle(x, y, base, options)
     local originOffset = getOriginOffset(origin, vertices, triangleType)
     local rotation = options.rotation or 0
 
+    
     save()
     translate(originOffset)
     rotate(rotation * 2 * math.pi)
@@ -64,6 +73,11 @@ function drawTriangle(x, y, base, options)
     fill(paint)
     restore()
 end
+
+
+
+
+drawTriangle(0, 0, 100, {origin="s", type="scalene", vertex={100, 100}})
 
 
 
