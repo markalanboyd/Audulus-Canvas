@@ -244,20 +244,34 @@ function drawRectangle(x, y, width, height, options)
     Returns:
     - None
     --]]
-    
-    local function getRectangleCoords(x, y, width, height, origin)
+
+    local function getOriginOffset(origin, width, height)
         local origins = {
-            ["n"] = function() return {{x - width/2, y - height}, {x + width/2, y}} end,
-            ["ne"] = function() return {{x - width, y - height}, {x, y}} end,
-            ["e"] = function() return {{x - width, y - height/2}, {x, y + height/2}} end,
-            ["se"] = function() return {{x - width, y}, {x, y + height}} end,
-            ["s"] = function() return {{x - width/2, y}, {x + width/2, y + height}} end,
-            ["sw"] = function() return {{x, y}, {x + width, y + height}} end,
-            ["w"] = function() return {{x, y - height/2}, {x + width, y + height/2}} end,
-            ["nw"] = function() return {{x, y - height}, {x + width, y}} end,
-            ["c"] = function() return {{x - width/2, y - height/2}, {x + width/2, y + height/2}} end,
+            ["n"] = function() return {-width / 2, -height} end,
+            ["ne"] = function() return {-width, -height} end,
+            ["e"] = function() return {-width, -height / 2} end,
+            ["se"] = function() return {-width, 0} end,
+            ["s"] = function() return {-width / 2, 0} end,
+            ["sw"] = function() return {0, 0} end,
+            ["w"] = function() return {0, -height / 2} end,
+            ["nw"] = function() return {0, -height} end,
+            ["c"] = function() return {-width / 2, -height / 2} end,
         }
         return origins[origin]()
+    end
+
+    local function getRectangleCoords(width, height)
+        return {{0, 0}, {width, height}}
+    end
+
+    local function drawRectangleShape(coords, cornerRadius, paint, fill, border, borderWidth, borderPaint)
+        if fill then
+            fill_rect(coords[1], coords[2], cornerRadius, paint)
+        end
+    
+        if border then
+            stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint)
+        end
     end
 
     local options = options or {}
@@ -266,27 +280,22 @@ function drawRectangle(x, y, width, height, options)
     if fill == nil then fill = true end
     local cornerRadius = options.cornerRadius or 0
     local proportionalRadius = options.proportionalRadius or false
+    if proportionalRadius then
+        cornerRadius = cornerRadius * width * 0.01
+    end
     local border = options.border or false
     local borderWidth = options.borderWidth or width/50
     local borderPaint = options.borderPaint or color_paint{theme.text[1], theme.text[2], theme.text[3], theme.text[4]}
     local origin = options.origin or "sw"
-    local coords = getRectangleCoords(x, y, width, height, origin)
+    local originOffset = getOriginOffset(origin, width, height)
+    local coords = getRectangleCoords(width, height)
     local rotation = options.rotation or 0
 
-    if proportionalRadius then
-        cornerRadius = cornerRadius * width * 0.01
-    end
-
     save()
+    translate{x, y}
     rotate(rotation * 2 * math.pi)
-
-    if fill then
-        fill_rect(coords[1], coords[2], cornerRadius, paint)
-    end
-
-    if border then
-        stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint)
-    end
+    translate{originOffset[1], originOffset[2]}
+    drawRectangleShape(coords, cornerRadius, paint, fill, border, borderWidth, borderPaint)
     restore()
 end
 
