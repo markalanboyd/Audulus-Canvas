@@ -111,17 +111,13 @@ function drawTriangle(x, y, base, options)
     local origin = options.origin or "sw"
     local originOffset = getOriginOffset(origin, vertices, triangleType)
 
-    local function draw()
-        save()
-        translate{x, y}
-        rotate(rotation * 2 * math.pi)
-        translate{originOffset[1], originOffset[2]}
-        lineToVertex(vertices)
-        fill(paint)
-        restore()
-    end
-
-    draw()
+    save()
+    translate{x, y}
+    rotate(rotation * 2 * math.pi)
+    translate{originOffset[1], originOffset[2]}
+    lineToVertex(vertices)
+    fill(paint)
+    restore()
 end
 
 function drawSquare(x, y, size, options)
@@ -198,22 +194,18 @@ function drawSquare(x, y, size, options)
         cornerRadius = cornerRadius * size * 0.01
     end
 
-    local function draw()
-        save()
-        rotate(rotation * 2 * math.pi)
-        translate{x + originOffset[1], y + originOffset[2]}
+    save()
+    rotate(rotation * 2 * math.pi)
+    translate{x + originOffset[1], y + originOffset[2]}
 
-        if fill then
-            fill_rect(coords[1], coords[2], cornerRadius, paint)
-        end
-        
-        if border then
-            stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint)
-        end
-        restore()
+    if fill then
+        fill_rect(coords[1], coords[2], cornerRadius, paint)
     end
     
-    draw()
+    if border then
+        stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint)
+    end
+    restore()
 end
 
 function drawRectangle(x, y, width, height, options)
@@ -290,42 +282,12 @@ function drawRectangle(x, y, width, height, options)
 end
 
 function drawPolygon(x, y, size, sides, options)
-    local function calculateVertices(sides)
-        local angle = 360 / sides
-        local length = 10 / math.cos(math.rad(angle))
-    
-        local vertices = {}
-        for i = 1, sides do
-            local x = length * math.cos(math.rad(angle * i))
-            local y = length * math.sin(math.rad(angle * i))
-            table.insert(vertices, {x, y})
-        end
-    
-        return vertices
-    end
-
-    local function lineToVertex(vertices)
-        for _, vertex in ipairs(vertices) do
-            line_to(vertex)
-        end
-    end
-
     local options = options or {}
     local paint = options.paint or color_paint{1, 1, 1, 1}
     local rotation = options.rotation or 0
 	local vertices = calculateVertices(sides)
 
-    local function draw()
-        save()
-        translate{x, y}
-        rotate(rotation * 2 * math.pi)
-        --translate{originOffset[1], originOffset[2]}
-        lineToVertex(vertices)
-        fill(paint)
-        restore()
-    end
-
-    draw()
+    
 end
 
 function drawCircle(x, y, radius, options)
