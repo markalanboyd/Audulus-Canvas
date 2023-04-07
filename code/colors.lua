@@ -1,13 +1,19 @@
 --[[
+
+Canvas Node Colors
+v1.0.0
+April 7, 2023
+by Mark Boyd
+
 This file contains functions for creating paint colors and gradients.
 
 The rgb() and hsl() functions can output either paint or text colors.
-]]
 
+--]]
 
 function rgb(r, g, b, options)
     --[[
-    Uses either 0 to 1 or 0 to 255 values to create a paint or text
+    Uses either 0 to 1 or 0 to 255 values to create a paint or table
     color using the RGB color model.
 
     Arguments:
@@ -17,12 +23,14 @@ function rgb(r, g, b, options)
     - options (table): table of optional arguments with default values
         - a (number): alpha value, defaults to 1
         - type (string): type of color, defaults to "paint"
+            - "paint": paint color
+            - "table": table color (e.g., for text)
         - is8bit (boolean): whether the values are 8-bit, defaults
         to false
 
     Returns:
-    - color (paint or table): paint or text color
-    ]]
+    - color (paint or table): paint or table color
+    --]]
 
     local options = options or {}
     local a = options.a or 1
@@ -31,15 +39,15 @@ function rgb(r, g, b, options)
     
     if type == "paint" then
         return color_paint{r*factor, g*factor, b*factor, a}
-    elseif type == "text" then
+    elseif type == "table" then
         return {r*factor, g*factor, b*factor, a}
     end
 end
 
 function hsl(h, s, l, options)
     --[[
-    Uses either 0 to 360 or 0 to 1 values to create a paint or text
-    color using the HSL color model.
+    Uses either 360/100/100 or normalized 0 to 1 values to create a 
+    paint or table color using the HSL color model.
 
     Arguments:
     - h (number): hue value (0-360 or 0-1)
@@ -48,12 +56,14 @@ function hsl(h, s, l, options)
     - options (table): table of optional arguments with default values
         - a (number): alpha value, defaults to 1
         - type (string): type of color, defaults to "paint"
+            - "paint": paint color
+            - "table": table color (e.g., for text)
         - normalize (boolean): whether the values are normalized to
             0 to 1, defaults to false
 
     Returns:
     - color (paint or table): paint or text color
-    ]]
+    --]]
 
     local function hslToRGB(h, s, l)
         if s == 0 then
@@ -65,21 +75,11 @@ function hsl(h, s, l, options)
         l = l / 100
 
         local function hueToRGB(p, q, t)
-            if t < 0 then
-                t = t + 1
-            end
-            if t > 1 then
-                t = t - 1
-            end
-            if t < 1/6 then
-                return p + (q - p) * 6 * t
-            end
-            if t < 1/2 then
-                return q
-            end
-            if t < 2/3 then
-                return p + (q - p) * (2/3 - t) * 6
-            end
+            if t < 0 then t = t + 1 end
+            if t > 1 then t = t - 1 end
+            if t < 1/6 then return p + (q - p) * 6 * t end
+            if t < 1/2 then return q end
+            if t < 2/3 then return p + (q - p) * (2/3 - t) * 6 end
             return p
         end
 
@@ -93,27 +93,24 @@ function hsl(h, s, l, options)
     end
 
     local options = options or {}
+    local a = options.a or 1
     local normalize = options.normalize or false
-
+    local paintType = options.type or "paint"
     if normalize then
         h = h * 360
         s = s * 100
         l = l * 100
     end
-
-    local a = options.a or 1
-    local paintType = options.type or "paint"
-
     local r, g, b = hslToRGB(h, s, l)
 
     if paintType == "paint" then
         return color_paint{r, g, b, a}
-    elseif paintType == "text" then
+    elseif paintType == "table" then
         return {r, g, b, a}
     end
 end
 
-function paintGradient(x1, y1, x2, y2, paint1, paint2)
+function gradient(x1, y1, x2, y2, paint1, paint2)
     --[[
     Streamlines the syntax for creating a linear gradient.
 
@@ -127,6 +124,7 @@ function paintGradient(x1, y1, x2, y2, paint1, paint2)
 
     Returns:
     - gradient (paint): linear gradient
-    ]]
+    --]]
+
     return linear_gradient({x1, y1}, {x2, y2}, paint1, paint2) 
 end

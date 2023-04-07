@@ -1,4 +1,5 @@
 --[[
+
 Canvas Node Primitives
 v1.0.0
 April 7, 2023
@@ -103,6 +104,7 @@ function drawTriangle(x, y, base, options)
     end
 
     local function lineToVertex(vertices)
+        move_to{vertices[1][1], vertices[1][2]}
         for _, vertex in ipairs(vertices) do
             line_to(vertex)
         end
@@ -362,13 +364,14 @@ function drawPolygon(x, y, diameter, sides, options)
     local function getVertices(x, y, diameter, sides)
         local vertices = {}
         local angle = 2 * math.pi / sides
-        for i = 1, sides do
+        for i = 1, sides + 1 do
             vertices[i] = {x + diameter / 2 * math.cos((i - 1) * angle), y + diameter / 2 * math.sin((i - 1) * angle)}
         end
         return vertices
     end
 
     local function lineToVertex(vertices)
+        move_to{vertices[1][1], vertices[1][2]}
         for _, vertex in ipairs(vertices) do
             line_to(vertex)
         end
