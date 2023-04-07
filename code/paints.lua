@@ -113,7 +113,6 @@ function hsl(h, s, l, options)
     end
 end
 
-
 function paintGradient(x1, y1, x2, y2, paint1, paint2)
     --[[
     Streamlines the syntax for creating a linear gradient.

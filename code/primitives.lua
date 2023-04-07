@@ -1,4 +1,15 @@
--- Description: Contains functions for drawing basic shapes.
+--[[
+Canvas Node Primitives
+v1.0.0
+April 7, 2023
+by Mark Boyd
+
+These are basic shapes you can draw in the Canvas node.
+
+Each function has no dependencies, meaning you can copy/paste just the
+functions you need into your own code.
+
+--]]
 
 function drawTriangle(x, y, base, options)
     --[[
@@ -172,12 +183,25 @@ function drawSquare(x, y, size, options)
         return {{0, 0}, {size, size}}
     end
 
+    local function drawSquareShape(coords, cornerRadius, paint, fill, border, borderWidth, borderPaint)
+        if fill then
+            fill_rect(coords[1], coords[2], cornerRadius, paint)
+        end
+        
+        if border then
+            stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint)
+        end
+    end
+
     local options = options or {}
     local paint = options.paint or color_paint{1, 1, 1, 1}
     local fill = options.fill
     if fill == nil then fill = true end
     local cornerRadius = options.cornerRadius or 0
     local proportionalRadius = options.proportionalRadius or false
+    if proportionalRadius then
+        cornerRadius = cornerRadius * size * 0.01
+    end
     local border = options.border or false
     local borderWidth = options.borderWidth or size / 50
     local borderPaint = options.borderPaint or color_paint{0.8, 0.8, 0.8, 1}
@@ -186,21 +210,10 @@ function drawSquare(x, y, size, options)
     local coords = getSquareCoords(size)
     local rotation = options.rotation or 0
 
-    if proportionalRadius then
-        cornerRadius = cornerRadius * size * 0.01
-    end
-
     save()
     rotate(rotation * 2 * math.pi)
     translate{x + originOffset[1], y + originOffset[2]}
-
-    if fill then
-        fill_rect(coords[1], coords[2], cornerRadius, paint)
-    end
-    
-    if border then
-        stroke_rect(coords[1], coords[2], cornerRadius, borderWidth, borderPaint)
-    end
+    drawSquareShape(coords, cornerRadius, paint, fill, border, borderWidth, borderPaint)
     restore()
 end
 
@@ -220,13 +233,17 @@ function drawRectangle(x, y, width, height, options)
         - proportionalRadius (boolean): whether to use a proportional
             radius, defaults to false
         - paint (paint): paint color of rectangle, defaults to white
-        - rotation (number): normalized rotation of triangle, 
+        - border (boolean): whether to draw a border, defaults to false
+        - borderWidth (number): width of border, defaults to size/50
+        - borderPaint (paint): paint color of border, defaults
+            to theme.text
+        - rotation (number): normalized rotation of rectangle, 
             defaults to 0
             - 0: no rotation
             - 0.25: 90 degrees counter-clockwise
             - 0.5: 180 degrees counter-clockwise
             - 0.75: 270 degrees counter-clockwise
-        - origin (string): origin of triangle, defaults to "sw"
+        - origin (string): origin of rectangle, defaults to "sw"
             - "n": north
             - "ne": northeast
             - "e": east
@@ -236,10 +253,6 @@ function drawRectangle(x, y, width, height, options)
             - "w": west
             - "nw": northwest
             - "c": center
-        - border (boolean): whether to draw a border, defaults to false
-        - borderWidth (number): width of border, defaults to size/50
-        - borderPaint (paint): paint color of border, defaults
-            to theme.text
 
     Returns:
     - None
@@ -310,13 +323,13 @@ function drawPolygon(x, y, diameter, sides, options)
     - sides (number): number of sides of polygon
     - options (table): table of optional arguments with default values
         - paint (paint): paint color of polygon, defaults to white
-        - rotation (number): normalized rotation of triangle, 
+        - rotation (number): normalized rotation of polygon, 
             defaults to 0
             - 0: no rotation
             - 0.25: 90 degrees counter-clockwise
             - 0.5: 180 degrees counter-clockwise
             - 0.75: 270 degrees counter-clockwise
-        - origin (string): origin of triangle, defaults to "sw"
+        - origin (string): origin of polygon, defaults to "sw"
             - "n": north
             - "ne": northeast
             - "e": east
@@ -388,13 +401,17 @@ function drawCircle(x, y, radius, options)
     - options (table): table of optional arguments with default values
         - fill (boolean): whether to fill the circle, defaults to true
         - paint (paint): paint color of circle, defaults to white
-        - rotation (number): normalized rotation of triangle, 
+        - border (boolean): whether to draw a border, defaults to false
+        - borderWidth (number): width of border, defaults to radius/50
+        - borderPaint (paint): paint color of border, defaults
+            to theme.text
+        - rotation (number): normalized rotation of the circle 
             defaults to 0
             - 0: no rotation
             - 0.25: 90 degrees counter-clockwise
             - 0.5: 180 degrees counter-clockwise
             - 0.75: 270 degrees counter-clockwise
-        - origin (string): origin of triangle, defaults to "sw"
+        - origin (string): origin of circle, defaults to "sw"
             - "n": north
             - "ne": northeast
             - "e": east
@@ -404,10 +421,6 @@ function drawCircle(x, y, radius, options)
             - "w": west
             - "nw": northwest
             - "c": center
-        - border (boolean): whether to draw a border, defaults to false
-        - borderWidth (number): width of border, defaults to radius/50
-        - borderPaint (paint): paint color of border, defaults
-            to theme.text
 
     Returns:
     - None
