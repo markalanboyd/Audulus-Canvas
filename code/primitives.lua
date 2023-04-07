@@ -41,8 +41,8 @@ function drawTriangle(x, y, base, options)
             - "c": center
 
     Returns:
-    - nil
-    ]]
+    - None
+    --]]
 
     local function getVertices(triangleType, base, height, vertex)
         local origin = {0, 0}
@@ -57,13 +57,9 @@ function drawTriangle(x, y, base, options)
     end
 
     local function getOriginOffset(origin, vertices, triangleType)
-        local function vertexError()
-            return error("Vertex coordinates cannot be negative", 3)
-        end
-
         local function getScaleneCoords()
             if vertices[3][1] <= 0 or vertices[3][2] <= 0 then
-                vertexError()
+                return error("Vertex coordinates cannot be negative", 3)
             else
                 return {math.max(vertices[2][1], vertices[3][1]) / 2, vertices[3][2]}
             end
@@ -155,7 +151,7 @@ function drawSquare(x, y, size, options)
 
     Returns:
     - None
-    ]]
+    --]]
 
     local function getOriginOffset(origin, size)
         local origins = {
@@ -224,9 +220,22 @@ function drawRectangle(x, y, width, height, options)
         - proportionalRadius (boolean): whether to use a proportional
             radius, defaults to false
         - paint (paint): paint color of rectangle, defaults to white
-        - origin (string): origin of rectangle, defaults to "sw"
-        - rotation (number): rotation of rectangle where 0 is no
-            rotation and 1 is a full rotation, defaults to 0.
+        - rotation (number): normalized rotation of triangle, 
+            defaults to 0
+            - 0: no rotation
+            - 0.25: 90 degrees counter-clockwise
+            - 0.5: 180 degrees counter-clockwise
+            - 0.75: 270 degrees counter-clockwise
+        - origin (string): origin of triangle, defaults to "sw"
+            - "n": north
+            - "ne": northeast
+            - "e": east
+            - "se": southeast
+            - "s": south
+            - "sw": southwest
+            - "w": west
+            - "nw": northwest
+            - "c": center
         - border (boolean): whether to draw a border, defaults to false
         - borderWidth (number): width of border, defaults to size/50
         - borderPaint (paint): paint color of border, defaults
@@ -234,7 +243,7 @@ function drawRectangle(x, y, width, height, options)
 
     Returns:
     - None
-    ]]
+    --]]
     
     local function getRectangleCoords(x, y, width, height, origin)
         local origins = {
@@ -281,13 +290,82 @@ function drawRectangle(x, y, width, height, options)
     restore()
 end
 
-function drawPolygon(x, y, size, sides, options)
+function drawPolygon(x, y, diameter, sides, options)
+    --[[
+    Draws a polygon at a given position.
+
+    Arguments:
+    - x (number): x coordinate of polygon
+    - y (number): y coordinate of polygon
+    - diameter (number): diameter of polygon
+    - sides (number): number of sides of polygon
+    - options (table): table of optional arguments with default values
+        - paint (paint): paint color of polygon, defaults to white
+        - rotation (number): normalized rotation of triangle, 
+            defaults to 0
+            - 0: no rotation
+            - 0.25: 90 degrees counter-clockwise
+            - 0.5: 180 degrees counter-clockwise
+            - 0.75: 270 degrees counter-clockwise
+        - origin (string): origin of triangle, defaults to "sw"
+            - "n": north
+            - "ne": northeast
+            - "e": east
+            - "se": southeast
+            - "s": south
+            - "sw": southwest
+            - "w": west
+            - "nw": northwest
+            - "c": center
+    
+    Returns:
+    - None
+    --]]
+
+    local function getOriginOffset(origin, diameter)
+        local origins = {
+            ["n"] = function() return {0, -diameter/2} end,
+            ["ne"] = function() return {-diameter/2, -diameter/2} end,
+            ["e"] = function() return {-diameter/2, 0} end,
+            ["se"] = function() return {-diameter/2, diameter/2} end,
+            ["s"] = function() return {0, diameter/2} end,
+            ["sw"] = function() return {diameter/2, diameter/2} end,
+            ["w"] = function() return {diameter/2, 0} end,
+            ["nw"] = function() return {diameter/2, -diameter/2} end,
+            ["c"] = function() return {0, 0} end,
+        }
+        return origins[origin]()
+    end
+
+    local function getVertices(x, y, diameter, sides)
+        local vertices = {}
+        local angle = 2 * math.pi / sides
+        for i = 1, sides do
+            vertices[i] = {x + diameter / 2 * math.cos((i - 1) * angle), y + diameter / 2 * math.sin((i - 1) * angle)}
+        end
+        return vertices
+    end
+
+    local function lineToVertex(vertices)
+        for _, vertex in ipairs(vertices) do
+            line_to(vertex)
+        end
+    end
+
     local options = options or {}
     local paint = options.paint or color_paint{1, 1, 1, 1}
     local rotation = options.rotation or 0
-	local vertices = calculateVertices(sides)
+    local origin = options.origin or "sw"
+    local originOffset = getOriginOffset(origin, diameter)
+    local vertices = getVertices(x, y, diameter, sides)
 
-    
+    save()
+    translate{x, y}
+    rotate((rotation) * 2 * math.pi)
+    translate{originOffset[1], originOffset[2]}
+    lineToVertex(vertices)
+    fill(paint)
+    restore()
 end
 
 function drawCircle(x, y, radius, options)
@@ -301,9 +379,22 @@ function drawCircle(x, y, radius, options)
     - options (table): table of optional arguments with default values
         - fill (boolean): whether to fill the circle, defaults to true
         - paint (paint): paint color of circle, defaults to white
-        - origin (string): origin of circle, defaults to "sw"
-        - rotation (number): rotation of circle where 0 is no
-            rotation and 1 is a full rotation, defaults to 0.
+        - rotation (number): normalized rotation of triangle, 
+            defaults to 0
+            - 0: no rotation
+            - 0.25: 90 degrees counter-clockwise
+            - 0.5: 180 degrees counter-clockwise
+            - 0.75: 270 degrees counter-clockwise
+        - origin (string): origin of triangle, defaults to "sw"
+            - "n": north
+            - "ne": northeast
+            - "e": east
+            - "se": southeast
+            - "s": south
+            - "sw": southwest
+            - "w": west
+            - "nw": northwest
+            - "c": center
         - border (boolean): whether to draw a border, defaults to false
         - borderWidth (number): width of border, defaults to radius/50
         - borderPaint (paint): paint color of border, defaults
@@ -311,7 +402,7 @@ function drawCircle(x, y, radius, options)
 
     Returns:
     - None
-    ]]
+    --]]
 
     local function getCircleOrigin(radius, origin)
         local origins = {
@@ -332,7 +423,7 @@ function drawCircle(x, y, radius, options)
     local fill = options.fill
     if fill == nil then fill = true end
     local paint = options.paint or color_paint{1, 1, 1, 1}
-    local origin = options.origin or "c"
+    local origin = options.origin or "sw"
     local rotation = options.rotation or 0
     local coordOffset = getCircleOrigin(radius, origin)
     local border = options.border or false
