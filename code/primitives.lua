@@ -463,53 +463,26 @@ function drawCircle(x, y, radius, options)
     restore()
 end
 
-function drawFreeform(x, y, coordinates, options)
-    --[[
-    Draws a freeform shape at a given position.
-
-    Arguments:
-    - x (number): x coordinate of freeform shape
-    - y (number): y coordinate of freeform shape
-    - coordinates (table): table of coordinates of freeform shape
-    - options (table): table of optional arguments with default values
-        - paint (paint): paint color of freeform shape, defaults to white
-        - rotation (number): normalized rotation of freeform shape, 
-            defaults to 0
-            - 0: no rotation
-            - 0.25: 90 degrees counter-clockwise
-            - 0.5: 180 degrees counter-clockwise
-            - 0.75: 270 degrees counter-clockwise
-        - origin (string): origin of freeform shape, defaults to "sw"
-            - "n": north
-            - "ne": northeast
-            - "e": east
-            - "se": southeast
-            - "s": south
-            - "sw": southwest
-            - "w": west
-            - "nw": northwest
-            - "c": center
-
-    Returns:
-    - None
-    --]]
-
-    local function getOriginOffset(origin, coordinates)
-        local origins = {
-            ["n"] = function() return {0, -coordinates[1][2]} end,
-            ["ne"] = function() return {-coordinates[1][1], -coordinates[1][2]} end,
-            ["e"] = function() return {-coordinates[1][1], 0} end,
-            ["se"] = function() return {-coordinates[1][1], coordinates[1][2]} end,
-            ["s"] = function() return {0, coordinates[1][2]} end,
-            ["sw"] = function() return {coordinates[1][1], coordinates[1][2]} end,
-            ["w"] = function() return {coordinates[1][1], 0} end,
-            ["nw"] = function() return {coordinates[1][1], -coordinates[1][2]} end,
-            ["c"] = function() return {0, 0} end,
-        }
-        return origins[origin]()
+function drawFreeform(x, y, path, options)
+    
+    local function drawOutline(vertices)
+        for _, vertex in ipairs(vertices) do
+            if vertex[1] == "move" then
+                move_to{vertex[2], vertex[3]}
+            elseif vertex[1] == "line" then
+                line_to{vertex[2], vertex[3]}
+            elseif vertex[1] == "quad" then
+                quad_to({vertex[2], vertex[3]}, {vertex[4], vertex[5]})
+            else
+                error "Invalid vertex type. Must be move, line, or quad."
+            end
+        end
     end
 
-    local function lineToVertex(vertices)
-        move_to{vertices[1][1], vertices[1][2]}
-        for _, vertex in ipairs(vertices) do
+    options = options or {}
+    local paint = options.paint or color_paint{1, 1, 1, 1}
+
+    drawOutline(path)
+    fill(paint)
+
 end
