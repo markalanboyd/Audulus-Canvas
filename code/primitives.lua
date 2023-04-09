@@ -361,11 +361,11 @@ function drawPolygon(x, y, diameter, sides, options)
         return origins[origin]()
     end
 
-    local function getVertices(x, y, diameter, sides)
+    local function getVertices(diameter, sides)
         local vertices = {}
         local angle = 2 * math.pi / sides
         for i = 1, sides + 1 do
-            vertices[i] = {x + diameter / 2 * math.cos((i - 1) * angle), y + diameter / 2 * math.sin((i - 1) * angle)}
+            vertices[i] = {diameter / 2 * math.cos((i - 1) * angle), diameter / 2 * math.sin((i - 1) * angle)}
         end
         return vertices
     end
@@ -382,12 +382,12 @@ function drawPolygon(x, y, diameter, sides, options)
     local rotation = options.rotation or 0
     local origin = options.origin or "sw"
     local originOffset = getOriginOffset(origin, diameter)
-    local vertices = getVertices(x, y, diameter, sides)
+    local vertices = getVertices(diameter, sides)
 
     save()
     translate{x, y}
-    rotate((rotation) * 2 * math.pi)
     translate{originOffset[1], originOffset[2]}
+    rotate((rotation) * 2 * math.pi)
     lineToVertex(vertices)
     fill(paint)
     restore()
