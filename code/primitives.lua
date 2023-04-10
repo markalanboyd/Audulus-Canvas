@@ -362,6 +362,7 @@ function drawPolygon(x, y, diameter, sides, options)
     end
 
     local function getVertices(diameter, sides)
+        local sides = math.floor(sides)
         local vertices = {}
         local angle = 2 * math.pi / sides
         for i = 1, sides + 1 do
