@@ -2,12 +2,12 @@
 
 Canvas Node Colors
 v1.0.0
-April 7, 2023
+April 10, 2023
 by Mark Boyd
 
 This file contains functions for creating paint colors and gradients.
 
-The rgb() and hsl() functions can output either paint or text colors.
+The rgb() and hsl() functions can output either paints or color tables.
 
 --]]
 
