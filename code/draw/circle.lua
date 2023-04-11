@@ -1,4 +1,4 @@
-function drawCircle(x, y, radius, options)
+function circle(x, y, radius, options)
     --[[
     Original Author: Mark Boyd
     Description: Draws a circle at a given position.

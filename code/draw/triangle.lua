@@ -115,3 +115,10 @@ function triangle(x, y, base, options)
     fill(paint)
     restore()
 end
+
+triangle(0, 0, 10, {
+    origin="c",
+    type="right", 
+    height=20,
+    rotation=0.25,
+})
