@@ -50,6 +50,3 @@ theme.redHighlightBackground
 theme.grooves
 theme.modules
 theme.text
-
-
-

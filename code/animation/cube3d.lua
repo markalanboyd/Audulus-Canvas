@@ -111,4 +111,3 @@ fill_circle({cx4,cy4}, 5, paint)
 fill_circle({cx5,cy5}, 5, paint)
 fill_circle({cx6,cy6}, 5, paint)
 fill_circle({cx7,cy7}, 5, paint)
-

@@ -55,4 +55,3 @@ squareArgs = {50, {border=true, borderWidth=2, cornerRadius=10}}
 rectangleArgs = {50, 100, {border=true, borderWidth=2, cornerRadius=10}}
 polygonArgs = {50, 6, {rotation=0.25}}
 circleArgs = {50, {border=true, borderWidth=2}}
-

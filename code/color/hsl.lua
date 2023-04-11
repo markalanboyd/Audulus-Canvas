@@ -63,4 +63,5 @@ function hsl(h, s, l, options)
     elseif paintType == "table" then
         return {r, g, b, a}
     end
-end
+
+    
