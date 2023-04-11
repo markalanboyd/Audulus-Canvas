@@ -1,5 +1,4 @@
-
-function tileColRow(x, y, cols, rows, drawFunc, args, options)
+function tileTable(x, y, cols, rows, drawFunc, args, options)
 
     local function getFunction(x, y, drawFunc, args)
         if drawFunc == drawTriangle then

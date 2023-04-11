@@ -1,3 +1,10 @@
+
+--[[
+	Original Author: Chang-I Ng
+	Description: 3D cube animation
+]]
+
+
 pi=3.1415926535
 
 paint = color_paint{0.5,0.5,1,1}
