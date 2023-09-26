@@ -49,7 +49,8 @@ function hsl(h, s, l, options)
 
     local options = options or {}
     local a = options.a or 1
-    local normalize = options.normalize or false
+    local normalize = options.normalize
+    if normalize == nil then normalize = true end
     local paintType = options.type or "paint"
     if normalize then
         h = h * 360
@@ -63,5 +64,4 @@ function hsl(h, s, l, options)
     elseif paintType == "table" then
         return {r, g, b, a}
     end
-
-    
+end
