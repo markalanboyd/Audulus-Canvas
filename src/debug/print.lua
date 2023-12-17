@@ -10,6 +10,8 @@ local function createPrintLogger()
 	local function printQueue()
 		translate { 0 , -30 }
 		text("Print Queue Output", theme.text)
+        translate { 0, -4}
+		text("_________________", theme.text)
 		translate { 0, -20}
 		for i, s in ipairs(queue) do
 			text(i .. ": " .. s, theme.text)
