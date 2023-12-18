@@ -24,33 +24,35 @@ end
 local print, printAll = createPrintLogger()
 
 local s = [[
-<rect x="0" y="0" width="100" height="50" fill="black" stroke="blue" stroke-width="2"/>
+<rect x="0" y="0" width="100" height="50" fill="black" stroke="red" stroke-width="2"/>
 ]]
 
 local function parseSVG(s)
-    local function getVal(s, key, valType)
-        local pattern = key .. '="([^"]+)"'
+    local function parseVal(s, key, valType)
+        local function escapeDashes(s)
+            return (s:gsub("%-", "%%-"))
+        end
+
+        local pattern = escapeDashes(key) .. '="([^"]+)"'
         local value = string.match(s, pattern)
         if valType == "number" then return tonumber(value) end
         if valType == "string" then return value end
     end
-    
+
     local function parseRect(sub)
-        local x1 = getVal(sub, "x", "number")
-        local y1 = getVal(sub, "y", "number")
-        local width = getVal(sub, "width", "number")
-        local height = getVal(sub, "height", "number")
+        local x1 = parseVal(sub, "x", "number")
+        local y1 = parseVal(sub, "y", "number")
+        local width = parseVal(sub, "width", "number")
+        local height = parseVal(sub, "height", "number")
         local x2 = x1 + width
         local y2 = y1 + height
         local coordA = {x1, y1}
         local coordB = {x2, y2}
-        local fill = getVal(sub, "fill", "string")
+        local fill = parseVal(sub, "fill", "string")
         if fill ~= nil then fill = color_paint(colors[fill]) end
-        local stroke = getVal(sub, "stroke", "string")
+        local stroke = parseVal(sub, "stroke", "string")
         if stroke ~= nil then stroke = color_paint(colors[stroke]) end
-        local strokeWidth = 2
--- Match pattern having trouble with the `-` in the middle of stroke-width
---        local strokeWidth = getVal(sub, "stroke-width", "number")
+        local strokeWidth = parseVal(sub, "stroke-width", "number")
 
         if fill ~= "none" then
             fill_rect(coordA, coordB, 1, fill)
@@ -67,5 +69,6 @@ end
 parseSVG(s)
 
 printAll()
+
 
 
