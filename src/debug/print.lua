@@ -1,31 +1,39 @@
--- Insert this function definition at the beginning of your script
-
 local function createPrintLogger()
-	local queue = {}
+    local queue = {}
 
-	local function addToPrintQueue(s)
-		table.insert(queue, s)
-	end
+    local function addToQueue(...)
+    	local args = {...}
+    	local statement = ""
 
-	local function printQueue()
-		translate { 0 , -30 }
-		text("Print Queue Output", theme.text)
+    	for i, arg in ipairs(args) do
+    		if i == 1 then
+	    		statement = statement .. arg
+	    	else
+	    		statement = statement .. ", " .. arg
+	    	end
+    	end
+
+    	table.insert(queue, statement)
+    end
+
+    local function printQueue()
+        translate { 0 , -30 }
+        text("Print Queue Output", theme.text)
         translate { 0, -4}
-		text("_________________", theme.text)
-		translate { 0, -20}
-		for i, s in ipairs(queue) do
-			text(i .. ": " .. s, theme.text)
-			translate { 0 , -14 }
-		end
-	end
+        text("_________________", theme.text)
+        translate { 0, -20}
 
-	return addToPrintQueue, printQueue
+        for i, s in ipairs(queue) do
+            text(i .. ": " .. s, theme.text)
+            translate { 0 , -14 }
+        end
+    end
+
+    return addToQueue, printQueue
 end
 
 local print, printAll = createPrintLogger()
 
--- Your code goes here
--- Use `print()` as needed
+-- INSERT SCRIPT HERE --
 
--- Call `printAll()` in the last line in your script
 printAll()
