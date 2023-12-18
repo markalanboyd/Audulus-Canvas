@@ -20,13 +20,19 @@ If you have a feature request or found a bug, please [open an issue](https://git
 
 As this project is in the very early stages, I want to really solidify the library's conventions before accepting pull requests.
 
+## Devlog
+
+If you want to follow the development of this project more closely, read my devlog [Declarative Digital Instrument GUIs with Lua in Audulus](https://github.com/markalanboyd/blog/blob/main/declarative-digital-instrument-guis/ddig-index.md).
+
 ## Quickstart
 
 The [quickstart guide](docs/quickstart.md) is written for people with little to no experience programming. If you just want to experiment a little or figure out how to add a custom button to your module, start here.
 
 ## Tutorials
 
-If you want to learn how to use every aspect of the library, these [tutorials](docs/tutorials/tutorial_index.md) will explain all of its features step-by-step. Each tutorial is self-contained, so you don't need to read them in order. That said, if you're an absolute beginner, make sure you read the [Introduction to Functions](docs/tutorials/introduction-to-functions.md) guide.
+If you want to learn how to use every aspect of the library, these [tutorials](docs/tutorials/tutorial_index.md) will explain all of its features step-by-step.
+
+Each tutorial is self-contained, so you don't need to read them in order. That said, if you're an absolute beginner, make sure you read the [Introduction to Functions](docs/tutorials/introduction-to-functions.md) guide.
 
 ## API Reference
 
