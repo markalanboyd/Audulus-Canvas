@@ -6,7 +6,7 @@ _Note: This is a work in progress and some documentation and features may be mis
 
 The Canvas node in Audulus 4 uses [Lua](https://www.lua.org) to draw text and graphics. It works with an implementation of [vger](https://github.com/audulus/vger).
 
-In the Canvas node, you are given several [built-in functions](/code/builtins/builtins.lua) to draw lines, rectangles, circles, and text.
+In the Canvas node, you are given several [built-in functions](/src/builtins/builtins.lua) to draw lines, rectangles, circles, and text.
 
 This library extends these functions to help you easily and quickly craft custom visualizers and graphical user interfaces (GUIs) with just a few lines of code. The library is designed in such a way that you do not need to know (hardly) anything about programming in order to use it.
 
