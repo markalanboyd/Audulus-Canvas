@@ -1,59 +1,33 @@
 # Audulus-Canvas
 
+## Intro
+
+_Note: This is a work in progress and some documentation and features may be missing. Give the repo a star ⭐ and watch it 👁️ to keep up with development!_
+
 The Canvas node in Audulus 4 uses [Lua](https://www.lua.org) to draw text and graphics. It works with an implementation of [vger](https://github.com/audulus/vger).
 
-In the Canvas node, you are given several [built-in](/code/builtins/builtins.lua) functions to draw lines, rectangles, circles, and text. The functions in this library extend these built-in ones to make it easier to draw more complex graphics.
+In the Canvas node, you are given several [built-in functions](/code/builtins/builtins.lua) to draw lines, rectangles, circles, and text.
 
-## How to Use
+This library extends these functions to help you easily and quickly craft custom visualizers and graphical user interfaces (GUIs) with just a few lines of code. The library is designed in such a way that you do not need to know (hardly) anything about programming in order to use it.
 
-All of the available functions are in the [code](/code) folder.
+The goal of this library is to provide everything from a few small quality-of-life upgrades for simple tasks like drawing primitive shapes and creating buttons to an drop-in SVG parser and even a full-blown 3D engine.
 
-Each function is in its own `.lua` file. To use a function, copy the code from the file into the Canvas node.
+## Contributing
 
-To ensure modularity and work around the limitations of the Canvas node, no functions have any dependencies on other functions. This means that you can copy and paste the code from any function into your Canvas node and it will work.
+If you're interested in what features are coming, check out the [roadmap](https://github.com/users/markalanboyd/projects/6).
 
-### Required Arguments
+If you have a feature request or found a bug, please [open an issue](https://github.com/markalanboyd/Audulus-Canvas/issues) for it. You can also ask questions, report bugs, or request features for this project on the [Audulus Discord](https://discord.gg/43CG7Trznj) in the [Lua channel](https://discord.gg/vcQqHQNP9t).
 
-![arguments](docs/img/arguments.png)
+As this project is in the very early stages, I want to really solidify the library's conventions before accepting pull requests.
 
-All functions that draw something on the screen take `x` and `y` as their first two arguments. The next argument or two is usually a `width`, `length`, `base` or `diameter`. The last argument, `options`, is a table of keyword arguments.
+## Quickstart
 
-Other functions will have different required arguments. Always check docstring comments at the top of the file to see what arguments a function takes.
+The [quickstart guide](docs/quickstart.md) is written for people with little to no experience programming. If you just want to experiment a little or figure out how to add a custom button to your module, start here.
 
-For all functions, every argument except `options` is required. If you don't specify a value for an argument, the function will not work.
+## Tutorials
 
-### Keyword Arguments
+If you want to learn how to use every aspect of the library, these [tutorials](docs/tutorials/tutorial_index.md) will explain all of its features step-by-step. Each tutorial is self-contained, so you don't need to read them in order. That said, if you're an absolute beginner, make sure you read the [Introduction to Functions](docs/tutorials/introduction-to-functions.md) guide.
 
-Lua implements keyword arguments using a table. The `options` argument is a table that contains the keyword arguments.
+## API Reference
 
-Keyword arguments are optional. You can specify any number of them in any order. 
-
-Each keyword argument has a default value. If you don't specify a value for a keyword argument, the default value will be used. For example, the default paint value for shapes is `color_paint{1, 1, 1, 1}`.
-
-![optional-args](docs/img/optional-args.png)
-
-In the example above, a right-angle triangle will be drawn at `0, 0` with a base of `10`, a height of `20`.
-
-Notice that when keyword arguments take a string as a value, you must enclose the string in quotes. This is because Lua uses quotes to distinguish between strings and variables.
-
-![organized_args](docs/img/organized-args.png)
-
-Some functions take a lot of arguments. To make it easier to read, you can organize the arguments into multiple lines. In the example above, the `x`, `y` and `base` arguments are on the first line. 
-
-The `options` argument is a table, so it is enclosed in curly braces. Leave the first curly bracket `{` on the first line and put the last curly bracket and closing parenthesis `})` on the last line. The keyword arguments go between the brackets indented by four spaces.
-
-### Origins
-
-![origins](docs/img/origins.png)
-
-Some functions take an `origin` argument. This argument specifies where the shape will be drawn relative to the `x` and `y` arguments.
-
-The default value for `origin` for most shapes is `sw`. For circles, the default value is `center`.
-
-![origin-shape](docs/img/origin-shape.png)
-
-Note that these origins are the same regardless of the shape, as seen above. The `sw` origin for a rectangle is the bottom left corner, while `sw` for the circle is the bottom left corner of an imaginary square that surrounds the circle.
-
-![rotation](docs/img/rotation.png)
-
-Also note that the `rotation` argument will rotate around the origin. In the example above, the top two are rotating around the `c` origin, while the bottom two are rotating around the `sw` origin.
+The [API reference](docs/api.md) is the go-to guide if you want all of the details about each function.
