@@ -1,21 +1,8 @@
--- Inputs
--- tX tY t x1y1 x2y1 x3y1 x4y1 x1y2 x2y2 x3y2 x4y2 x1y3 x2y3 x3y3 x4y3 x1y4 x2y4 x3y4 x4y4
-
-local tX = tX * canvas_width
-local tY = tY * canvas_height
-
-local grid = {
-    x1y1, x2y1, x3y1, x4y1,
-    x1y2, x2y2, x3y2, x4y2,
-    x1y3, x2y3, x3y3, x4y3,
-    x1y4, x2y4, x3y4, x4y4
-}
-
-local function btn(x, y, width, options)
+function btn(x, y, width, options)
     -- Error Handling
     local function checkMutuallyExclusiveArgs(arg1Name, arg1, arg2Name, arg2)
         local e = "MutuallyExclusiveArgError: '%s' and '%s' cannot be used" ..
-                  "together. Remove one or the other."
+            "together. Remove one or the other."
         if arg1 and arg2 then
             error(string.format(e, arg1Name, arg2Name))
         end
@@ -32,14 +19,14 @@ local function btn(x, y, width, options)
     local pRadius = o.pRadius or false
     if pRadius then
         checkMutuallyExclusiveArgs("radius", r, "pRadius", pRadius)
-        local pRadiusPercent = math.min( o.pRadiusPercent or 10, 50 )
-        r = width * ( pRadiusPercent / 100)
+        local pRadiusPercent = math.min(o.pRadiusPercent or 10, 50)
+        r = width * (pRadiusPercent / 100)
     else
         if r ~= nil and r > width then
             error(string.format("ValueError: Radius cannot exceed size." ..
-                                "Max: %d, " ..
-                                "Provided: %d",
-                                width, r))
+                "Max: %d, " ..
+                "Provided: %d",
+                width, r))
         end
     end
     local radius = r or 0
@@ -48,7 +35,7 @@ local function btn(x, y, width, options)
     local border = o.border or false
     local borderWidth = o.borderWidth or 1
     local borderColor = o.borderColor or
-                        { c[1] * 0.75, c[2] * 0.75, c[3] * 0.75, c[4] }
+        { c[1] * 0.75, c[2] * 0.75, c[3] * 0.75, c[4] }
 
     -- Initialize coordinates
     local x1 = x
@@ -78,7 +65,7 @@ local function btn(x, y, width, options)
     if pPad then
         checkMutuallyExclusiveArgs("pad", p, "pPad", pPad)
         local pPadPercent = o.pPadPercent or 5
-        p = width * ( pPadPercent / 100 )
+        p = width * (pPadPercent / 100)
     end
     local pad = p or 0
     x1 = x1 + pad
@@ -96,7 +83,7 @@ local function btn(x, y, width, options)
         local st = grid[id] * 0.5
         local f = math.max(0, math.min(br + st, 1))
         local paint = color_paint(
-            { c[1] * f , c[2] * f, c[3] * f, c[4] }
+            { c[1] * f, c[2] * f, c[3] * f, c[4] }
         )
         if not border then
             fill_rect(pA, pB, radius, paint)
@@ -107,8 +94,8 @@ local function btn(x, y, width, options)
             -- Adjust the radius as border gets thicker
             local innerWidth = x2 - x1 - borderWidth
             local innerHeight = y2 - y1 - borderWidth
-            local scaleFactor = math.min(innerWidth  / (x2 - x1),
-                                         innerHeight / (y2 - y1))
+            local scaleFactor = math.min(innerWidth / (x2 - x1),
+                innerHeight / (y2 - y1))
             local adjustedRadius = radius * scaleFactor
 
             -- Inner rectangle
@@ -122,8 +109,7 @@ local function btn(x, y, width, options)
     drawButton()
 end
 
-
-local function tileFn(func, r, c)
+function tileFn(func, r, c)
     return function(x, y, w, o)
         local h = o.height or w
         for i = 0, c - 1 do
@@ -134,16 +120,3 @@ local function tileFn(func, r, c)
         end
     end
 end
-
-
-local tileBtn = tileFn(btn, 4, 4)
-tileBtn(0, 0, 50, {
-    color = theme.azureHighlight,
-    pPad = true,
-    pRadius = true,
-    border = true,
-    borderWidth = 3,
-    shrinkOnPress = true,
-    }
-)
-
