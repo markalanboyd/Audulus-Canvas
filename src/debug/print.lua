@@ -57,6 +57,5 @@ end
 local print, printAll = createPrintLogger()
 
 -- INSERT SCRIPT HERE --
--- Call print() where needed --
 
 printAll()
