@@ -30,9 +30,7 @@ local function createPrintLogger()
 		local statement = ""
 
 		for i, arg in ipairs(args) do
-			if type(arg) == "table" then
-				arg = tableToString(arg)
-			end
+			if type(arg) == "table" then arg = tableToString(arg) end
 			statement = statement .. tostring(arg) .. ", "
 		end
 
