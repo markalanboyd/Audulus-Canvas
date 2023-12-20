@@ -1,45 +1,47 @@
 local function createPrintLogger()
 	local queue = {}
 
+	local function hasNonIntegerKeys(t)
+		for k, _ in pairs(t) do
+			if type(k) ~= "number" or k ~= math.floor(k) or k < 1 then
+				return true
+			end
+		end
+		return false
+	end
+
+	local function tableToString(t)
+		local parts = {}
+		if hasNonIntegerKeys(t) then
+			for k, v in pairs(t) do
+				parts[#parts + 1] = "[" .. tostring(k) .. "] = " .. tostring(v)
+			end
+		else
+			for _, v in ipairs(t) do
+				parts[#parts + 1] = tostring(v)
+			end
+		end
+		return "{ " .. table.concat(parts, ", ") .. " }"
+	end
+
 	local function addToQueue(...)
-		local function hasNonIntegerKeys(t)
-			for k, _ in pairs(t) do
-				if type(k) ~= "number" or k ~= math.floor(k) or k < 1 then
-					return true
-				end
-			end
-			return false
-		end
-
-		local function tableToString(t)
-			local s = "{ "
-			if hasNonIntegerKeys(t) then
-				for k, v in pairs(t) do
-					s = s .. "[" .. k .. "] = " .. v .. ", "
-				end
-			else
-				for _, v in pairs(t) do
-					s = s .. v .. ", "
-				end
-			end
-			s = s:sub(1, -3) .. " }"
-			return s
-		end
-
 		local args = { ... }
-		local statement = ""
+		local statements = {}
 
 		for i, arg in ipairs(args) do
-			if type(arg) == "table" then arg = tableToString(arg) end
-			statement = statement .. tostring(arg) .. ", "
+			statements[i] = (type(arg) == "table")
+				and tableToString(arg) or tostring(arg)
 		end
 
-		statement = statement:sub(1, -3)
-		table.insert(queue, statement)
+		table.insert(queue, table.concat(statements, ", "))
 	end
 
 	local function printQueue()
+		local memory = math.floor(collectgarbage("count"))
+
 		translate { 0, -30 }
+		text("Memory usage (KB): " .. memory, theme.text)
+		translate { 0, -20 }
 		text("Print Queue Output", theme.text)
 		translate { 0, -4 }
 		text("_________________", theme.text)
