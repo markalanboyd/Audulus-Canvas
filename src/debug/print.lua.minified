@@ -1,0 +1,7 @@
+local function p() local q={}; local function h(t) for k,_ in pairs(t) do if type(k)~="number" or k~=math.floor(k) or k<1 then return true end end return false end local function tS(t) local p={}; if h(t) then for k,v in pairs(t) do p[#p+1]="["..tostring(k).."]="..tostring(v) end else for _,v in ipairs(t) do p[#p+1]=tostring(v) end end return "{"..table.concat(p,", ").."}" end local function a(...) local a={...}; local s={}; for _,arg in ipairs(a) do s[#s+1]=(type(arg)=="table") and tS(arg) or tostring(arg) end table.insert(q,table.concat(s,", ")) end local function pQ() local m=math.floor(collectgarbage("count")); translate{0,-30}; text("Memory usage (KB): "..m,theme.text); translate{0,-20}; text("Print Queue Output",theme.text); translate{0,-4}; text("_________________",theme.text); translate{0,-20}; for i,s in ipairs(q) do text(i..": "..s,theme.text); translate{0,-14} end end return a,pQ end
+
+print, printAll() = p()
+
+-- INSERT SCRIPT HERE --
+
+printAll()
