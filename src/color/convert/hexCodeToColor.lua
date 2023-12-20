@@ -12,27 +12,23 @@
 -- @see isValidHexCode Depends on this validator
 -- @see hexToColor If you want to convert a hexidecimal number to
 -- a color table.
-function hexCodeStrToColor(s)
+local function hexCodeStrToColor(s)
     if not isValidHexCode(s) then
         error("ValueError: Not a valid hex code.")
     end
 
     s = tostring(s):gsub("#", "")
-    local color = { r = "", g = "", b = "", a = "" }
+    local color = {}
     if #s == 3 or #s == 4 then
-        color["r"] = s:sub(1, 1):rep(2)
-        color["g"] = s:sub(2, 2):rep(2)
-        color["b"] = s:sub(3, 3):rep(2)
-        color["a"] = (#s == 4) and s:sub(4, 4):rep(2) or "FF"
+        table.insert(color, tonumber(s:sub(1, 1):rep(2), 16) / 255)
+        table.insert(color, tonumber(s:sub(2, 2):rep(2), 16) / 255)
+        table.insert(color, tonumber(s:sub(3, 3):rep(2), 16) / 255)
+        table.insert(color, (#s == 4) and tonumber(s:sub(4, 4):rep(2), 16) / 255 or 1)
     elseif #s == 6 or #s == 8 then
-        color["r"] = s:sub(1, 2)
-        color["g"] = s:sub(3, 4)
-        color["b"] = s:sub(5, 6)
-        color["a"] = (#s == 8) and s:sub(7, 8) or "FF"
-    end
-
-    for k, v in pairs(color) do
-        color[k] = tonumber(v, 16) / 255
+        table.insert(color, tonumber(s:sub(1, 2), 16) / 255)
+        table.insert(color, tonumber(s:sub(3, 4), 16) / 255)
+        table.insert(color, tonumber(s:sub(5, 6), 16) / 255)
+        table.insert(color, (#s == 8) and tonumber(s:sub(7, 8), 16) / 255 or 1)
     end
 
     return color
