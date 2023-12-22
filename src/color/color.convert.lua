@@ -1,5 +1,4 @@
 --- Functions to convert various color types into one another\
--- Dependencies: `color.validate`
 -- @submodule color
 
 --- Converts a hex code string to a color table.

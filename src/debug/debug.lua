@@ -1,4 +1,4 @@
---- Useful debugging functions.
+--- Add debugging capabilities.
 -- @module debug
 
 --- Returns a set of functions that together enable stdout-like printing.
@@ -87,5 +87,5 @@ function create_print_logger()
         end
     end
 
-    return addToQueue, printQueue
+    return add_to_queue, print_queue
 end
