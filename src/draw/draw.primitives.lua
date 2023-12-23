@@ -1,7 +1,7 @@
-function fill_triangle(coord_a, coord_b, coord_c, paint)
-    move_to(coord_a)
-    line_to(coord_b)
-    line_to(coord_c)
-    line_to(coord_a)
+function fill_triangle(vec2_a, vec2_b, vec2_c, paint)
+    move_to(vec2_a)
+    line_to(vec2_b)
+    line_to(vec2_c)
+    line_to(vec2_a)
     fill(paint)
 end
