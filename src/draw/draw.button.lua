@@ -1,2 +1,0 @@
---- Functions to convert various color types into one another
--- @submodule draw
