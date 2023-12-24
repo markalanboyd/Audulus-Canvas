@@ -103,5 +103,5 @@ function create_print_logger()
         end
     end
 
-    return addToQueue, printQueue
+    return add_to_queue, print_queue
 end
