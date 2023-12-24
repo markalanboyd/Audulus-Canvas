@@ -34,7 +34,7 @@ function color_paint(color_table)
 end
 
 --- Returns a linear gradient paint from two color tables and a set of coordinates.
-function linear_gradient(start, end, color_start, color_end)
+function linear_gradient(start_coord, end_coord, color_start, color_end)
 end
 
 --- Draws a solid circle.
