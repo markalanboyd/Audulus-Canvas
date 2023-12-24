@@ -35,11 +35,29 @@ function Line.draw_between_all(...)
     end
 end
 
+function Line.dash_between_all(...)
+    local vec2s = process_args(Line, ...)
+    for i = 1, #vec2s do
+        for j = i + 1, #vec2s do
+            local line = Line.new(vec2s[i], vec2s[j])
+            line:dashed()
+        end
+    end
+end
+
 function Line.draw_from_to_all(vec2, ...)
     local vec2s = process_args(Line, ...)
     for i = 1, #vec2s do
         local line = Line.new(vec2, vec2s[i])
         line:draw()
+    end
+end
+
+function Line.dash_from_to_all(vec2, ...)
+    local vec2s = process_args(Line, ...)
+    for i = 1, #vec2s do
+        local line = Line.new(vec2, vec2s[i])
+        line:dash()
     end
 end
 
