@@ -117,3 +117,13 @@ function Vec2:Rotate(angle)
     self.y = self.x * sin_theta + self.y * cos_theta
     return self
 end
+
+function Vec2:distance(other)
+    if is_vec(other) then
+        local dx = self.x - other.x
+        local dy = self.y - other.y
+        return math.sqrt(dx * dx + dy * dy)
+    else
+        error("TypeError: Argument for Vec2:distance must be a Vec2")
+    end
+end
