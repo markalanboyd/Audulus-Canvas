@@ -8,18 +8,32 @@ function Vec2.new(x, y)
     return self
 end
 
-local function is_vec(v)
-    return type(v) == "table" and v.x and v.y
+function Vec2.is_vec2(obj)
+    return type(obj) == "table" and obj.x and obj.y and not obj.z
 end
 
-local function is_num_pair(x, y)
+function Vec2.is_xy_pair(x, y)
     return type(x) == "number" and type(y) == "number"
 end
 
+function Vec2:Set(x, y)
+    if Vec2.is_vec2(x) then
+        self.x = x.x
+        self.y = x.y
+        return self
+    elseif Vec2.is_xy_pair(x, y) then
+        self.x = x
+        self.y = y
+        return self
+    else
+        error("TypeError: Invalid arguments for Vec2:set")
+    end
+end
+
 function Vec2:add(x, y)
-    if is_vec(x) then
+    if Vec2.is_vec2(x) then
         return Vec2.new(self.x + x.x, self.y + x.y)
-    elseif is_num_pair(x, y) then
+    elseif Vec2.is_xy_pair(x, y) then
         return Vec2.new(self.x + x, self.y + y)
     else
         error("TypeError: Invalid arguments for Vec2:add")
@@ -27,11 +41,11 @@ function Vec2:add(x, y)
 end
 
 function Vec2:Add(x, y)
-    if is_vec(x) then
+    if Vec2.is_vec2(x) then
         self.x = self.x + x.x
         self.y = self.y + x.y
         return self
-    elseif is_num_pair(x, y) then
+    elseif Vec2.is_xy_pair(x, y) then
         self.x = self.x + x
         self.y = self.y + y
         return self
@@ -41,9 +55,9 @@ function Vec2:Add(x, y)
 end
 
 function Vec2:sub(x, y)
-    if is_vec(x) then
+    if Vec2.is_vec2(x) then
         return Vec2.new(self.x - x.x, self.y - x.y)
-    elseif is_num_pair(x, y) then
+    elseif Vec2.is_xy_pair(x, y) then
         return Vec2.new(self.x - x, self.y - y)
     else
         error("TypeError: Invalid arguments for Vec2:sub")
@@ -51,11 +65,11 @@ function Vec2:sub(x, y)
 end
 
 function Vec2:Sub(x, y)
-    if is_vec(x) then
+    if Vec2.is_vec2(x) then
         self.x = self.x - x.x
         self.y = self.y - y.y
         return self
-    elseif is_num_pair(x, y) then
+    elseif Vec2.is_xy_pair(x, y) then
         self.x = self.x - x
         self.y = self.y - y
         return self
@@ -119,11 +133,22 @@ function Vec2:Rotate(angle)
 end
 
 function Vec2:distance(other)
-    if is_vec(other) then
+    if Vec2.is_vec2(other) then
         local dx = self.x - other.x
         local dy = self.y - other.y
         return math.sqrt(dx * dx + dy * dy)
     else
         error("TypeError: Argument for Vec2:distance must be a Vec2")
+    end
+end
+
+function Vec2:scale_about(other, scalar)
+    if Vec2.is_vec2(other) then
+        return Vec2.new(
+            other.x + (self.x - other.x) * scalar,
+            other.y + (self.y - other.y) * scalar
+        )
+    else
+        error("TypeError: First argument for Vec2:scale_about must be a Vec2")
     end
 end
