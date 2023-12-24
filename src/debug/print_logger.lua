@@ -70,11 +70,27 @@ function create_print_logger()
         table.insert(queue, table.concat(statements, ", "))
     end
 
-    local function print_queue()
-        local memory = math.floor(collectgarbage("count"))
+    local function get_peak_memory(interval)
+        if _PeakMemory == nil then
+            _PeakMemory = math.floor(collectgarbage("count"))
+        end
 
+        if Time == nil then Time = 0 end
+        local current_memory_usage = math.floor(collectgarbage("count"))
+        local truncated_time = math.floor(Time * 100) / 100
+
+        if _PeakMemory < current_memory_usage then
+            _PeakMemory = current_memory_usage
+        end
+
+        if truncated_time % interval == 0 then _PeakMemory = 0 end
+
+        return _PeakMemory
+    end
+
+    local function print_queue()
         translate { 0, -30 }
-        text("Memory usage (KB): " .. memory, theme.text)
+        text("Peak memory usage (KB): " .. get_peak_memory(10), theme.text)
         translate { 0, -20 }
         text("Print Queue Output", theme.text)
         translate { 0, -4 }
