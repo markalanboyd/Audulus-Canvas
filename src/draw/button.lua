@@ -1,4 +1,4 @@
-function btn(x, y, width, options)
+function button(x, y, width, options)
     -- Error Handling
     local function checkMutuallyExclusiveArgs(arg1Name, arg1, arg2Name, arg2)
         local e = "MutuallyExclusiveArgError: '%s' and '%s' cannot be used" ..
@@ -109,7 +109,7 @@ function btn(x, y, width, options)
     drawButton()
 end
 
-function tileFn(func, r, c)
+function tile_button_fn(func, r, c)
     return function(x, y, w, o)
         local h = o.height or w
         for i = 0, c - 1 do
