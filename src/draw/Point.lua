@@ -9,25 +9,8 @@ function Point.new(vec2, color, size)
     return self
 end
 
-local function process_args(class_meta, ...)
-    local args = { ... }
-    local processed_args
-
-    if type(args[1]) == "table" then
-        if getmetatable(args[1]) == class_meta then
-            processed_args = args
-        else
-            processed_args = args[1]
-        end
-    else
-        processed_args = args
-    end
-
-    return processed_args
-end
-
 function Point.draw_all(...)
-    local points = process_args(Point, ...)
+    local points = Utils.process_args(Point, ...)
 
     for _, point in ipairs(points) do
         if getmetatable(point) == Point then
