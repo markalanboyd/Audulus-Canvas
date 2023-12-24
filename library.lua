@@ -8,7 +8,6 @@ htmlColors = { indianred = { 205, 92, 92, 1 }, lightcoral = { 240, 128, 128, 1 }
 
 
 --- Functions to convert various color types into one another\
--- Dependencies: `color.validate`
 -- @submodule color
 
 --- Converts a hex code string to a color table.
@@ -58,15 +57,6 @@ function hex_code_to_color(s)
     return color
 end
 
-
---- Functions and tables that create, translate, validate, and manipulate colors.
--- This is the main module for color-related functionalities.
--- It encapsulates submodules like color.convert, color.tables, and color.validate.
--- @module color
-
--- This file intentionally left blank to help generate API docs.
-
-
 --- Functions to validate the form of color strings and numbers
 -- @submodule color
 
@@ -89,35 +79,121 @@ function is_valid_hex_code(s)
     return hasValidChars and isValidLen
 end
 
+--- Draw, move, scale, and color basic shapes.
+-- These functions draw, move, scale, and color shapes on the Canvas node.
+-- There are also several built-in theme values that represent color tables
+-- matching the style of Audulus. The Audulus-Canvas library is extends the
+-- usefulness of these built-ins by adding additional abstraction layers and
+-- utility functions that simplify complex drawing operations.
+-- @module builtins
 
--- paint = color_paint { r, g, b, a }
--- paint = linear_gradient( {start_x, start_y}, {end_x, end_y}, {r, g, b, a}, {r, g, b, a})
+-- Note: If you would like to see the source code for these functions, you can
+-- view it at https://github.com/audulus/vger.
 
--- fill_circle( {x, y}, radius, paint)
--- stroke_circle( {x, y}, radius, width, paint)
+--- Returns a paint userdata from a color table.
+-- Creates a userdata called paint that represents an rgba color. Paints are
+-- used to color all of the SVG shapes. It is good practice to keep colors
+-- values as color values right up until you need them to be paints, usually
+-- just one line before you actually draw the shape that takes a paint. This is
+-- because you cannot index into and manipulate the rgba values of a paint.
+-- @tparam table color_table An {r, g, b, a} color table where each variable is
+-- a normalized 0 to 1 value.
+-- @treturn userdata A paint userdata.
+-- @usage
+-- white = {1, 1, 1, 1}
+-- paint = color_paint(white)
+-- fill_circle({0, 0}, 10, paint) -- white circle
+--
+-- -- In this example, sine is a Canvas node input and is a 0 to 1 sine wave
+-- pulsing_red = {sine, 0, 0, 1}
+-- pulsing_red_paint = color_paint(pulsing_red)
+-- fill_rect({0, 0}, {40, 10}, 0, pulsing_red_paint) --
+--
+-- print(white[1]) -- 1
+-- print(paint[1]) -- Error: attempt to index global 'white' (a userdata value)
+function color_paint(color_table)
+end
 
--- stroke_arc( {x, y}, radius, width, rotation, aperture, paint)
--- stroke_segment( {ax, ay}, {bx, by}, width, paint)
+--- Returns a linear gradient paint from two color tables and a set of coordinates.
+function linear_gradient(start_coord, end_coord, color_start, color_end)
+end
 
--- fill_rect( {min_x, min_y}, {max_x, max_y}, corner_radius, paint)
--- stroke_rect( {min_x, min_y}, {max_x, max_y}, corner_radius, width, paint)
+--- Draws a solid circle.
+function fill_circle(coordinate, radius, paint)
+end
 
--- stroke_bezier( {ax, ay}, {bx, by}, {cx, cy}, width, paint)
+--- Draws an outlined circle.
+function stroke_circle(coordinate, radius, width, paint)
+end
 
--- text("hello world!", {r,g,b,a})
--- min, max = text_bounds("hello world!")
--- text_box("lorem ipsum...", break_row_width, {r,g,b,a})
+--- Draws an arc.
+function stroke_arc(coordinate, radius, width, rotation, aperture, paint)
+end
 
--- move_to {x, y}
--- line_to {x, y}
--- quad_to({bx, by}, {cx, cy})
--- fill(paint)
+--- Draws a line.
+function stroke_segment(a, b, width, paint)
+end
 
--- translate {tx, ty}
--- scale {sx, sy}
--- scale {sx, sy}
--- save()
--- restore()
+--- Draws a solid rectangle.
+function fill_rect(min, max, corner_radius, paint)
+end
+
+--- Draws an outlined rectangle.
+function stroke_rect(min, max, corner_radius, width, paint)
+end
+
+--- Draws a quadratic bezier curve.
+function stroke_bezier(a, b, c, width, paint)
+end
+
+--- Draws a string.
+function text(s, color_table)
+end
+
+--- Returns the minimum and maximum of a string.
+function text_bounds(s)
+end
+
+--- Draws a string in a text box.
+function text_box(s, break_row_width, color_table)
+end
+
+--- Pick up the pen and move to coordinate {x, y}
+function move_to(coordinate)
+end
+
+--- Draw a line from current pen position to coordinate {x, y}
+function line_to(coordinate)
+end
+
+--- Draw a quadratic bezier curve from current pen position to coord_c
+function quad_to(coord_b, coord_c)
+end
+
+--- Fill the space enclosed by the pen with a paint color.
+function fill(paint)
+end
+
+--- Translate the coordinate system by an offset set by the coordinate {tx, ty}
+function translate(coordinate)
+end
+
+--- Grow (>1) or shrink (<1) the x and y axes independently with the coordinate
+function scale(coordinate)
+end
+
+--- Rotates the canvas around the origin by radians.
+-- Positive to left, negative to right.
+function rotate(theta)
+end
+
+--- Saves the coordinate system state.
+function save()
+end
+
+--- Restores the coordinate system state to the point where it was saved.
+function restore()
+end
 
 -- canvas_width
 -- canvas_height
@@ -139,7 +215,272 @@ end
 -- theme.text
 
 
-function btn(x, y, width, options)
+Vec2 = {}
+Vec2.__index = Vec2
+
+function Vec2.new(x, y)
+    local self = setmetatable({}, Vec2)
+    self.x = x or 0
+    self.y = y or 0
+    return self
+end
+
+local function is_vec(v)
+    return type(v) == "table" and v.x and v.y
+end
+
+local function is_num_pair(x, y)
+    return type(x) == "number" and type(y) == "number"
+end
+
+function Vec2:add(x, y)
+    if is_vec(x) then
+        return Vec2.new(self.x + x.x, self.y + x.y)
+    elseif is_num_pair(x, y) then
+        return Vec2.new(self.x + x, self.y + y)
+    else
+        error("TypeError: Invalid arguments for Vec2:add")
+    end
+end
+
+function Vec2:Add(x, y)
+    if is_vec(x) then
+        self.x = self.x + x.x
+        self.y = self.y + x.y
+        return self
+    elseif is_num_pair(x, y) then
+        self.x = self.x + x
+        self.y = self.y + y
+        return self
+    else
+        error("TypeError: Invalid arguments for Vec2:Add")
+    end
+end
+
+function Vec2:sub(x, y)
+    if is_vec(x) then
+        return Vec2.new(self.x - x.x, self.y - x.y)
+    elseif is_num_pair(x, y) then
+        return Vec2.new(self.x - x, self.y - y)
+    else
+        error("TypeError: Invalid arguments for Vec2:sub")
+    end
+end
+
+function Vec2:Sub(x, y)
+    if is_vec(x) then
+        self.x = self.x - x.x
+        self.y = self.y - y.y
+        return self
+    elseif is_num_pair(x, y) then
+        self.x = self.x - x
+        self.y = self.y - y
+        return self
+    else
+        error("TypeError: Invalid arguments for Vec2:Sub")
+    end
+end
+
+function Vec2:mult(scalar)
+    return Vec2.new(self.x * scalar, self.y * scalar)
+end
+
+function Vec2:Mult(scalar)
+    self.x = self.x * scalar
+    self.y = self.y * scalar
+    return self
+end
+
+function Vec2:magnitude()
+    return math.sqrt(self.x * self.x + self.y * self.y)
+end
+
+function Vec2:normalize()
+    local mag = self:magnitude()
+    if mag > 0 then
+        return Vec2.new(self.x / mag, self.y / mag)
+    else
+        return Vec2.new(0, 0)
+    end
+end
+
+function Vec2:dot(other)
+    return self.x * other.x + self.y * other.y
+end
+
+function Vec2:angle(other)
+    local dot_product = self:dot(other)
+    local mag_product = self:magnitude() * other:magnitude()
+    if mag_product > 0 then
+        return math.acos(dot_product / mag_product)
+    else
+        return 0
+    end
+end
+
+function Vec2:rotate(angle)
+    local cos_theta = math.cos(angle)
+    local sin_theta = math.sin(angle)
+    return Vec2.new(
+        self.x * cos_theta - self.y * sin_theta,
+        self.x * sin_theta + self.y * cos_theta
+    )
+end
+
+function Vec2:Rotate(angle)
+    local cos_theta = math.cos(angle)
+    local sin_theta = math.sin(angle)
+    self.x = self.x * cos_theta - self.y * sin_theta
+    self.y = self.x * sin_theta + self.y * cos_theta
+    return self
+end
+
+function Vec2:distance(other)
+    if is_vec(other) then
+        local dx = self.x - other.x
+        local dy = self.y - other.y
+        return math.sqrt(dx * dx + dy * dy)
+    else
+        error("TypeError: Argument for Vec2:distance must be a Vec2")
+    end
+end
+
+Point = {}
+Point.__index = Point
+
+function Point.new(vec2, color, size)
+    local self = setmetatable({}, Point)
+    self.vec2 = vec2 or { x = 0, y = 0 }
+    self.color = color or { 1, 1, 1, 1 }
+    self.size = size or 2
+    return self
+end
+
+local function process_args(class_meta, ...)
+    local args = { ... }
+    local processed_args
+
+    if type(args[1]) == "table" then
+        if getmetatable(args[1]) == class_meta then
+            processed_args = args
+        else
+            processed_args = args[1]
+        end
+    else
+        processed_args = args
+    end
+
+    return processed_args
+end
+
+function Point.draw_all(...)
+    local points = process_args(Point, ...)
+
+    for _, point in ipairs(points) do
+        if getmetatable(point) == Point then
+            point:draw()
+        else
+            error("Invalid argument to Point.draw_all:" ..
+                "Expected a Point instance or a table of Point instances")
+        end
+    end
+end
+
+function Point:draw()
+    fill_circle({ self.vec2.x, self.vec2.y },
+        self.size,
+        color_paint(self.color)
+    )
+end
+
+function fill_triangle(vec2_a, vec2_b, vec2_c, paint)
+    move_to(vec2_a)
+    line_to(vec2_b)
+    line_to(vec2_c)
+    line_to(vec2_a)
+    fill(paint)
+end
+
+Line = {}
+Line.__index = Line
+
+function Line.new(vec2_a, vec2_b)
+    local self = setmetatable({}, Line)
+    self.vec2_a = vec2_a or { 0, 0 }
+    self.vec2_b = vec2_b or { 0, 0 }
+    return self
+end
+
+local function process_args(class_meta, ...)
+    local args = { ... }
+    local processed_args
+
+    if type(args[1]) == "table" then
+        if getmetatable(args[1]) == class_meta then
+            processed_args = args
+        else
+            processed_args = args[1]
+        end
+    else
+        processed_args = args
+    end
+
+    return processed_args
+end
+
+function Line.draw_between_all(...)
+    local vec2s = process_args(Line, ...)
+    for i = 1, #vec2s do
+        for j = i + 1, #vec2s do
+            local line = Line.new(vec2s[i], vec2s[j])
+            line:draw()
+        end
+    end
+end
+
+function Line.draw_from_to_all(vec2, ...)
+    local vec2s = process_args(Line, ...)
+    for i = 1, #vec2s do
+        local line = Line.new(vec2, vec2s[i])
+        line:draw()
+    end
+end
+
+function Line:draw(color, width)
+    color = color or theme.text
+    width = width or 1
+    local paint = color_paint(color)
+    stroke_segment(
+        { self.vec2_a.x, self.vec2_a.y },
+        { self.vec2_b.x, self.vec2_b.y },
+        width, paint
+    )
+end
+
+function Line:dashed(color, width, dash_length, space_length)
+    color = color or theme.text
+    width = width or 1
+    dash_length = dash_length or 5
+    space_length = space_length or dash_length
+    local paint = color_paint(color)
+
+    local total_distance = self.vec2_a:distance(self.vec2_b)
+    local direction = self.vec2_b:sub(self.vec2_a):normalize()
+
+    local current_distance = 0
+    while current_distance < total_distance do
+        local start_dash = self.vec2_a:add(direction:mult(current_distance))
+        current_distance = math.min(current_distance + dash_length, total_distance)
+        local end_dash = self.vec2_a:add(direction:mult(current_distance))
+
+        local temp_line = Line.new(start_dash, end_dash)
+        temp_line:draw(color, width)
+
+        current_distance = current_distance + space_length
+    end
+end
+
+function button(x, y, width, options)
     -- Error Handling
     local function checkMutuallyExclusiveArgs(arg1Name, arg1, arg2Name, arg2)
         local e = "MutuallyExclusiveArgError: '%s' and '%s' cannot be used" ..
@@ -250,7 +591,7 @@ function btn(x, y, width, options)
     drawButton()
 end
 
-function tileFn(func, r, c)
+function tile_button_fn(func, r, c)
     return function(x, y, w, o)
         local h = o.height or w
         for i = 0, c - 1 do
@@ -261,7 +602,6 @@ function tileFn(func, r, c)
         end
     end
 end
-
 
 --- Useful debugging functions.
 -- @module debug
@@ -335,11 +675,27 @@ function create_print_logger()
         table.insert(queue, table.concat(statements, ", "))
     end
 
-    local function print_queue()
-        local memory = math.floor(collectgarbage("count"))
+    local function get_peak_memory(interval)
+        if _PeakMemory == nil then
+            _PeakMemory = math.floor(collectgarbage("count"))
+        end
 
+        if Time == nil then Time = 0 end
+        local current_memory_usage = math.floor(collectgarbage("count"))
+        local truncated_time = math.floor(Time * 100) / 100
+
+        if _PeakMemory < current_memory_usage then
+            _PeakMemory = current_memory_usage
+        end
+
+        if truncated_time % interval == 0 then _PeakMemory = 0 end
+
+        return _PeakMemory
+    end
+
+    local function print_queue()
         translate { 0, -30 }
-        text("Memory usage (KB): " .. memory, theme.text)
+        text("Peak memory usage (KB): " .. get_peak_memory(10), theme.text)
         translate { 0, -20 }
         text("Print Queue Output", theme.text)
         translate { 0, -4 }
@@ -352,7 +708,29 @@ function create_print_logger()
         end
     end
 
-    return addToQueue, printQueue
+    return add_to_queue, print_queue
 end
 
+Graph = {}
+Graph.__index = Graph
 
+function Graph.new(x_max, y_max, step, color)
+    local self = setmetatable({}, Graph)
+    self.x_max = x_max or 100
+    self.y_max = y_max or 100
+    self.step = step or 10
+    self.color = color or { 0.4, 0.4, 0.4, 1 }
+    return self
+end
+
+function Graph:draw()
+    local paint = color_paint(self.color)
+
+    for i = 0, self.step * self.step * 2, self.step do
+        stroke_segment({ -self.x_max, -self.y_max + i }, { self.x_max, -self.y_max + i }, 1, paint)
+        stroke_segment({ -self.x_max + i, -self.y_max }, { -self.x_max + i, self.y_max }, 1, paint)
+    end
+
+    stroke_segment({ -self.x_max, 0 }, { self.x_max, 0 }, 2, paint)
+    stroke_segment({ 0, self.y_max }, { 0, -self.y_max }, 2, paint)
+end
