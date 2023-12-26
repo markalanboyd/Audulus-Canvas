@@ -4,7 +4,6 @@ function Debug.Logger()
     local queue = {}
 
     local function add_to_queue(...)
-        local args = { ... }
         local statements = {}
 
         for i = 1, select("#", ...) do
@@ -14,6 +13,26 @@ function Debug.Logger()
             else
                 statements[i] = (type(arg) == "table")
                     and Utils.table_to_string(arg) or tostring(arg)
+            end
+        end
+
+        table.insert(queue, table.concat(statements, ", "))
+    end
+
+    local function truncate_and_add_to_queue(places, ...)
+        if not MathUtils.is_positive_int(places) then
+            error("Error: First argument 'places' must be a positive integer")
+        end
+        local statements = {}
+
+        for i = 1, select("#", ...) do
+            local arg = select(i, ...)
+            if arg == nil then
+                statements[i] = "nil"
+            else
+                statements[i] = (type(arg) == "table")
+                    and Utils.table_to_string(arg, true, places)
+                    or tostring(MathUtils.truncate(arg, places))
             end
         end
 
@@ -35,7 +54,7 @@ function Debug.Logger()
         end
     end
 
-    return add_to_queue, print_queue
+    return add_to_queue, truncate_and_add_to_queue, print_queue
 end
 
-print, print_all = Debug.Logger()
+print, tprint, print_all = Debug.Logger()

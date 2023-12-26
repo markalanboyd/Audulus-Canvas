@@ -26,15 +26,30 @@ function Utils.has_non_integer_keys(t)
     return false
 end
 
-function Utils.table_to_string(t)
+function Utils.table_to_string(t, truncate, places)
+    truncate = truncate or false
+    places = places or 0
+
     local parts = {}
+    local function process_value(v)
+        if truncate and type(v) == "number" then
+            return MathUtils.truncate(v, places)
+        elseif type(v) == "table" then
+            return Utils.table_to_string(v, truncate, places)
+        else
+            return tostring(v)
+        end
+    end
+
     if Utils.has_non_integer_keys(t) then
         for k, v in pairs(t) do
-            parts[#parts + 1] = tostring(k) .. " = " .. tostring(v)
+            v = process_value(v)
+            parts[#parts + 1] = tostring(k) .. " = " .. v
         end
     else
         for _, v in ipairs(t) do
-            parts[#parts + 1] = tostring(v)
+            v = process_value(v)
+            parts[#parts + 1] = v
         end
     end
     return "{ " .. table.concat(parts, ", ") .. " }"
