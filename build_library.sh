@@ -10,7 +10,33 @@ echo "-- SCROLL TO BOTTOM ----------------------------------------------------\n
 find . -name '*.lua' -not -name 'library.lua' -not -name 'builtins.lua' -not -name 'temp_library.lua' -exec sh -c 'cat {} && echo && echo' \; >> "$temp_file"
 
 # Add the bottom content
-echo -e "-- AUDULUS-CANVAS LIBRARY ----------------------------------------------\n\n----- Instructions -----\n-- 1. Create 'Time' input (case-sensitive)\n-- 2. Attach Timer node to the 'Time' input\n-- 3. Select 'Save Data' at the bottom of the inspector panel\n-- 4. Set a custom W(idth) and H(eight) in the inspector panel\n-- 5. Write your code below this line\n\n-- CODE ----------------------------------------------------------------\n\n\n\n\n\n-- PRINT CONSOLE -------------------------------------------------------\n\nprint_all()" >> "$temp_file"
+echo -e "
+-- AUDULUS-CANVAS LIBRARY ----------------------------------------------
+-- Version: 0.0.2-alpha
+-- Updated: 2023.12.26
+-- URL: https://github.com/markalanboyd/Audulus-Canvas
+
+----- Instructions -----
+-- 1. Create 'Time' input (case-sensitive)
+-- 2. Attach Timer node to the 'Time' input
+-- 3. Select 'Save Data' at the bottom of the inspector panel
+-- 4. Set a custom W(idth) and H(eight) in the inspector panel
+-- 5. Write your code in the CODE block below
+
+o = Origin.new(\"c\", {show = true, type = \"cross\", width = 4, color = theme.text})
+
+-- CODE ----------------------------------------------------------------
+
+
+
+
+
+
+-- PRINT CONSOLE -------------------------------------------------------
+
+o:reset()
+print_all()
+" >> "$temp_file"
 
 # Rename the temporary file to library.lua
 mv "$temp_file" "library.lua"
