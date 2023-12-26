@@ -39,3 +39,21 @@ function Utils.table_to_string(t)
     end
     return "{ " .. table.concat(parts, ", ") .. " }"
 end
+
+function Utils.get_peak_memory(interval)
+    if _PeakMemory == nil then
+        _PeakMemory = math.floor(collectgarbage("count"))
+    end
+
+    if Time == nil then Time = 0 end
+    local current_memory_usage = math.floor(collectgarbage("count"))
+    local truncated_time = math.floor(Time * 100) / 100
+
+    if _PeakMemory < current_memory_usage then
+        _PeakMemory = current_memory_usage
+    end
+
+    if truncated_time % interval == 0 then _PeakMemory = 0 end
+
+    return _PeakMemory
+end
