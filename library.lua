@@ -80,6 +80,24 @@ function Utils.table_to_string(t)
     return "{ " .. table.concat(parts, ", ") .. " }"
 end
 
+function Utils.get_peak_memory(interval)
+    if _PeakMemory == nil then
+        _PeakMemory = math.floor(collectgarbage("count"))
+    end
+
+    if Time == nil then Time = 0 end
+    local current_memory_usage = math.floor(collectgarbage("count"))
+    local truncated_time = math.floor(Time * 100) / 100
+
+    if _PeakMemory < current_memory_usage then
+        _PeakMemory = current_memory_usage
+    end
+
+    if truncated_time % interval == 0 then _PeakMemory = 0 end
+
+    return _PeakMemory
+end
+
 
 Vec2 = {}
 Vec2.__index = Vec2
@@ -735,34 +753,20 @@ function Debug.Logger()
         local statements = {}
 
         for i, arg in ipairs(args) do
-            statements[i] = (type(arg) == "table")
-                and Utils.table_to_string(arg) or tostring(arg)
+            if type(arg) == "nil" then
+                statements[i] = "nil"
+            else
+                statements[i] = (type(arg) == "table")
+                    and Utils.table_to_string(arg) or tostring(arg)
+            end
         end
 
         table.insert(queue, table.concat(statements, ", "))
     end
 
-    local function get_peak_memory(interval)
-        if _PeakMemory == nil then
-            _PeakMemory = math.floor(collectgarbage("count"))
-        end
-
-        if Time == nil then Time = 0 end
-        local current_memory_usage = math.floor(collectgarbage("count"))
-        local truncated_time = math.floor(Time * 100) / 100
-
-        if _PeakMemory < current_memory_usage then
-            _PeakMemory = current_memory_usage
-        end
-
-        if truncated_time % interval == 0 then _PeakMemory = 0 end
-
-        return _PeakMemory
-    end
-
     local function print_queue()
         translate { 0, -30 }
-        text("Peak memory usage (KB): " .. get_peak_memory(10), theme.text)
+        text("Peak memory usage (KB): " .. Utils.get_peak_memory(10), theme.text)
         translate { 0, -20 }
         text("Print Queue Output", theme.text)
         translate { 0, -4 }
