@@ -22,7 +22,7 @@ function Debug.Logger()
 
     local function print_queue()
         translate { 0, -30 }
-        text("Peak memory usage (KB): " .. Utils.get_peak_memory(10), theme.text)
+        text("Memory usage: " .. Utils.get_peak_memory(10) .. "KB", theme.text)
         translate { 0, -20 }
         text("Print Queue Output", theme.text)
         translate { 0, -4 }
