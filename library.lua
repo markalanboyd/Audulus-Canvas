@@ -380,17 +380,17 @@ end
 Triangle = {}
 Triangle.__index = Triangle
 
-function Triangle.new(vec2_a, vec2_b, vec2_c)
+function Triangle.new(vec2_a, vec2_b, vec2_c, color)
     local self = setmetatable({}, Triangle)
     self.vec2_a = vec2_a or { x = 0, y = 0 }
     self.vec2_b = vec2_b or { x = 0, y = 0 }
     self.vec2_c = vec2_c or { x = 0, y = 0 }
+    self.color = color or theme.text
     return self
 end
 
-function Triangle:draw(color)
-    color = color or theme.text
-    local paint = color_paint(color)
+function Triangle:draw()
+    local paint = color_paint(self.color)
     move_to { self.vec2_a.x, self.vec2_a.y }
     line_to { self.vec2_b.x, self.vec2_b.y }
     line_to { self.vec2_c.x, self.vec2_c.y }
@@ -611,13 +611,53 @@ function Triangle:circumcircle()
 end
 
 
+-- TODO - Set a background that is always the lowest layer
+-- TODO - Set a foreground that is always the highest layer
+-- TODO - Attach origin to background/foreground based on preference
+Layer = {}
+Layer.__index = Layer
+Layer.layers = {}
+
+function Layer.new(z_index)
+    local self = setmetatable({}, Layer)
+    self.z_index = z_index or 0
+    self.objects = {}
+    table.insert(Layer.layers, self)
+    return self
+end
+
+function Layer.draw_all()
+    table.sort(Layer.layers, function(a, b) return a.z_index < b.z_index end)
+    for _, layer in ipairs(Layer.layers) do
+        layer:draw()
+    end
+end
+
+function Layer:add(object, draw_function_name)
+    draw_function_name = draw_function_name or "draw"
+    table.insert(self.objects, { object = object, draw_function = draw_function_name })
+end
+
+function Layer:draw()
+    for _, item in ipairs(self.objects) do
+        local obj = item.object
+        local draw_function = item.draw_function
+        if obj[draw_function] then
+            obj[draw_function](obj)
+        end
+    end
+end
+
+
 Line = {}
 Line.__index = Line
 
-function Line.new(vec2_a, vec2_b)
+function Line.new(vec2_a, vec2_b, color, width)
     local self = setmetatable({}, Line)
     self.vec2_a = vec2_a or { 0, 0 }
     self.vec2_b = vec2_b or { 0, 0 }
+    self.color = color or theme.text
+    self.width = width or 1
     return self
 end
 
@@ -670,27 +710,22 @@ function Line.dash_from_to_all(vec2, ...)
     local vec2s = process_args(Line, ...)
     for i = 1, #vec2s do
         local line = Line.new(vec2, vec2s[i])
-        line:dash()
+        line:dashed()
     end
 end
 
-function Line:draw(color, width)
-    color = color or theme.text
-    width = width or 1
-    local paint = color_paint(color)
+function Line:draw()
+    local paint = color_paint(self.color)
     stroke_segment(
         { self.vec2_a.x, self.vec2_a.y },
         { self.vec2_b.x, self.vec2_b.y },
-        width, paint
+        self.width, paint
     )
 end
 
-function Line:dashed(color, width, dash_length, space_length)
-    color = color or theme.text
-    width = width or 1
+function Line:dashed(dash_length, space_length)
     dash_length = dash_length or 5
     space_length = space_length or dash_length
-    local paint = color_paint(color)
 
     local total_distance = self.vec2_a:distance(self.vec2_b)
     local direction = self.vec2_b:sub(self.vec2_a):normalize()
@@ -701,8 +736,8 @@ function Line:dashed(color, width, dash_length, space_length)
         current_distance = math.min(current_distance + dash_length, total_distance)
         local end_dash = self.vec2_a:add(direction:mult(current_distance))
 
-        local temp_line = Line.new(start_dash, end_dash)
-        temp_line:draw(color, width)
+        local temp_line = Line.new(start_dash, end_dash, self.color, self.width)
+        temp_line:draw()
 
         current_distance = current_distance + space_length
     end

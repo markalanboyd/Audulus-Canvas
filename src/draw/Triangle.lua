@@ -1,17 +1,17 @@
 Triangle = {}
 Triangle.__index = Triangle
 
-function Triangle.new(vec2_a, vec2_b, vec2_c)
+function Triangle.new(vec2_a, vec2_b, vec2_c, color)
     local self = setmetatable({}, Triangle)
     self.vec2_a = vec2_a or { x = 0, y = 0 }
     self.vec2_b = vec2_b or { x = 0, y = 0 }
     self.vec2_c = vec2_c or { x = 0, y = 0 }
+    self.color = color or theme.text
     return self
 end
 
-function Triangle:draw(color)
-    color = color or theme.text
-    local paint = color_paint(color)
+function Triangle:draw()
+    local paint = color_paint(self.color)
     move_to { self.vec2_a.x, self.vec2_a.y }
     line_to { self.vec2_b.x, self.vec2_b.y }
     line_to { self.vec2_c.x, self.vec2_c.y }
