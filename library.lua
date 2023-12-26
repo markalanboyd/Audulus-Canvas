@@ -66,18 +66,67 @@ function Utils.has_non_integer_keys(t)
     return false
 end
 
-function Utils.table_to_string(t)
+function Utils.table_to_string(t, truncate, places)
+    truncate = truncate or false
+    places = places or 0
+
     local parts = {}
+    local function process_value(v)
+        if truncate and type(v) == "number" then
+            return MathUtils.truncate(v, places)
+        elseif type(v) == "table" then
+            return Utils.table_to_string(v, truncate, places)
+        else
+            return tostring(v)
+        end
+    end
+
     if Utils.has_non_integer_keys(t) then
         for k, v in pairs(t) do
-            parts[#parts + 1] = tostring(k) .. " = " .. tostring(v)
+            v = process_value(v)
+            parts[#parts + 1] = tostring(k) .. " = " .. v
         end
     else
         for _, v in ipairs(t) do
-            parts[#parts + 1] = tostring(v)
+            v = process_value(v)
+            parts[#parts + 1] = v
         end
     end
     return "{ " .. table.concat(parts, ", ") .. " }"
+end
+
+function Utils.get_peak_memory(interval)
+    if _PeakMemory == nil then
+        _PeakMemory = math.floor(collectgarbage("count"))
+    end
+
+    if Time == nil then Time = 0 end
+    local current_memory_usage = math.floor(collectgarbage("count"))
+    local truncated_time = math.floor(Time * 100) / 100
+
+    if _PeakMemory < current_memory_usage then
+        _PeakMemory = current_memory_usage
+    end
+
+    if truncated_time % interval == 0 then _PeakMemory = 0 end
+
+    return _PeakMemory
+end
+
+
+MathUtils = {}
+
+function MathUtils.round(n, places)
+    local s = "%." .. places .. "f"
+    return tonumber(string.format(s, n))
+end
+
+function MathUtils.truncate(n, places)
+    return math.floor(n * 10 ^ places) / 10 ^ places
+end
+
+function MathUtils.is_positive_int(n)
+    return n == math.floor(n) and n >= 0
 end
 
 
@@ -731,38 +780,44 @@ function Debug.Logger()
     local queue = {}
 
     local function add_to_queue(...)
-        local args = { ... }
         local statements = {}
 
-        for i, arg in ipairs(args) do
-            statements[i] = (type(arg) == "table")
-                and Utils.table_to_string(arg) or tostring(arg)
+        for i = 1, select("#", ...) do
+            local arg = select(i, ...)
+            if arg == nil then
+                statements[i] = "nil"
+            else
+                statements[i] = (type(arg) == "table")
+                    and Utils.table_to_string(arg) or tostring(arg)
+            end
         end
 
         table.insert(queue, table.concat(statements, ", "))
     end
 
-    local function get_peak_memory(interval)
-        if _PeakMemory == nil then
-            _PeakMemory = math.floor(collectgarbage("count"))
+    local function truncate_and_add_to_queue(places, ...)
+        if not MathUtils.is_positive_int(places) then
+            error("Error: First argument 'places' must be a positive integer")
+        end
+        local statements = {}
+
+        for i = 1, select("#", ...) do
+            local arg = select(i, ...)
+            if arg == nil then
+                statements[i] = "nil"
+            else
+                statements[i] = (type(arg) == "table")
+                    and Utils.table_to_string(arg, true, places)
+                    or tostring(MathUtils.truncate(arg, places))
+            end
         end
 
-        if Time == nil then Time = 0 end
-        local current_memory_usage = math.floor(collectgarbage("count"))
-        local truncated_time = math.floor(Time * 100) / 100
-
-        if _PeakMemory < current_memory_usage then
-            _PeakMemory = current_memory_usage
-        end
-
-        if truncated_time % interval == 0 then _PeakMemory = 0 end
-
-        return _PeakMemory
+        table.insert(queue, table.concat(statements, ", "))
     end
 
     local function print_queue()
         translate { 0, -30 }
-        text("Peak memory usage (KB): " .. get_peak_memory(10), theme.text)
+        text("Memory usage: " .. Utils.get_peak_memory(10) .. "KB", theme.text)
         translate { 0, -20 }
         text("Print Queue Output", theme.text)
         translate { 0, -4 }
@@ -775,10 +830,10 @@ function Debug.Logger()
         end
     end
 
-    return add_to_queue, print_queue
+    return add_to_queue, truncate_and_add_to_queue, print_queue
 end
 
-print, print_all = Debug.Logger()
+print, tprint, print_all = Debug.Logger()
 
 
 Graph = {}
