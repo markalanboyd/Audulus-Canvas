@@ -36,4 +36,4 @@ Each tutorial is self-contained, so you don't need to read them in order. That s
 
 ## API Reference
 
-The [API Reference](https://markalanboyd.github.io/Audulus-Canvas/index.html) is where you can read up-to-date documentation on every function and feature of the library.
+The [API Reference](https://audulus-canvas-docs.readthedocs.io/en/latest/api-reference/index.html) is where you can read up-to-date documentation on every function and feature of the library.
