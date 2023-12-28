@@ -58,6 +58,39 @@ function Line:draw()
     end
 end
 
+function Line:print(places)
+    places = places or 2
+    local ax = tostring(MathUtils.truncate(self.vec2_a.x, places))
+    local ay = tostring(MathUtils.truncate(self.vec2_a.y, places))
+    local bx = tostring(MathUtils.truncate(self.vec2_b.x, places))
+    local by = tostring(MathUtils.truncate(self.vec2_b.y, places))
+    local color = tostring(Utils.table_to_string(self.color, true, places))
+    local width = tostring(MathUtils.truncate(self.width, places))
+    local style = self.style
+    local dash_length = tostring(MathUtils.truncate(self.dash_length, places))
+    local space_length = tostring(MathUtils.truncate(self.space_length, places))
+
+    print("-- BEGIN Line.print() --")
+    print("vec2_a: { x = " .. ax .. ", y = " .. ay .. " }")
+    print("vec2_b: { x = " .. bx .. ", y = " .. by .. " }")
+    print("color: " .. color)
+    print("width: " .. width)
+    print("style: " .. style)
+    print("dash_length: " .. dash_length)
+    print("space_length: " .. space_length)
+    print("-- END Line.print() --")
+end
+
+-- self.type = "Line"
+-- self.o = options or {}
+-- self.vec2_a = vec2_a or { 0, 0 }
+-- self.vec2_b = vec2_b or { 0, 0 }
+-- self.color = self.o.color or theme.text
+-- self.width = self.o.width or 1
+-- self.style = self.o.style or "normal"
+-- self.dash_length = self.o.dash_length or 5
+-- self.space_length = self.o.space_length or self.dash_length
+
 LineGroup = {}
 
 LineGroup.__index = LineGroup
