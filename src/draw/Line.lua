@@ -1,4 +1,3 @@
--- TODO Add dotted
 -- TODO Add alpha?
 
 Line = {}
@@ -20,6 +19,7 @@ function Line.new(vec2_a, vec2_b, options)
     self.width = self.o.width or 1
     self.style = self.o.style or "normal"
     self.dash_length = self.o.dash_length or 5
+    self.dot_radius = self.o.dot_radius or 1
     self.space_length = self.o.space_length or self.dash_length
     return self
 end
@@ -50,11 +50,28 @@ function Line:draw_dashed()
     end
 end
 
+function Line:draw_dotted()
+    local total_distance = self.vec2_a:distance(self.vec2_b)
+    local direction = self.vec2_b:sub(self.vec2_a):normalize()
+
+    local current_distance = 0
+    while current_distance <= total_distance do
+        local dot_position = self.vec2_a:add(direction:mult(current_distance))
+        local paint = color_paint(self.color)
+
+        fill_circle({ dot_position.x, dot_position.y }, self.dot_radius, paint)
+
+        current_distance = current_distance + self.space_length
+    end
+end
+
 function Line:draw()
     if self.style == "normal" then
         self:draw_normal()
     elseif self.style == "dashed" then
         self:draw_dashed()
+    elseif self.style == "dotted" then
+        self:draw_dotted()
     end
 end
 
@@ -69,6 +86,7 @@ function Line:print(places)
     local style = self.style
     local dash_length = tostring(MathUtils.truncate(self.dash_length, places))
     local space_length = tostring(MathUtils.truncate(self.space_length, places))
+    local dot_radius = tostring(MathUtils.truncate(self.dot_radius, places))
 
     print("-- BEGIN Line.print() --")
     print("vec2_a: { x = " .. ax .. ", y = " .. ay .. " }")
@@ -77,19 +95,10 @@ function Line:print(places)
     print("width: " .. width)
     print("style: " .. style)
     print("dash_length: " .. dash_length)
+    print("dot_radius: " .. dot_radius)
     print("space_length: " .. space_length)
     print("-- END Line.print() --")
 end
-
--- self.type = "Line"
--- self.o = options or {}
--- self.vec2_a = vec2_a or { 0, 0 }
--- self.vec2_b = vec2_b or { 0, 0 }
--- self.color = self.o.color or theme.text
--- self.width = self.o.width or 1
--- self.style = self.o.style or "normal"
--- self.dash_length = self.o.dash_length or 5
--- self.space_length = self.o.space_length or self.dash_length
 
 LineGroup = {}
 
