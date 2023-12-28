@@ -1,16 +1,22 @@
 #!/bin/zsh
 # Concatenate all Lua files in the current directory into one except for builtins.
 
-temp_file="temp_library.lua"
+library_file="library.lua"
+dev_library_file="library-dev.lua"
 
-# Add the top content
-echo "-- SCROLL TO BOTTOM ----------------------------------------------------\n" > "$temp_file"
+# Delete the existing library files if they exist
+[ -f "$library_file" ] && rm "$library_file"
+[ -f "$dev_library_file" ] && rm "$dev_library_file"
 
-# Concatenate the Lua files
-find . -name '*.lua' -not -name 'library.lua' -not -name 'builtins.lua' -not -name 'temp_library.lua' -exec sh -c 'cat {} && echo && echo' \; >> "$temp_file"
+# Add the top content to library.lua
+echo "-- SCROLL TO BOTTOM ----------------------------------------------------\n" > "$library_file"
 
-# Add the bottom content
-echo -e "
+# Concatenate the Lua files into library.lua using find
+find . -name '*.lua' -not -name "$library_file" -not -name 'builtins.lua' -not -name 'temp_library.lua' -exec cat {} + >> "$library_file"
+echo "\n" >> "$library_file" # Add a newline at the end
+
+# Add the bottom content to library.lua
+cat << EOF >> "$library_file"
 -- AUDULUS-CANVAS LIBRARY ----------------------------------------------
 -- Version: 0.0.2-alpha
 -- Updated: 2023.12.26
@@ -27,16 +33,11 @@ o = Origin.new(\"c\", {show = true, type = \"cross\", width = 4, color = theme.t
 
 -- CODE ----------------------------------------------------------------
 
-
-
-
-
-
 -- PRINT CONSOLE -------------------------------------------------------
 
 o:reset()
 print_all()
-" >> "$temp_file"
+EOF
 
-# Rename the temporary file to library.lua
-mv "$temp_file" "library.lua"
+# Create development version of the library file (library-dev.lua)
+awk '/-- AUDULUS-CANVAS LIBRARY/{exit} {print}' "$library_file" > "$dev_library_file"

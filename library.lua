@@ -3,8 +3,6 @@
 ColorTables = {}
 
 ColorTables.htmlColors = { indianred = { 205, 92, 92, 1 }, lightcoral = { 240, 128, 128, 1 }, salmon = { 250, 128, 114, 1 }, darksalmon = { 233, 150, 122, 1 }, lightsalmon = { 255, 160, 122, 1 }, crimson = { 220, 20, 60, 1 }, red = { 255, 0, 0, 1 }, firebrick = { 178, 34, 34, 1 }, darkred = { 139, 0, 0, 1 }, pink = { 255, 192, 203, 1 }, lightpink = { 255, 182, 193, 1 }, hotpink = { 255, 105, 180, 1 }, deeppink = { 255, 20, 147, 1 }, mediumvioletred = { 199, 21, 133, 1 }, palevioletred = { 219, 112, 147, 1 }, coral = { 255, 127, 80, 1 }, tomato = { 255, 99, 71, 1 }, orangered = { 255, 69, 0, 1 }, darkorange = { 255, 140, 0, 1 }, orange = { 255, 165, 0, 1 }, gold = { 255, 215, 0, 1 }, yellow = { 255, 255, 0, 1 }, lightyellow = { 255, 255, 224, 1 }, lemonchiffon = { 255, 250, 205, 1 }, lightgoldenrodyellow = { 250, 250, 210, 1 }, papayawhip = { 255, 239, 213, 1 }, moccasin = { 255, 228, 181, 1 }, peachpuff = { 255, 218, 185, 1 }, palegoldenrod = { 238, 232, 170, 1 }, khaki = { 240, 230, 140, 1 }, darkkhaki = { 189, 183, 107, 1 }, lavender = { 230, 230, 250, 1 }, thistle = { 216, 191, 216, 1 }, plum = { 221, 160, 221, 1 }, violet = { 238, 130, 238, 1 }, orchid = { 218, 112, 214, 1 }, fuchsia = { 255, 0, 255, 1 }, magenta = { 255, 0, 255, 1 }, mediumorchid = { 186, 85, 211, 1 }, mediumpurple = { 147, 112, 219, 1 }, rebeccapurple = { 102, 51, 153, 1 }, blueviolet = { 138, 43, 226, 1 }, darkviolet = { 148, 0, 211, 1 }, darkorchid = { 153, 50, 204, 1 }, darkmagenta = { 139, 0, 139, 1 }, purple = { 128, 0, 128, 1 }, indigo = { 75, 0, 130, 1 }, slateblue = { 106, 90, 205, 1 }, darkslateblue = { 72, 61, 139, 1 }, mediumslateblue = { 123, 104, 238, 1 }, greenyellow = { 173, 255, 47, 1 }, chartreuse = { 127, 255, 0, 1 }, lawngreen = { 124, 252, 0, 1 }, lime = { 0, 255, 0, 1 }, limegreen = { 50, 205, 50, 1 }, palegreen = { 152, 251, 152, 1 }, lightgreen = { 144, 238, 144, 1 }, mediumspringgreen = { 0, 250, 154, 1 }, springgreen = { 0, 255, 127, 1 }, mediumseagreen = { 60, 179, 113, 1 }, seagreen = { 46, 139, 87, 1 }, forestgreen = { 34, 139, 34, 1 }, green = { 0, 128, 0, 1 }, darkgreen = { 0, 100, 0, 1 }, yellowgreen = { 154, 205, 50, 1 }, olivedrab = { 107, 142, 35, 1 }, olive = { 128, 128, 0, 1 }, darkolivegreen = { 85, 107, 47, 1 }, mediumaquamarine = { 102, 205, 170, 1 }, darkseagreen = { 143, 188, 139, 1 }, lightseagreen = { 32, 178, 170, 1 }, darkcyan = { 0, 139, 139, 1 }, teal = { 0, 128, 128, 1 }, aqua = { 0, 255, 255, 1 }, cyan = { 0, 255, 255, 1 }, lightcyan = { 224, 255, 255, 1 }, paleturquoise = { 175, 238, 238, 1 }, aquamarine = { 127, 255, 212, 1 }, turquoise = { 64, 224, 208, 1 }, mediumturquoise = { 72, 209, 204, 1 }, darkturquoise = { 0, 206, 209, 1 }, cadetblue = { 95, 158, 160, 1 }, steelblue = { 70, 130, 180, 1 }, lightsteelblue = { 176, 196, 222, 1 }, powderblue = { 176, 224, 230, 1 }, lightblue = { 173, 216, 230, 1 }, skyblue = { 135, 206, 235, 1 }, lightskyblue = { 135, 206, 250, 1 }, deepskyblue = { 0, 191, 255, 1 }, dodgerblue = { 30, 144, 255, 1 }, cornflowerblue = { 100, 149, 237, 1 }, royalblue = { 65, 105, 225, 1 }, blue = { 0, 0, 255, 1 }, mediumblue = { 0, 0, 205, 1 }, darkblue = { 0, 0, 139, 1 }, navy = { 0, 0, 128, 1 }, midnightblue = { 25, 25, 112, 1 }, cornsilk = { 255, 248, 220, 1 }, blanchedalmond = { 255, 235, 205, 1 }, bisque = { 255, 228, 196, 1 }, navajowhite = { 255, 222, 173, 1 }, wheat = { 245, 222, 179, 1 }, burlywood = { 222, 184, 135, 1 }, tan = { 210, 180, 140, 1 }, rosybrown = { 188, 143, 143, 1 }, sandybrown = { 244, 164, 96, 1 }, goldenrod = { 218, 165, 32, 1 }, darkgoldenrod = { 184, 134, 11, 1 }, peru = { 205, 133, 63, 1 }, chocolate = { 210, 105, 30, 1 }, saddlebrown = { 139, 69, 19, 1 }, sienna = { 160, 82, 45, 1 }, brown = { 165, 42, 42, 1 }, maroon = { 128, 0, 0, 1 }, white = { 255, 255, 255, 1 }, snow = { 255, 250, 250, 1 }, honeydew = { 240, 255, 240, 1 }, mintcream = { 245, 255, 250, 1 }, azure = { 240, 255, 255, 1 }, aliceblue = { 240, 248, 255, 1 }, ghostwhite = { 248, 248, 255, 1 }, whitesmoke = { 245, 245, 245, 1 }, seashell = { 255, 245, 238, 1 }, beige = { 245, 245, 220, 1 }, oldlace = { 253, 245, 230, 1 }, floralwhite = { 255, 250, 240, 1 }, ivory = { 255, 255, 240, 1 }, antiquewhite = { 250, 235, 215, 1 }, linen = { 250, 240, 230, 1 }, lavenderblush = { 255, 240, 245, 1 }, mistyrose = { 255, 228, 225, 1 }, gainsboro = { 220, 220, 220, 1 }, lightgray = { 211, 211, 211, 1 }, silver = { 192, 192, 192, 1 }, darkgray = { 169, 169, 169, 1 }, gray = { 128, 128, 128, 1 }, dimgray = { 105, 105, 105, 1 }, lightslategray = { 119, 136, 153, 1 }, slategray = { 112, 128, 144, 1 }, darkslategray = { 47, 79, 79, 1 }, black = { 0, 0, 0, 1 } }
-
-
 ColorUtils = {}
 
 function ColorUtils.is_valid_hex_code(s)
@@ -36,8 +34,6 @@ function ColorUtils.hex_code_to_color(s)
 
     return color
 end
-
-
 Utils = {}
 
 function Utils.process_args(class_meta, ...)
@@ -112,8 +108,6 @@ function Utils.get_peak_memory(interval)
 
     return _PeakMemory
 end
-
-
 MathUtils = {}
 
 function MathUtils.round(n, places)
@@ -128,20 +122,19 @@ end
 function MathUtils.is_positive_int(n)
     return n == math.floor(n) and n >= 0
 end
-
-
 Vec2 = {}
 Vec2.__index = Vec2
 
 function Vec2.new(x, y)
     local self = setmetatable({}, Vec2)
+    self.type = "Vec2"
     self.x = x or 0
     self.y = y or 0
     return self
 end
 
 function Vec2.is_vec2(obj)
-    return type(obj) == "table" and obj.x and obj.y and not obj.z
+    return obj.type == "Vec2"
 end
 
 function Vec2.is_xy_pair(x, y)
@@ -284,8 +277,6 @@ function Vec2:scale_about(other, scalar)
         error("TypeError: First argument for Vec2:scale_about must be a Vec2")
     end
 end
-
-
 Point = {}
 Point.__index = Point
 
@@ -316,8 +307,6 @@ function Point:draw()
         color_paint(self.color)
     )
 end
-
-
 Origin = {}
 Origin.__index = Origin
 
@@ -375,8 +364,6 @@ end
 function Origin:reset()
     translate { -self.offset[1], -self.offset[2] }
 end
-
-
 Triangle = {}
 Triangle.__index = Triangle
 
@@ -609,8 +596,6 @@ function Triangle:circumcircle()
         (cx ^ 2 + cy ^ 2) * (bx - ax)) / D
     return Vec2.new(Ux, Uy), radius
 end
-
-
 -- TODO - Set a background that is always the lowest layer
 -- TODO - Set a foreground that is always the highest layer
 -- TODO - Attach origin to background/foreground based on preference
@@ -647,74 +632,33 @@ function Layer:draw()
         end
     end
 end
-
+-- TODO Add dotted
+-- TODO Add alpha?
 
 Line = {}
 Line.__index = Line
 
-function Line.new(vec2_a, vec2_b, color, width)
+function Line.new(vec2_a, vec2_b, options)
+    local invalid_args = not Vec2.is_vec2(vec2_a) or not Vec2.is_vec2(vec2_b)
+
+    if invalid_args then
+        error("The first two arguments to Line.new must be Vec2s.")
+    end
+
     local self = setmetatable({}, Line)
+    self.type = "Line"
+    self.o = options or {}
     self.vec2_a = vec2_a or { 0, 0 }
     self.vec2_b = vec2_b or { 0, 0 }
-    self.color = color or theme.text
-    self.width = width or 1
+    self.color = self.o.color or theme.text
+    self.width = self.o.width or 1
+    self.style = self.o.style or "normal"
+    self.dash_length = self.o.dash_length or 5
+    self.space_length = self.o.space_length or self.dash_length
     return self
 end
 
-local function process_args(class_meta, ...)
-    local args = { ... }
-    local processed_args
-
-    if type(args[1]) == "table" then
-        if getmetatable(args[1]) == class_meta then
-            processed_args = args
-        else
-            processed_args = args[1]
-        end
-    else
-        processed_args = args
-    end
-
-    return processed_args
-end
-
-function Line.draw_between_all(...)
-    local vec2s = process_args(Line, ...)
-    for i = 1, #vec2s do
-        for j = i + 1, #vec2s do
-            local line = Line.new(vec2s[i], vec2s[j])
-            line:draw()
-        end
-    end
-end
-
-function Line.dash_between_all(...)
-    local vec2s = process_args(Line, ...)
-    for i = 1, #vec2s do
-        for j = i + 1, #vec2s do
-            local line = Line.new(vec2s[i], vec2s[j])
-            line:dashed()
-        end
-    end
-end
-
-function Line.draw_from_to_all(vec2, ...)
-    local vec2s = process_args(Line, ...)
-    for i = 1, #vec2s do
-        local line = Line.new(vec2, vec2s[i])
-        line:draw()
-    end
-end
-
-function Line.dash_from_to_all(vec2, ...)
-    local vec2s = process_args(Line, ...)
-    for i = 1, #vec2s do
-        local line = Line.new(vec2, vec2s[i])
-        line:dashed()
-    end
-end
-
-function Line:draw()
+function Line:draw_normal()
     local paint = color_paint(self.color)
     stroke_segment(
         { self.vec2_a.x, self.vec2_a.y },
@@ -723,27 +667,87 @@ function Line:draw()
     )
 end
 
-function Line:dashed(dash_length, space_length)
-    dash_length = dash_length or 5
-    space_length = space_length or dash_length
-
+function Line:draw_dashed()
     local total_distance = self.vec2_a:distance(self.vec2_b)
     local direction = self.vec2_b:sub(self.vec2_a):normalize()
 
     local current_distance = 0
     while current_distance < total_distance do
         local start_dash = self.vec2_a:add(direction:mult(current_distance))
-        current_distance = math.min(current_distance + dash_length, total_distance)
+        current_distance = math.min(current_distance + self.dash_length, total_distance)
         local end_dash = self.vec2_a:add(direction:mult(current_distance))
 
-        local temp_line = Line.new(start_dash, end_dash, self.color, self.width)
-        temp_line:draw()
+        local temp_line = Line.new(start_dash, end_dash, { color = self.color, width = self.width })
+        temp_line:draw_normal()
 
-        current_distance = current_distance + space_length
+        current_distance = current_distance + self.space_length
     end
 end
 
+function Line:draw()
+    if self.style == "normal" then
+        self:draw_normal()
+    elseif self.style == "dashed" then
+        self:draw_dashed()
+    end
+end
 
+LineGroup = {}
+
+LineGroup.__index = LineGroup
+
+function LineGroup.new(vec2s, options)
+    for _, vec2 in ipairs(vec2s) do
+        if not Vec2.is_vec2(vec2) then
+            error("All elements in vec2s must be Vec2 instances.")
+        end
+    end
+
+    local self = setmetatable({}, LineGroup)
+    self.type = "LineGroup"
+    self.vec2s = vec2s
+    self.len_vec2s = #vec2s
+    self.o = options or {}
+    self.color = self.o.color or theme.text
+    self.width = self.o.width or 1
+    self.style = self.o.style or "normal"
+    self.dash_length = self.o.dash_length or 5
+    self.space_length = self.o.space_length or self.dash_length
+    self.method = self.o.method or "between"
+    return self
+end
+
+function LineGroup:draw_between()
+    for i = 1, self.len_vec2s do
+        for j = i + 1, self.len_vec2s do
+            local line = Line.new(self.vec2s[i], self.vec2s[j], self.o)
+            if self.style == "normal" then
+                line:draw_normal()
+            elseif self.style == "dashed" then
+                line:draw_dashed()
+            end
+        end
+    end
+end
+
+function LineGroup:draw_from_to()
+    for i = 1, self.len_vec2s do
+        local line = Line.new(self.vec2s[1], self.vec2s[i])
+        if self.style == "normal" then
+            line:draw_normal()
+        elseif self.style == "dashed" then
+            line:draw_dashed()
+        end
+    end
+end
+
+function LineGroup:draw()
+    if self.method == "between" then
+        self:draw_between()
+    elseif self.method == "from-to" then
+        self:draw_from_to()
+    end
+end
 function button(x, y, width, options)
     -- Error Handling
     local function checkMutuallyExclusiveArgs(arg1Name, arg1, arg2Name, arg2)
@@ -866,8 +870,6 @@ function tile_button_fn(func, r, c)
         end
     end
 end
-
-
 Debug = {}
 
 function Debug.Logger()
@@ -928,8 +930,6 @@ function Debug.Logger()
 end
 
 print, tprint, print_all = Debug.Logger()
-
-
 Graph = {}
 Graph.__index = Graph
 
@@ -955,7 +955,6 @@ function Graph:draw()
 end
 
 
-
 -- AUDULUS-CANVAS LIBRARY ----------------------------------------------
 -- Version: 0.0.2-alpha
 -- Updated: 2023.12.26
@@ -968,17 +967,11 @@ end
 -- 4. Set a custom W(idth) and H(eight) in the inspector panel
 -- 5. Write your code in the CODE block below
 
-o = Origin.new("c", {show = true, type = "cross", width = 4, color = theme.text})
+o = Origin.new(\"c\", {show = true, type = \"cross\", width = 4, color = theme.text})
 
 -- CODE ----------------------------------------------------------------
-
-
-
-
-
 
 -- PRINT CONSOLE -------------------------------------------------------
 
 o:reset()
 print_all()
-
