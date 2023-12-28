@@ -3,6 +3,8 @@
 Line = {}
 Line.__index = Line
 
+Line.id = 1
+
 function Line.new(vec2_a, vec2_b, options)
     local invalid_args = not Vec2.is_vec2(vec2_a) or not Vec2.is_vec2(vec2_b)
 
@@ -12,14 +14,22 @@ function Line.new(vec2_a, vec2_b, options)
 
     local self = setmetatable({}, Line)
     self.type = "Line"
-    self.o = options or {}
+    self.element_id = Element.id
+    Element.id = Element.id + 1
+    self.class_id = Line.id
+    Line.id = Line.id + 1
+
     self.vec2_a = vec2_a or { 0, 0 }
     self.vec2_b = vec2_b or { 0, 0 }
+    self.o = options or {}
+
     self.color = self.o.color or theme.text
     self.width = self.o.width or 1
     self.style = self.o.style or "normal"
     self.dash_length = self.o.dash_length or 5
     self.dot_radius = self.o.dot_radius or 1
+    self.char = self.o.char or "+"
+    self.char_vertex = self.o.char_vertex or self.char
     self.space_length = self.o.space_length or self.dash_length
     return self
 end
@@ -43,8 +53,12 @@ function Line:draw_dashed()
         current_distance = math.min(current_distance + self.dash_length, total_distance)
         local end_dash = self.vec2_a:add(direction:mult(current_distance))
 
-        local temp_line = Line.new(start_dash, end_dash, { color = self.color, width = self.width })
-        temp_line:draw_normal()
+        local paint = color_paint(self.color)
+        stroke_segment(
+            { start_dash.x, start_dash.y },
+            { end_dash.x, end_dash.y },
+            self.width, paint
+        )
 
         current_distance = current_distance + self.space_length
     end
@@ -65,6 +79,39 @@ function Line:draw_dotted()
     end
 end
 
+function Line:draw_char()
+    if #self.char > 1 or #self.char_vertex > 1 then
+        error("char and char_vertex must be single characters.")
+    end
+
+    local total_distance = self.vec2_a:distance(self.vec2_b)
+    local direction = self.vec2_b:sub(self.vec2_a):normalize()
+
+    save()
+    translate { self.vec2_a.x, self.vec2_a.y }
+    text(self.char_vertex or self.char, self.color)
+    restore()
+
+    local current_distance = self.space_length
+    while current_distance < total_distance do
+        local char_position = self.vec2_a:add(direction:mult(current_distance))
+
+        save()
+        translate { char_position.x, char_position.y }
+        text(self.char, self.color)
+        restore()
+
+        current_distance = current_distance + self.space_length
+    end
+
+    if total_distance > 0 then
+        save()
+        translate { self.vec2_b.x, self.vec2_b.y }
+        text(self.char_vertex or self.char, self.color)
+        restore()
+    end
+end
+
 function Line:draw()
     if self.style == "normal" then
         self:draw_normal()
@@ -72,11 +119,32 @@ function Line:draw()
         self:draw_dashed()
     elseif self.style == "dotted" then
         self:draw_dotted()
+    elseif self.style == "char" then
+        self:draw_char()
     end
+end
+
+function Line:Translate(...)
+    local args = Utils.process_args(Vec2, ...)
+    local translation
+
+    if #args == 1 and Vec2.is_vec2(args[1]) then
+        translation = args[1]
+    elseif #args == 2 and Vec2.is_xy_pair(args[1], args[2]) then
+        translation = Vec2.new(args[1], args[2])
+    else
+        error("Invalid arguments for Translate. Expected Vec2 or two numbers.")
+    end
+
+    self.vec2_a:Add(translation)
+    self.vec2_b:Add(translation)
 end
 
 function Line:print(places)
     places = places or 2
+
+    local element_id = tostring(self.element_id)
+    local class_id = self.class_id
     local ax = tostring(MathUtils.truncate(self.vec2_a.x, places))
     local ay = tostring(MathUtils.truncate(self.vec2_a.y, places))
     local bx = tostring(MathUtils.truncate(self.vec2_b.x, places))
@@ -85,10 +153,14 @@ function Line:print(places)
     local width = tostring(MathUtils.truncate(self.width, places))
     local style = self.style
     local dash_length = tostring(MathUtils.truncate(self.dash_length, places))
-    local space_length = tostring(MathUtils.truncate(self.space_length, places))
     local dot_radius = tostring(MathUtils.truncate(self.dot_radius, places))
+    local char = self.char
+    local char_vertex = self.char_vertex
+    local space_length = tostring(MathUtils.truncate(self.space_length, places))
 
-    print("-- BEGIN Line.print() --")
+    print("-- BEGIN Line " .. element_id .. ":" .. class_id .. " --")
+    print("element_id: " .. element_id)
+    print("class_id: " .. class_id)
     print("vec2_a: { x = " .. ax .. ", y = " .. ay .. " }")
     print("vec2_b: { x = " .. bx .. ", y = " .. by .. " }")
     print("color: " .. color)
@@ -96,13 +168,18 @@ function Line:print(places)
     print("style: " .. style)
     print("dash_length: " .. dash_length)
     print("dot_radius: " .. dot_radius)
+    print("char: " .. char)
+    print("char_vertex: " .. char_vertex)
     print("space_length: " .. space_length)
-    print("-- END Line.print() --")
+    print("-- END Line " .. element_id .. ":" .. class_id .. " --")
+    print("")
 end
 
 LineGroup = {}
 
 LineGroup.__index = LineGroup
+
+LineGroup.id = 1
 
 function LineGroup.new(vec2s, options)
     for _, vec2 in ipairs(vec2s) do
@@ -113,13 +190,22 @@ function LineGroup.new(vec2s, options)
 
     local self = setmetatable({}, LineGroup)
     self.type = "LineGroup"
+    self.element_id = Element.id
+    Element.id = Element.id + 1
+    self.class_id = LineGroup.id
+    LineGroup.id = LineGroup.id + 1
+
     self.vec2s = vec2s
-    self.len_vec2s = #vec2s
     self.o = options or {}
+
+    self.len_vec2s = #vec2s
     self.color = self.o.color or theme.text
     self.width = self.o.width or 1
     self.style = self.o.style or "normal"
     self.dash_length = self.o.dash_length or 5
+    self.dot_radius = self.o.dot_radius or 1
+    self.char = self.o.char or "+"
+    self.char_vertex = self.o.char_vertex or self.char
     self.space_length = self.o.space_length or self.dash_length
     self.method = self.o.method or "between"
     return self
@@ -133,6 +219,10 @@ function LineGroup:draw_between()
                 line:draw_normal()
             elseif self.style == "dashed" then
                 line:draw_dashed()
+            elseif self.style == "dotted" then
+                line:draw_dotted()
+            elseif self.style == "char" then
+                line:draw_char()
             end
         end
     end
@@ -145,6 +235,10 @@ function LineGroup:draw_from_to()
             line:draw_normal()
         elseif self.style == "dashed" then
             line:draw_dashed()
+        elseif self.style == "dotted" then
+            line:draw_dotted()
+        elseif self.style == "char" then
+            line:draw_char()
         end
     end
 end
@@ -155,4 +249,40 @@ function LineGroup:draw()
     elseif self.method == "from-to" then
         self:draw_from_to()
     end
+end
+
+function LineGroup:print(places)
+    places = places or 2
+
+    local element_id = tostring(self.element_id)
+    local class_id = tostring(self.class_id)
+    local len_vec2s = tostring(self.len_vec2s)
+    local color = tostring(Utils.table_to_string(self.color, true, places))
+    local width = tostring(MathUtils.truncate(self.width, places))
+    local style = self.style
+    local dash_length = tostring(MathUtils.truncate(self.dash_length, places))
+    local dot_radius = tostring(MathUtils.truncate(self.dot_radius, places))
+    local char = self.char
+    local char_vertex = self.char_vertex
+    local space_length = tostring(MathUtils.truncate(self.space_length, places))
+
+    print("-- BEGIN LineGroup " .. element_id .. ":" .. class_id .. " --")
+    print("element_id: " .. element_id)
+    print("class_id: " .. class_id)
+    print("len_vec2s: " .. len_vec2s)
+    for i, vec2 in ipairs(self.vec2s) do
+        local x = tostring(MathUtils.truncate(vec2.x, places))
+        local y = tostring(MathUtils.truncate(vec2.y, places))
+        print("vec2_" .. i .. ": { x = " .. x .. ", y = " .. y .. " }")
+    end
+    print("color: " .. color)
+    print("width: " .. width)
+    print("style: " .. style)
+    print("dash_length: " .. dash_length)
+    print("dot_radius: " .. dot_radius)
+    print("char: " .. char)
+    print("char_vertex: " .. char_vertex)
+    print("space_length: " .. space_length)
+    print("-- END LineGroup " .. element_id .. ":" .. class_id .. " --")
+    print("")
 end
