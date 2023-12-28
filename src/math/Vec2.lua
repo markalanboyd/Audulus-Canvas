@@ -3,13 +3,14 @@ Vec2.__index = Vec2
 
 function Vec2.new(x, y)
     local self = setmetatable({}, Vec2)
+    self.type = "Vec2"
     self.x = x or 0
     self.y = y or 0
     return self
 end
 
 function Vec2.is_vec2(obj)
-    return type(obj) == "table" and obj.x and obj.y and not obj.z
+    return obj.type == "Vec2"
 end
 
 function Vec2.is_xy_pair(x, y)
