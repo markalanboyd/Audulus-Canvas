@@ -1,9 +1,18 @@
+-- TODO file structure like printing for method
+
 Vec2 = {}
 Vec2.__index = Vec2
+
+Vec2.id = 1
 
 function Vec2.new(x, y)
     local self = setmetatable({}, Vec2)
     self.type = "Vec2"
+    self.element_id = Element.id
+    Element.id = Element.id + 1
+    self.class_id = Vec2.id
+    Vec2.id = Vec2.id + 1
+
     self.x = x or 0
     self.y = y or 0
     return self
@@ -226,6 +235,21 @@ function Vec2:mod(a, b)
     end
 end
 
+function Vec2:Mod(a, b)
+    if Vec2.is_single_num(a, b) then
+        self.x = MathUtils.mod(self.x, a)
+        self.y = MathUtils.mod(self.y, a)
+    elseif Vec2.is_xy_pair(a, b) then
+        self.x = MathUtils.mod(self.x, a)
+        self.y = MathUtils.mod(self.y, b)
+    elseif Vec2.is_vec2(a) then
+        self.x = MathUtils.mod(self.x, a.x)
+        self.y = MathUtils.mod(self.y, a.y)
+    else
+        error("Invalid arguments for Vec2:mod")
+    end
+end
+
 function Vec2:mult(a, b)
     if Vec2.is_single_num(a, b) then
         return Vec2.new(self.x * a, self.y * a)
@@ -299,6 +323,22 @@ function Vec2:Pow(a, b)
         error("Invalid arguments for Vec2:Pow")
     end
     return self
+end
+
+function Vec2:print(places)
+    places = places or 2
+
+    local element_id = tostring(self.element_id)
+    local class_id = tostring(self.class_id)
+    local x = tostring(MathUtils.truncate(self.x, places))
+    local y = tostring(MathUtils.truncate(self.y, places))
+
+    print("-- Vec2 " .. element_id .. ":" .. class_id .. " --")
+    print("  element_id: " .. element_id)
+    print("  class_id: " .. class_id)
+    print("  x = " .. x)
+    print("  y = " .. y)
+    print("")
 end
 
 function Vec2:rotate(angle, pivot)
