@@ -1,4 +1,5 @@
--- TODO Add alpha?
+-- TODO Add nudge to vertex?
+-- TODO Add consistent error messages
 
 Line = {}
 Line.__index = Line
@@ -19,8 +20,8 @@ function Line.new(vec2_a, vec2_b, options)
     self.class_id = Line.id
     Line.id = Line.id + 1
 
-    self.vec2_a = vec2_a or { 0, 0 }
-    self.vec2_b = vec2_b or { 0, 0 }
+    self.vec2_a = vec2_a or Vec2.new(0, 0)
+    self.vec2_b = vec2_b or Vec2.new(0, 0)
     self.o = options or {}
 
     self.color = self.o.color or theme.text
@@ -30,6 +31,8 @@ function Line.new(vec2_a, vec2_b, options)
     self.dot_radius = self.o.dot_radius or 1
     self.char = self.o.char or "+"
     self.char_vertex = self.o.char_vertex or self.char
+    self.char_vertex_nudge = self.o.char_vertex_nudge or { 0, 0 }
+    self.char_size = self.o.char_size or 12
     self.space_length = self.o.space_length or self.dash_length
     return self
 end
@@ -84,12 +87,17 @@ function Line:draw_char()
         error("char and char_vertex must be single characters.")
     end
 
+    local char_scale_factor = self.char_size / 12
     local total_distance = self.vec2_a:distance(self.vec2_b)
     local direction = self.vec2_b:sub(self.vec2_a):normalize()
 
     save()
-    translate { self.vec2_a.x, self.vec2_a.y }
-    text(self.char_vertex or self.char, self.color)
+    translate {
+        self.vec2_a.x + self.char_vertex_nudge[1],
+        self.vec2_a.y + self.char_vertex_nudge[2]
+    }
+    scale { char_scale_factor, char_scale_factor }
+    text(self.char_vertex, self.color)
     restore()
 
     local current_distance = self.space_length
@@ -98,6 +106,7 @@ function Line:draw_char()
 
         save()
         translate { char_position.x, char_position.y }
+        scale { char_scale_factor, char_scale_factor }
         text(self.char, self.color)
         restore()
 
@@ -106,8 +115,12 @@ function Line:draw_char()
 
     if total_distance > 0 then
         save()
-        translate { self.vec2_b.x, self.vec2_b.y }
-        text(self.char_vertex or self.char, self.color)
+        translate {
+            self.vec2_b.x + self.char_vertex_nudge[1],
+            self.vec2_b.y + self.char_vertex_nudge[2]
+        }
+        scale { char_scale_factor, char_scale_factor }
+        text(self.char_vertex, self.color)
         restore()
     end
 end
@@ -122,6 +135,50 @@ function Line:draw()
     elseif self.style == "char" then
         self:draw_char()
     end
+end
+
+function Line:get_center()
+    return Vec2.new(
+        (self.vec2_a.x + self.vec2_b.x) / 2,
+        (self.vec2_a.y + self.vec2_b.y) / 2
+    )
+end
+
+function Line:rotate(angle, pivot)
+    pivot = pivot or self:get_center()
+
+    local new_vec2_a = self.vec2_a:rotate(angle, pivot)
+    local new_vec2_b = self.vec2_b:rotate(angle, pivot)
+
+    return Line.new(new_vec2_a, new_vec2_b, self.o)
+end
+
+function Line:Rotate(angle, pivot)
+    pivot = pivot or self:get_center()
+
+    self.vec2_a:Rotate(angle, pivot)
+    self.vec2_b:Rotate(angle, pivot)
+
+    return self
+end
+
+function Line:translate(...)
+    local args = Utils.process_args(Vec2, ...)
+    local translation
+
+    if #args == 1 and Vec2.is_vec2(args[1]) then
+        translation = args[1]
+    elseif #args == 2 and Vec2.is_xy_pair(args[1], args[2]) then
+        translation = Vec2.new(args[1], args[2])
+    else
+        error("Invalid arguments for Translate. Expected Vec2 or two numbers.")
+    end
+
+    return Line.new(
+        self.vec2_a:add(translation),
+        self.vec2_b:add(translation),
+        self.o
+    )
 end
 
 function Line:Translate(...)
@@ -140,6 +197,32 @@ function Line:Translate(...)
     self.vec2_b:Add(translation)
 end
 
+function Line:scale(scaleFactor)
+    local center = self:get_center()
+    local translated_a = self.vec2_a:sub(center)
+    local translated_b = self.vec2_b:sub(center)
+    translated_a:Mult(scaleFactor):Add(center)
+    translated_b:Mult(scaleFactor):Add(center)
+
+    return Line.new(translated_a, translated_b, self.o)
+end
+
+function Line:Scale(scaleFactor)
+    local center = self:get_center()
+    local translated_a = self.vec2_a:sub(center)
+    local translated_b = self.vec2_b:sub(center)
+    translated_a:Mult(scaleFactor):Add(center)
+    translated_b:Mult(scaleFactor):Add(center)
+
+    self.vec2_a = translated_a
+    self.vec2_b = translated_b
+end
+
+function Line:Flip_x()
+    self.vec2_a = -self.vec2_a
+    self.vec2_b:Rotate()
+end
+
 function Line:print(places)
     places = places or 2
 
@@ -156,23 +239,26 @@ function Line:print(places)
     local dot_radius = tostring(MathUtils.truncate(self.dot_radius, places))
     local char = self.char
     local char_vertex = self.char_vertex
+    local char_vertex_nudge = self.char_vertex_nudge
+    local char_size = tostring(MathUtils.truncate(self.char_size, places))
     local space_length = tostring(MathUtils.truncate(self.space_length, places))
 
-    print("-- BEGIN Line " .. element_id .. ":" .. class_id .. " --")
-    print("element_id: " .. element_id)
-    print("class_id: " .. class_id)
-    print("vec2_a: { x = " .. ax .. ", y = " .. ay .. " }")
-    print("vec2_b: { x = " .. bx .. ", y = " .. by .. " }")
-    print("color: " .. color)
-    print("width: " .. width)
-    print("style: " .. style)
-    print("dash_length: " .. dash_length)
-    print("dot_radius: " .. dot_radius)
-    print("char: " .. char)
-    print("char_vertex: " .. char_vertex)
-    print("space_length: " .. space_length)
-    print("-- END Line " .. element_id .. ":" .. class_id .. " --")
-    print("")
+    print("-- Line " .. element_id .. ":" .. class_id .. " --")
+    print("  element_id: " .. element_id)
+    print("  class_id: " .. class_id)
+    print("  vec2_a: { x = " .. ax .. ", y = " .. ay .. " }")
+    print("  vec2_b: { x = " .. bx .. ", y = " .. by .. " }")
+    print("  color: " .. color)
+    print("  width: " .. width)
+    print("  style: " .. style)
+    print("  dash_length: " .. dash_length)
+    print("  dot_radius: " .. dot_radius)
+    print("  char: " .. char)
+    print("  char_vertex: " .. char_vertex)
+    print("  char_vertex nudge:" .. char_vertex_nudge)
+    print("  char_size: " .. char_size)
+    print("  space_length: " .. space_length)
+    print("  ")
 end
 
 LineGroup = {}
@@ -195,7 +281,7 @@ function LineGroup.new(vec2s, options)
     self.class_id = LineGroup.id
     LineGroup.id = LineGroup.id + 1
 
-    self.vec2s = vec2s
+    self.vec2s = vec2s or { Vec2.new(0, 0) }
     self.o = options or {}
 
     self.len_vec2s = #vec2s
@@ -206,6 +292,8 @@ function LineGroup.new(vec2s, options)
     self.dot_radius = self.o.dot_radius or 1
     self.char = self.o.char or "+"
     self.char_vertex = self.o.char_vertex or self.char
+    self.char_vertex_nudge = self.o.char_vertex_nudge or { 0, 0 }
+    self.char_size = self.o.char_size or 12
     self.space_length = self.o.space_length or self.dash_length
     self.method = self.o.method or "between"
     return self
@@ -230,7 +318,7 @@ end
 
 function LineGroup:draw_from_to()
     for i = 1, self.len_vec2s do
-        local line = Line.new(self.vec2s[1], self.vec2s[i])
+        local line = Line.new(self.vec2s[1], self.vec2s[i], self.o)
         if self.style == "normal" then
             line:draw_normal()
         elseif self.style == "dashed" then
@@ -264,25 +352,28 @@ function LineGroup:print(places)
     local dot_radius = tostring(MathUtils.truncate(self.dot_radius, places))
     local char = self.char
     local char_vertex = self.char_vertex
+    local char_vertex_nudge = Utils.table_to_string(self.char_vertex_nudge, true, places)
+    local char_size = tostring(MathUtils.truncate(self.char_size, places))
     local space_length = tostring(MathUtils.truncate(self.space_length, places))
 
-    print("-- BEGIN LineGroup " .. element_id .. ":" .. class_id .. " --")
-    print("element_id: " .. element_id)
-    print("class_id: " .. class_id)
-    print("len_vec2s: " .. len_vec2s)
+    print("-- LineGroup " .. element_id .. ":" .. class_id .. " --")
+    print("  element_id: " .. element_id)
+    print("  class_id: " .. class_id)
+    print("  len_vec2s: " .. len_vec2s)
     for i, vec2 in ipairs(self.vec2s) do
         local x = tostring(MathUtils.truncate(vec2.x, places))
         local y = tostring(MathUtils.truncate(vec2.y, places))
-        print("vec2_" .. i .. ": { x = " .. x .. ", y = " .. y .. " }")
+        print("vec2_" .. i .. ": " .. x .. ", y = " .. y .. " }")
     end
-    print("color: " .. color)
-    print("width: " .. width)
-    print("style: " .. style)
-    print("dash_length: " .. dash_length)
-    print("dot_radius: " .. dot_radius)
-    print("char: " .. char)
-    print("char_vertex: " .. char_vertex)
-    print("space_length: " .. space_length)
-    print("-- END LineGroup " .. element_id .. ":" .. class_id .. " --")
+    print("  color: " .. color)
+    print("  width: " .. width)
+    print("  style: " .. style)
+    print("  dash_length: " .. dash_length)
+    print("  dot_radius: " .. dot_radius)
+    print("  char: " .. char)
+    print("  char_vertex: " .. char_vertex)
+    print("  char_vertex nudge:" .. char_vertex_nudge)
+    print("  char_size: " .. char_size)
+    print("  space_length: " .. space_length)
     print("")
 end
