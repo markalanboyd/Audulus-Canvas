@@ -3,8 +3,6 @@
 ColorTables = {}
 
 ColorTables.htmlColors = { indianred = { 205, 92, 92, 1 }, lightcoral = { 240, 128, 128, 1 }, salmon = { 250, 128, 114, 1 }, darksalmon = { 233, 150, 122, 1 }, lightsalmon = { 255, 160, 122, 1 }, crimson = { 220, 20, 60, 1 }, red = { 255, 0, 0, 1 }, firebrick = { 178, 34, 34, 1 }, darkred = { 139, 0, 0, 1 }, pink = { 255, 192, 203, 1 }, lightpink = { 255, 182, 193, 1 }, hotpink = { 255, 105, 180, 1 }, deeppink = { 255, 20, 147, 1 }, mediumvioletred = { 199, 21, 133, 1 }, palevioletred = { 219, 112, 147, 1 }, coral = { 255, 127, 80, 1 }, tomato = { 255, 99, 71, 1 }, orangered = { 255, 69, 0, 1 }, darkorange = { 255, 140, 0, 1 }, orange = { 255, 165, 0, 1 }, gold = { 255, 215, 0, 1 }, yellow = { 255, 255, 0, 1 }, lightyellow = { 255, 255, 224, 1 }, lemonchiffon = { 255, 250, 205, 1 }, lightgoldenrodyellow = { 250, 250, 210, 1 }, papayawhip = { 255, 239, 213, 1 }, moccasin = { 255, 228, 181, 1 }, peachpuff = { 255, 218, 185, 1 }, palegoldenrod = { 238, 232, 170, 1 }, khaki = { 240, 230, 140, 1 }, darkkhaki = { 189, 183, 107, 1 }, lavender = { 230, 230, 250, 1 }, thistle = { 216, 191, 216, 1 }, plum = { 221, 160, 221, 1 }, violet = { 238, 130, 238, 1 }, orchid = { 218, 112, 214, 1 }, fuchsia = { 255, 0, 255, 1 }, magenta = { 255, 0, 255, 1 }, mediumorchid = { 186, 85, 211, 1 }, mediumpurple = { 147, 112, 219, 1 }, rebeccapurple = { 102, 51, 153, 1 }, blueviolet = { 138, 43, 226, 1 }, darkviolet = { 148, 0, 211, 1 }, darkorchid = { 153, 50, 204, 1 }, darkmagenta = { 139, 0, 139, 1 }, purple = { 128, 0, 128, 1 }, indigo = { 75, 0, 130, 1 }, slateblue = { 106, 90, 205, 1 }, darkslateblue = { 72, 61, 139, 1 }, mediumslateblue = { 123, 104, 238, 1 }, greenyellow = { 173, 255, 47, 1 }, chartreuse = { 127, 255, 0, 1 }, lawngreen = { 124, 252, 0, 1 }, lime = { 0, 255, 0, 1 }, limegreen = { 50, 205, 50, 1 }, palegreen = { 152, 251, 152, 1 }, lightgreen = { 144, 238, 144, 1 }, mediumspringgreen = { 0, 250, 154, 1 }, springgreen = { 0, 255, 127, 1 }, mediumseagreen = { 60, 179, 113, 1 }, seagreen = { 46, 139, 87, 1 }, forestgreen = { 34, 139, 34, 1 }, green = { 0, 128, 0, 1 }, darkgreen = { 0, 100, 0, 1 }, yellowgreen = { 154, 205, 50, 1 }, olivedrab = { 107, 142, 35, 1 }, olive = { 128, 128, 0, 1 }, darkolivegreen = { 85, 107, 47, 1 }, mediumaquamarine = { 102, 205, 170, 1 }, darkseagreen = { 143, 188, 139, 1 }, lightseagreen = { 32, 178, 170, 1 }, darkcyan = { 0, 139, 139, 1 }, teal = { 0, 128, 128, 1 }, aqua = { 0, 255, 255, 1 }, cyan = { 0, 255, 255, 1 }, lightcyan = { 224, 255, 255, 1 }, paleturquoise = { 175, 238, 238, 1 }, aquamarine = { 127, 255, 212, 1 }, turquoise = { 64, 224, 208, 1 }, mediumturquoise = { 72, 209, 204, 1 }, darkturquoise = { 0, 206, 209, 1 }, cadetblue = { 95, 158, 160, 1 }, steelblue = { 70, 130, 180, 1 }, lightsteelblue = { 176, 196, 222, 1 }, powderblue = { 176, 224, 230, 1 }, lightblue = { 173, 216, 230, 1 }, skyblue = { 135, 206, 235, 1 }, lightskyblue = { 135, 206, 250, 1 }, deepskyblue = { 0, 191, 255, 1 }, dodgerblue = { 30, 144, 255, 1 }, cornflowerblue = { 100, 149, 237, 1 }, royalblue = { 65, 105, 225, 1 }, blue = { 0, 0, 255, 1 }, mediumblue = { 0, 0, 205, 1 }, darkblue = { 0, 0, 139, 1 }, navy = { 0, 0, 128, 1 }, midnightblue = { 25, 25, 112, 1 }, cornsilk = { 255, 248, 220, 1 }, blanchedalmond = { 255, 235, 205, 1 }, bisque = { 255, 228, 196, 1 }, navajowhite = { 255, 222, 173, 1 }, wheat = { 245, 222, 179, 1 }, burlywood = { 222, 184, 135, 1 }, tan = { 210, 180, 140, 1 }, rosybrown = { 188, 143, 143, 1 }, sandybrown = { 244, 164, 96, 1 }, goldenrod = { 218, 165, 32, 1 }, darkgoldenrod = { 184, 134, 11, 1 }, peru = { 205, 133, 63, 1 }, chocolate = { 210, 105, 30, 1 }, saddlebrown = { 139, 69, 19, 1 }, sienna = { 160, 82, 45, 1 }, brown = { 165, 42, 42, 1 }, maroon = { 128, 0, 0, 1 }, white = { 255, 255, 255, 1 }, snow = { 255, 250, 250, 1 }, honeydew = { 240, 255, 240, 1 }, mintcream = { 245, 255, 250, 1 }, azure = { 240, 255, 255, 1 }, aliceblue = { 240, 248, 255, 1 }, ghostwhite = { 248, 248, 255, 1 }, whitesmoke = { 245, 245, 245, 1 }, seashell = { 255, 245, 238, 1 }, beige = { 245, 245, 220, 1 }, oldlace = { 253, 245, 230, 1 }, floralwhite = { 255, 250, 240, 1 }, ivory = { 255, 255, 240, 1 }, antiquewhite = { 250, 235, 215, 1 }, linen = { 250, 240, 230, 1 }, lavenderblush = { 255, 240, 245, 1 }, mistyrose = { 255, 228, 225, 1 }, gainsboro = { 220, 220, 220, 1 }, lightgray = { 211, 211, 211, 1 }, silver = { 192, 192, 192, 1 }, darkgray = { 169, 169, 169, 1 }, gray = { 128, 128, 128, 1 }, dimgray = { 105, 105, 105, 1 }, lightslategray = { 119, 136, 153, 1 }, slategray = { 112, 128, 144, 1 }, darkslategray = { 47, 79, 79, 1 }, black = { 0, 0, 0, 1 } }
-
-
 ColorUtils = {}
 
 function ColorUtils.is_valid_hex_code(s)
@@ -36,8 +34,6 @@ function ColorUtils.hex_code_to_color(s)
 
     return color
 end
-
-
 Utils = {}
 
 function Utils.process_args(class_meta, ...)
@@ -112,8 +108,6 @@ function Utils.get_peak_memory(interval)
 
     return _PeakMemory
 end
-
-
 MathUtils = {}
 
 function MathUtils.round(n, places)
@@ -129,99 +123,301 @@ function MathUtils.is_positive_int(n)
     return n == math.floor(n) and n >= 0
 end
 
+function MathUtils.div(a, b)
+    return b ~= 0 and a / b or 0
+end
+
+function MathUtils.mod(a, b)
+    return b ~= 0 and a % b or 0
+end
+-- TODO file structure like printing for method
 
 Vec2 = {}
 Vec2.__index = Vec2
 
+Vec2.id = 1
+
 function Vec2.new(x, y)
     local self = setmetatable({}, Vec2)
+    self.type = "Vec2"
+    self.element_id = Element.id
+    Element.id = Element.id + 1
+    self.class_id = Vec2.id
+    Vec2.id = Vec2.id + 1
+
     self.x = x or 0
     self.y = y or 0
     return self
 end
 
+-- Metamethods --
+
+function Vec2.__add(a, b)
+    return Vec2.new(a.x + b.x, a.y + b.y)
+end
+
+function Vec2.__sub(a, b)
+    return Vec2.new(a.x - b.x, a.y - b.y)
+end
+
+function Vec2.__mul(a, b)
+    return Vec2.new(a.x * b.x, a.y * b.y)
+end
+
+function Vec2.__div(a, b)
+    local x = b.x ~= 0 and a.x / b.x or 0
+    local y = b.y ~= 0 and a.y / b.y or 0
+    return Vec2.new(x, y)
+end
+
+function Vec2.__mod(a, b)
+    local x = b.x ~= 0 and a.x % b.x or 0
+    local y = b.y ~= 0 and a.y % b.y or 0
+    return Vec2.new(x, y)
+end
+
+function Vec2.__unm(a)
+    return Vec2.new(-a.x, -a.y)
+end
+
+function Vec2.__pow(a, b)
+    return Vec2.new(a.x ^ b.x, a.y ^ b.y)
+end
+
+function Vec2.__eq(a, b)
+    return a.x == b.x and a.y == b.y
+end
+
+function Vec2.__lt(a, b)
+    return a:magnitude() < b:magnitude()
+end
+
+function Vec2.__le(a, b)
+    return a:magnitude() <= b:magnitude()
+end
+
+function Vec2.__tostring(a)
+    return "{ x = " .. a.x .. ", y = " .. a.y .. " }"
+end
+
+function Vec2.__concat(a, b)
+    local x = tonumber(tostring(a.x) .. tostring(b.x))
+    local y = tonumber(tostring(a.y) .. tostring(b.y))
+    return Vec2.new(x, y)
+end
+
+-- Static Methods --
+
+function Vec2.is_single_num(a, b)
+    return type(a) == "number" and not b
+end
+
 function Vec2.is_vec2(obj)
-    return type(obj) == "table" and obj.x and obj.y and not obj.z
+    return obj.type == "Vec2"
 end
 
 function Vec2.is_xy_pair(x, y)
     return type(x) == "number" and type(y) == "number"
 end
 
-function Vec2:Set(x, y)
-    if Vec2.is_vec2(x) then
-        self.x = x.x
-        self.y = x.y
-        return self
-    elseif Vec2.is_xy_pair(x, y) then
-        self.x = x
-        self.y = y
-        return self
+function Vec2.parse_other(a, b, func_name)
+    if Vec2.is_single_num(a, b) then
+        return Vec2.new(a, a)
+    elseif Vec2.is_xy_pair(a, b) then
+        return Vec2.new(a, b)
+    elseif Vec2.is_vec2(a) then
+        return a
     else
-        error("TypeError: Invalid arguments for Vec2:set")
+        error("Invalid arguments to " .. func_name)
     end
 end
 
-function Vec2:add(x, y)
-    if Vec2.is_vec2(x) then
-        return Vec2.new(self.x + x.x, self.y + x.y)
-    elseif Vec2.is_xy_pair(x, y) then
-        return Vec2.new(self.x + x, self.y + y)
+-- Instance Methods --
+
+function Vec2:add(a, b)
+    if Vec2.is_single_num(a, b) then
+        return Vec2.new(self.x + a, self.y + b)
+    elseif Vec2.is_xy_pair(a, b) then
+        return Vec2.new(self.x + a, self.y + b)
+    elseif Vec2.is_vec2(a) then
+        return Vec2.new(self.x + a.x, self.y + a.y)
     else
-        error("TypeError: Invalid arguments for Vec2:add")
+        error("Invalid arguments for Vec2:add")
     end
 end
 
-function Vec2:Add(x, y)
-    if Vec2.is_vec2(x) then
-        self.x = self.x + x.x
-        self.y = self.y + x.y
-        return self
-    elseif Vec2.is_xy_pair(x, y) then
-        self.x = self.x + x
-        self.y = self.y + y
-        return self
+function Vec2:Add(a, b)
+    if Vec2.is_single_num(a, b) then
+        self.x = self.x + a
+        self.y = self.y + a
+    elseif Vec2.is_vec2(a) then
+        self.x = self.x + a.x
+        self.y = self.y + a.y
+    elseif Vec2.is_xy_pair(a, b) then
+        self.x = self.x + a
+        self.y = self.y + b
     else
-        error("TypeError: Invalid arguments for Vec2:Add")
+        error("Invalid arguments for Vec2:Add")
     end
-end
-
-function Vec2:sub(x, y)
-    if Vec2.is_vec2(x) then
-        return Vec2.new(self.x - x.x, self.y - x.y)
-    elseif Vec2.is_xy_pair(x, y) then
-        return Vec2.new(self.x - x, self.y - y)
-    else
-        error("TypeError: Invalid arguments for Vec2:sub")
-    end
-end
-
-function Vec2:Sub(x, y)
-    if Vec2.is_vec2(x) then
-        self.x = self.x - x.x
-        self.y = self.y - y.y
-        return self
-    elseif Vec2.is_xy_pair(x, y) then
-        self.x = self.x - x
-        self.y = self.y - y
-        return self
-    else
-        error("TypeError: Invalid arguments for Vec2:Sub")
-    end
-end
-
-function Vec2:mult(scalar)
-    return Vec2.new(self.x * scalar, self.y * scalar)
-end
-
-function Vec2:Mult(scalar)
-    self.x = self.x * scalar
-    self.y = self.y * scalar
     return self
+end
+
+function Vec2:angle(a, b)
+    local other = Vec2.parse_other(a, b, "Vec2:angle")
+    local dot_product = self:dot(other)
+    local mag_product = self:magnitude() * other:magnitude()
+    if mag_product > 0 then
+        return math.acos(dot_product / mag_product)
+    else
+        return 0
+    end
+end
+
+function Vec2:distance(a, b)
+    local dx
+    local dy
+
+    if Vec2.is_single_num(a, b) then
+        dx = self.x - a
+        dy = self.y - a
+    elseif Vec2.is_xy_pair(a, b) then
+        dx = self.x - a
+        dy = self.y - b
+    elseif Vec2.is_vec2(a) then
+        dx = self.x - a.x
+        dy = self.y - a.y
+    else
+        error("Incorrect arguments to Vec2:distance")
+    end
+
+    return math.sqrt(dx * dx + dy * dy)
+end
+
+function Vec2:div(a, b)
+    if Vec2.is_single_num(a, b) then
+        return Vec2.new(
+            MathUtils.div(self.x, a),
+            MathUtils.div(self.y, a)
+        )
+    elseif Vec2.is_xy_pair(a, b) then
+        return Vec2.new(
+            MathUtils.div(self.x, a),
+            MathUtils.div(self.y, b)
+        )
+    elseif Vec2.is_vec2(a) then
+        return Vec2.new(
+            MathUtils.div(self.x, a.x),
+            MathUtils.div(self.y, a.y)
+        )
+    else
+        error("Invalid arguments for Vec2:div")
+    end
+end
+
+function Vec2:Div(a, b)
+    if Vec2.is_single_num(a, b) then
+        self.x = MathUtils.div(self.x, a)
+        self.y = MathUtils.div(self.y, a)
+    elseif Vec2.is_xy_pair(a, b) then
+        self.x = MathUtils.div(self.x, a)
+        self.y = MathUtils.div(self.y, b)
+    elseif Vec2.is_vec2(a) then
+        self.x = MathUtils.div(self.x, a.x)
+        self.y = MathUtils.div(self.y, a.y)
+    else
+        error("Invalid arguments for Vec2:Div")
+    end
+    return self
+end
+
+function Vec2:dot(a, b)
+    if Vec2.is_single_num(a, b) then
+        return self.x * a + self.y * a
+    elseif Vec2.is_xy_pair(a, b) then
+        return self.x * a + self.y * b
+    elseif Vec2.is_vec2(a) then
+        return self.x * a.x + self.y * a.y
+    else
+        error("Invalid arguments to Vec2:dot")
+    end
 end
 
 function Vec2:magnitude()
     return math.sqrt(self.x * self.x + self.y * self.y)
+end
+
+function Vec2:mod(a, b)
+    if Vec2.is_single_num(a, b) then
+        return Vec2.new(
+            MathUtils.mod(self.x, a),
+            MathUtils.mod(self.y, a)
+        )
+    elseif Vec2.is_xy_pair(a, b) then
+        return Vec2.new(
+            MathUtils.mod(self.x, a),
+            MathUtils.mod(self.y, b)
+        )
+    elseif Vec2.is_vec2(a) then
+        return Vec2.new(
+            MathUtils.mod(self.x, a.x),
+            MathUtils.mod(self.y, a.y)
+        )
+    else
+        error("Invalid arguments for Vec2:mod")
+    end
+end
+
+function Vec2:Mod(a, b)
+    if Vec2.is_single_num(a, b) then
+        self.x = MathUtils.mod(self.x, a)
+        self.y = MathUtils.mod(self.y, a)
+    elseif Vec2.is_xy_pair(a, b) then
+        self.x = MathUtils.mod(self.x, a)
+        self.y = MathUtils.mod(self.y, b)
+    elseif Vec2.is_vec2(a) then
+        self.x = MathUtils.mod(self.x, a.x)
+        self.y = MathUtils.mod(self.y, a.y)
+    else
+        error("Invalid arguments for Vec2:mod")
+    end
+end
+
+function Vec2:mult(a, b)
+    if Vec2.is_single_num(a, b) then
+        return Vec2.new(self.x * a, self.y * a)
+    elseif Vec2.is_xy_pair(a, b) then
+        return Vec2.new(self.x * a, self.y * b)
+    elseif Vec2.is_vec2(a) then
+        return Vec2.new(self.x * a.x, self.y * a.y)
+    else
+        error("Invalid arguments for Vec2:mult")
+    end
+end
+
+function Vec2:Mult(a, b)
+    if Vec2.is_single_num(a, b) then
+        self.x = self.x * a
+        self.y = self.y * a
+    elseif Vec2.is_xy_pair(a, b) then
+        self.x = self.x * a
+        self.y = self.y * b
+    elseif Vec2.is_vec2(a) then
+        self.x = self.x * a.x
+        self.y = self.y * a.y
+    else
+        error("Invalid arguments for Vec2:Mult")
+    end
+    return self
+end
+
+function Vec2:neg()
+    return Vec2.new(-self.x, -self.y)
+end
+
+function Vec2:Neg()
+    self.x = -self.x
+    self.y = -self.y
+    return self
 end
 
 function Vec2:normalize()
@@ -233,59 +429,171 @@ function Vec2:normalize()
     end
 end
 
-function Vec2:dot(other)
-    return self.x * other.x + self.y * other.y
-end
-
-function Vec2:angle(other)
-    local dot_product = self:dot(other)
-    local mag_product = self:magnitude() * other:magnitude()
-    if mag_product > 0 then
-        return math.acos(dot_product / mag_product)
+function Vec2:pow(a, b)
+    if Vec2.is_single_num(a, b) then
+        return Vec2.new(self.x ^ a, self.y ^ a)
+    elseif Vec2.is_xy_pair(a, b) then
+        return Vec2.new(self.x ^ a, self.y ^ b)
+    elseif Vec2.is_vec2(a) then
+        return Vec2.new(self.x ^ a.x, self.y ^ a.y)
     else
-        return 0
+        error("Invalid arguments for Vec2:pow")
     end
 end
 
-function Vec2:rotate(angle)
-    local cos_theta = math.cos(angle)
-    local sin_theta = math.sin(angle)
-    return Vec2.new(
-        self.x * cos_theta - self.y * sin_theta,
-        self.x * sin_theta + self.y * cos_theta
-    )
-end
-
-function Vec2:Rotate(angle)
-    local cos_theta = math.cos(angle)
-    local sin_theta = math.sin(angle)
-    self.x = self.x * cos_theta - self.y * sin_theta
-    self.y = self.x * sin_theta + self.y * cos_theta
+function Vec2:Pow(a, b)
+    if Vec2.is_single_num(a, b) then
+        self.x = self.x ^ a
+        self.y = self.y ^ a
+    elseif Vec2.is_xy_pair(a, b) then
+        self.x = self.x ^ a
+        self.y = self.y ^ b
+    elseif Vec2.is_vec2(a) then
+        self.x = self.x ^ a.x
+        self.y = self.y ^ a.y
+    else
+        error("Invalid arguments for Vec2:Pow")
+    end
     return self
 end
 
-function Vec2:distance(other)
-    if Vec2.is_vec2(other) then
-        local dx = self.x - other.x
-        local dy = self.y - other.y
-        return math.sqrt(dx * dx + dy * dy)
-    else
-        error("TypeError: Argument for Vec2:distance must be a Vec2")
-    end
+function Vec2:print(places)
+    places = places or 2
+
+    local element_id = tostring(self.element_id)
+    local class_id = tostring(self.class_id)
+    local x = tostring(MathUtils.truncate(self.x, places))
+    local y = tostring(MathUtils.truncate(self.y, places))
+
+    print("-- Vec2 " .. element_id .. ":" .. class_id .. " --")
+    print("  element_id: " .. element_id)
+    print("  class_id: " .. class_id)
+    print("  x = " .. x)
+    print("  y = " .. y)
+    print("")
 end
 
-function Vec2:scale_about(other, scalar)
-    if Vec2.is_vec2(other) then
+function Vec2:rotate(angle, pivot)
+    pivot = pivot or Vec2.new(0, 0)
+    local translated = self:sub(pivot)
+
+    local cos_theta = math.cos(angle)
+    local sin_theta = math.sin(angle)
+
+    return Vec2.new(
+        translated.x * cos_theta - translated.y * sin_theta,
+        translated.x * sin_theta + translated.y * cos_theta
+    ):add(pivot)
+end
+
+function Vec2:Rotate(angle, pivot)
+    pivot = pivot or Vec2.new(0, 0)
+    local translated = self:sub(pivot)
+
+    local cos_theta = math.cos(angle)
+    local sin_theta = math.sin(angle)
+
+    self.x = translated.x * cos_theta - translated.y * sin_theta
+    self.y = translated.x * sin_theta + translated.y * cos_theta
+
+    self:Add(pivot)
+    return self
+end
+
+function Vec2:scale_about(scalar, a, b)
+    if Vec2.is_single_num(a, b) then
         return Vec2.new(
-            other.x + (self.x - other.x) * scalar,
-            other.y + (self.y - other.y) * scalar
+            a + (self.x - a) * scalar,
+            a + (self.y - a) * scalar
+        )
+    elseif Vec2.is_xy_pair(a, b) then
+        return Vec2.new(
+            a + (self.x - a) * scalar,
+            b + (self.y - b) * scalar
+        )
+    elseif Vec2.is_vec2(a) then
+        return Vec2.new(
+            a.x + (self.x - a.x) * scalar,
+            a.y + (self.y - a.x) * scalar
         )
     else
-        error("TypeError: First argument for Vec2:scale_about must be a Vec2")
+        error("Invalid arguments to Vec2:scale_about")
     end
 end
 
+function Vec2:Scale_about(scalar, a, b)
+    if Vec2.is_single_num(a, b) then
+        self.x = a + (self.x - a) * scalar
+        self.y = a + (self.y - a) * scalar
+    elseif Vec2.is_xy_pair(a, b) then
+        self.x = a + (self.x - a) * scalar
+        self.y = b + (self.y - b) * scalar
+    elseif Vec2.is_vec2(a) then
+        self.x = a.x + (self.x - a.x) * scalar
+        self.y = a.y + (self.y - a.x) * scalar
+    else
+        error("Invalid arguments to Vec2:Scale_about")
+    end
+end
 
+function Vec2:Set(a, b)
+    if Vec2.is_single_num(a, b) then
+        self.x = a
+        self.y = a
+    elseif Vec2.is_xy_pair(a, b) then
+        self.x = a
+        self.y = b
+    elseif Vec2.is_vec2(a) then
+        self.x = a.x
+        self.y = a.y
+    else
+        error("Invalid arguments for Vec2:set")
+    end
+    return self
+end
+
+function Vec2:Set_x(a)
+    self.x = a
+    return self
+end
+
+function Vec2:Set_y(a)
+    self.y = a
+    return self
+end
+
+function Vec2:sub(a, b)
+    if Vec2.is_single_num(a, b) then
+        return Vec2.new(self.x - a, self.y - a)
+    elseif Vec2.is_xy_pair(a, b) then
+        return Vec2.new(self.x - a, self.y - b)
+    elseif Vec2.is_vec2(a) then
+        return Vec2.new(self.x - a.x, self.y - a.y)
+    else
+        error("Invalid arguments for Vec2:sub")
+    end
+end
+
+function Vec2:Sub(a, b)
+    if Vec2.is_single_num(a, b) then
+        self.x = self.x - a
+        self.y = self.y - a
+    elseif Vec2.is_xy_pair(a, b) then
+        self.x = self.x - a
+        self.y = self.y - b
+    elseif Vec2.is_vec2(a) then
+        self.x = self.x - a.x
+        self.y = self.y - a.y
+    else
+        error("Invalid arguments for Vec2:Sub")
+    end
+    return self
+end
+Element = {}
+
+Element.__index = Element
+
+Element.id = 1
 Point = {}
 Point.__index = Point
 
@@ -316,8 +624,6 @@ function Point:draw()
         color_paint(self.color)
     )
 end
-
-
 Origin = {}
 Origin.__index = Origin
 
@@ -375,22 +681,20 @@ end
 function Origin:reset()
     translate { -self.offset[1], -self.offset[2] }
 end
-
-
 Triangle = {}
 Triangle.__index = Triangle
 
-function Triangle.new(vec2_a, vec2_b, vec2_c)
+function Triangle.new(vec2_a, vec2_b, vec2_c, color)
     local self = setmetatable({}, Triangle)
     self.vec2_a = vec2_a or { x = 0, y = 0 }
     self.vec2_b = vec2_b or { x = 0, y = 0 }
     self.vec2_c = vec2_c or { x = 0, y = 0 }
+    self.color = color or theme.text
     return self
 end
 
-function Triangle:draw(color)
-    color = color or theme.text
-    local paint = color_paint(color)
+function Triangle:draw()
+    local paint = color_paint(self.color)
     move_to { self.vec2_a.x, self.vec2_a.y }
     line_to { self.vec2_b.x, self.vec2_b.y }
     line_to { self.vec2_c.x, self.vec2_c.y }
@@ -419,14 +723,17 @@ end
 
 function Triangle:Set_vec2_a(x, y)
     self.vec2_a:Set(x, y)
+    return self
 end
 
 function Triangle:Set_vec2_b(x, y)
     self.vec2_b:Set(x, y)
+    return self
 end
 
 function Triangle:Set_vec2_c(x, y)
     self.vec2_c:Set(x, y)
+    return self
 end
 
 function Triangle:centroid()
@@ -504,18 +811,19 @@ function Triangle:scale(scalar)
     local centroid = self:centroid()
 
     return Triangle.new(
-        self.vec2_a:scale_about(centroid, scalar),
-        self.vec2_b:scale_about(centroid, scalar),
-        self.vec2_c:scale_about(centroid, scalar)
+        self.vec2_a:scale_about(scalar, centroid),
+        self.vec2_b:scale_about(scalar, centroid),
+        self.vec2_c:scale_about(scalar, centroid)
     )
 end
 
 function Triangle:Scale(scalar)
     local centroid = self:centroid()
 
-    self.vec2_a = self.vec2_a:scale_about(centroid, scalar)
-    self.vec2_b = self.vec2_b:scale_about(centroid, scalar)
-    self.vec2_c = self.vec2_c:scale_about(centroid, scalar)
+    self.vec2_a:Scale_about(scalar, centroid)
+    self.vec2_b:Scale_about(scalar, centroid)
+    self.vec2_c:Scale_about(scalar, centroid)
+    return self
 end
 
 function Triangle:rotate(angle)
@@ -609,106 +917,421 @@ function Triangle:circumcircle()
         (cx ^ 2 + cy ^ 2) * (bx - ax)) / D
     return Vec2.new(Ux, Uy), radius
 end
+-- TODO - Set a background that is always the lowest layer
+-- TODO - Set a foreground that is always the highest layer
+-- TODO - Attach origin to background/foreground based on preference
+Layer = {}
+Layer.__index = Layer
+Layer.layers = {}
 
+function Layer.new(z_index)
+    local self = setmetatable({}, Layer)
+    self.z_index = z_index or 0
+    self.objects = {}
+    table.insert(Layer.layers, self)
+    return self
+end
+
+function Layer.draw_all()
+    table.sort(Layer.layers, function(a, b) return a.z_index < b.z_index end)
+    for _, layer in ipairs(Layer.layers) do
+        layer:draw()
+    end
+end
+
+function Layer:add(object, draw_function_name)
+    draw_function_name = draw_function_name or "draw"
+    table.insert(self.objects, { object = object, draw_function = draw_function_name })
+end
+
+function Layer:draw()
+    for _, item in ipairs(self.objects) do
+        local obj = item.object
+        local draw_function = item.draw_function
+        if obj[draw_function] then
+            obj[draw_function](obj)
+        end
+    end
+end
+-- TODO Add nudge to vertex?
+-- TODO Add consistent error messages
 
 Line = {}
 Line.__index = Line
 
-function Line.new(vec2_a, vec2_b)
+Line.id = 1
+
+function Line.new(vec2_a, vec2_b, options)
+    local invalid_args = not Vec2.is_vec2(vec2_a) or not Vec2.is_vec2(vec2_b)
+
+    if invalid_args then
+        error("The first two arguments to Line.new must be Vec2s.")
+    end
+
     local self = setmetatable({}, Line)
-    self.vec2_a = vec2_a or { 0, 0 }
-    self.vec2_b = vec2_b or { 0, 0 }
+    self.type = "Line"
+    self.element_id = Element.id
+    Element.id = Element.id + 1
+    self.class_id = Line.id
+    Line.id = Line.id + 1
+
+    self.vec2_a = vec2_a or Vec2.new(0, 0)
+    self.vec2_b = vec2_b or Vec2.new(0, 0)
+    self.o = options or {}
+
+    self.color = self.o.color or theme.text
+    self.width = self.o.width or 1
+    self.style = self.o.style or "normal"
+    self.dash_length = self.o.dash_length or 5
+    self.dot_radius = self.o.dot_radius or 1
+    self.char = self.o.char or "+"
+    self.char_vertex = self.o.char_vertex or self.char
+    self.char_vertex_nudge = self.o.char_vertex_nudge or { 0, 0 }
+    self.char_size = self.o.char_size or 12
+    self.space_length = self.o.space_length or self.dash_length
     return self
 end
 
-local function process_args(class_meta, ...)
-    local args = { ... }
-    local processed_args
-
-    if type(args[1]) == "table" then
-        if getmetatable(args[1]) == class_meta then
-            processed_args = args
-        else
-            processed_args = args[1]
-        end
-    else
-        processed_args = args
-    end
-
-    return processed_args
-end
-
-function Line.draw_between_all(...)
-    local vec2s = process_args(Line, ...)
-    for i = 1, #vec2s do
-        for j = i + 1, #vec2s do
-            local line = Line.new(vec2s[i], vec2s[j])
-            line:draw()
-        end
-    end
-end
-
-function Line.dash_between_all(...)
-    local vec2s = process_args(Line, ...)
-    for i = 1, #vec2s do
-        for j = i + 1, #vec2s do
-            local line = Line.new(vec2s[i], vec2s[j])
-            line:dashed()
-        end
-    end
-end
-
-function Line.draw_from_to_all(vec2, ...)
-    local vec2s = process_args(Line, ...)
-    for i = 1, #vec2s do
-        local line = Line.new(vec2, vec2s[i])
-        line:draw()
-    end
-end
-
-function Line.dash_from_to_all(vec2, ...)
-    local vec2s = process_args(Line, ...)
-    for i = 1, #vec2s do
-        local line = Line.new(vec2, vec2s[i])
-        line:dash()
-    end
-end
-
-function Line:draw(color, width)
-    color = color or theme.text
-    width = width or 1
-    local paint = color_paint(color)
+function Line:draw_normal()
+    local paint = color_paint(self.color)
     stroke_segment(
         { self.vec2_a.x, self.vec2_a.y },
         { self.vec2_b.x, self.vec2_b.y },
-        width, paint
+        self.width, paint
     )
 end
 
-function Line:dashed(color, width, dash_length, space_length)
-    color = color or theme.text
-    width = width or 1
-    dash_length = dash_length or 5
-    space_length = space_length or dash_length
-    local paint = color_paint(color)
-
+function Line:draw_dashed()
     local total_distance = self.vec2_a:distance(self.vec2_b)
     local direction = self.vec2_b:sub(self.vec2_a):normalize()
 
     local current_distance = 0
     while current_distance < total_distance do
         local start_dash = self.vec2_a:add(direction:mult(current_distance))
-        current_distance = math.min(current_distance + dash_length, total_distance)
+        current_distance = math.min(current_distance + self.dash_length, total_distance)
         local end_dash = self.vec2_a:add(direction:mult(current_distance))
 
-        local temp_line = Line.new(start_dash, end_dash)
-        temp_line:draw(color, width)
+        local paint = color_paint(self.color)
+        stroke_segment(
+            { start_dash.x, start_dash.y },
+            { end_dash.x, end_dash.y },
+            self.width, paint
+        )
 
-        current_distance = current_distance + space_length
+        current_distance = current_distance + self.space_length
     end
 end
 
+function Line:draw_dotted()
+    local total_distance = self.vec2_a:distance(self.vec2_b)
+    local direction = self.vec2_b:sub(self.vec2_a):normalize()
 
+    local current_distance = 0
+    while current_distance <= total_distance do
+        local dot_position = self.vec2_a:add(direction:mult(current_distance))
+        local paint = color_paint(self.color)
+
+        fill_circle({ dot_position.x, dot_position.y }, self.dot_radius, paint)
+
+        current_distance = current_distance + self.space_length
+    end
+end
+
+function Line:draw_char()
+    if #self.char > 1 or #self.char_vertex > 1 then
+        error("char and char_vertex must be single characters.")
+    end
+
+    local char_scale_factor = self.char_size / 12
+    local total_distance = self.vec2_a:distance(self.vec2_b)
+    local direction = self.vec2_b:sub(self.vec2_a):normalize()
+
+    save()
+    translate {
+        self.vec2_a.x + self.char_vertex_nudge[1],
+        self.vec2_a.y + self.char_vertex_nudge[2]
+    }
+    scale { char_scale_factor, char_scale_factor }
+    text(self.char_vertex, self.color)
+    restore()
+
+    local current_distance = self.space_length
+    while current_distance < total_distance do
+        local char_position = self.vec2_a:add(direction:mult(current_distance))
+
+        save()
+        translate { char_position.x, char_position.y }
+        scale { char_scale_factor, char_scale_factor }
+        text(self.char, self.color)
+        restore()
+
+        current_distance = current_distance + self.space_length
+    end
+
+    if total_distance > 0 then
+        save()
+        translate {
+            self.vec2_b.x + self.char_vertex_nudge[1],
+            self.vec2_b.y + self.char_vertex_nudge[2]
+        }
+        scale { char_scale_factor, char_scale_factor }
+        text(self.char_vertex, self.color)
+        restore()
+    end
+end
+
+function Line:draw()
+    if self.style == "normal" then
+        self:draw_normal()
+    elseif self.style == "dashed" then
+        self:draw_dashed()
+    elseif self.style == "dotted" then
+        self:draw_dotted()
+    elseif self.style == "char" then
+        self:draw_char()
+    end
+end
+
+function Line:get_center()
+    return Vec2.new(
+        (self.vec2_a.x + self.vec2_b.x) / 2,
+        (self.vec2_a.y + self.vec2_b.y) / 2
+    )
+end
+
+function Line:rotate(angle, pivot)
+    pivot = pivot or self:get_center()
+
+    local new_vec2_a = self.vec2_a:rotate(angle, pivot)
+    local new_vec2_b = self.vec2_b:rotate(angle, pivot)
+
+    return Line.new(new_vec2_a, new_vec2_b, self.o)
+end
+
+function Line:Rotate(angle, pivot)
+    pivot = pivot or self:get_center()
+
+    self.vec2_a:Rotate(angle, pivot)
+    self.vec2_b:Rotate(angle, pivot)
+
+    return self
+end
+
+function Line:translate(...)
+    local args = Utils.process_args(Vec2, ...)
+    local translation
+
+    if #args == 1 and Vec2.is_vec2(args[1]) then
+        translation = args[1]
+    elseif #args == 2 and Vec2.is_xy_pair(args[1], args[2]) then
+        translation = Vec2.new(args[1], args[2])
+    else
+        error("Invalid arguments for Translate. Expected Vec2 or two numbers.")
+    end
+
+    return Line.new(
+        self.vec2_a:add(translation),
+        self.vec2_b:add(translation),
+        self.o
+    )
+end
+
+function Line:Translate(...)
+    local args = Utils.process_args(Vec2, ...)
+    local translation
+
+    if #args == 1 and Vec2.is_vec2(args[1]) then
+        translation = args[1]
+    elseif #args == 2 and Vec2.is_xy_pair(args[1], args[2]) then
+        translation = Vec2.new(args[1], args[2])
+    else
+        error("Invalid arguments for Translate. Expected Vec2 or two numbers.")
+    end
+
+    self.vec2_a:Add(translation)
+    self.vec2_b:Add(translation)
+end
+
+function Line:scale(scaleFactor)
+    local center = self:get_center()
+    local translated_a = self.vec2_a:sub(center)
+    local translated_b = self.vec2_b:sub(center)
+    translated_a:Mult(scaleFactor):Add(center)
+    translated_b:Mult(scaleFactor):Add(center)
+
+    return Line.new(translated_a, translated_b, self.o)
+end
+
+function Line:Scale(scaleFactor)
+    local center = self:get_center()
+    local translated_a = self.vec2_a:sub(center)
+    local translated_b = self.vec2_b:sub(center)
+    translated_a:Mult(scaleFactor):Add(center)
+    translated_b:Mult(scaleFactor):Add(center)
+
+    self.vec2_a = translated_a
+    self.vec2_b = translated_b
+end
+
+function Line:Flip_x()
+    self.vec2_a = -self.vec2_a
+    self.vec2_b:Rotate()
+end
+
+function Line:print(places)
+    places = places or 2
+
+    local element_id = tostring(self.element_id)
+    local class_id = self.class_id
+    local ax = tostring(MathUtils.truncate(self.vec2_a.x, places))
+    local ay = tostring(MathUtils.truncate(self.vec2_a.y, places))
+    local bx = tostring(MathUtils.truncate(self.vec2_b.x, places))
+    local by = tostring(MathUtils.truncate(self.vec2_b.y, places))
+    local color = tostring(Utils.table_to_string(self.color, true, places))
+    local width = tostring(MathUtils.truncate(self.width, places))
+    local style = self.style
+    local dash_length = tostring(MathUtils.truncate(self.dash_length, places))
+    local dot_radius = tostring(MathUtils.truncate(self.dot_radius, places))
+    local char = self.char
+    local char_vertex = self.char_vertex
+    local char_vertex_nudge = self.char_vertex_nudge
+    local char_size = tostring(MathUtils.truncate(self.char_size, places))
+    local space_length = tostring(MathUtils.truncate(self.space_length, places))
+
+    print("-- Line " .. element_id .. ":" .. class_id .. " --")
+    print("  element_id: " .. element_id)
+    print("  class_id: " .. class_id)
+    print("  vec2_a: { x = " .. ax .. ", y = " .. ay .. " }")
+    print("  vec2_b: { x = " .. bx .. ", y = " .. by .. " }")
+    print("  color: " .. color)
+    print("  width: " .. width)
+    print("  style: " .. style)
+    print("  dash_length: " .. dash_length)
+    print("  dot_radius: " .. dot_radius)
+    print("  char: " .. char)
+    print("  char_vertex: " .. char_vertex)
+    print("  char_vertex nudge:" .. char_vertex_nudge)
+    print("  char_size: " .. char_size)
+    print("  space_length: " .. space_length)
+    print("  ")
+end
+
+LineGroup = {}
+
+LineGroup.__index = LineGroup
+
+LineGroup.id = 1
+
+function LineGroup.new(vec2s, options)
+    for _, vec2 in ipairs(vec2s) do
+        if not Vec2.is_vec2(vec2) then
+            error("All elements in vec2s must be Vec2 instances.")
+        end
+    end
+
+    local self = setmetatable({}, LineGroup)
+    self.type = "LineGroup"
+    self.element_id = Element.id
+    Element.id = Element.id + 1
+    self.class_id = LineGroup.id
+    LineGroup.id = LineGroup.id + 1
+
+    self.vec2s = vec2s or { Vec2.new(0, 0) }
+    self.o = options or {}
+
+    self.len_vec2s = #vec2s
+    self.color = self.o.color or theme.text
+    self.width = self.o.width or 1
+    self.style = self.o.style or "normal"
+    self.dash_length = self.o.dash_length or 5
+    self.dot_radius = self.o.dot_radius or 1
+    self.char = self.o.char or "+"
+    self.char_vertex = self.o.char_vertex or self.char
+    self.char_vertex_nudge = self.o.char_vertex_nudge or { 0, 0 }
+    self.char_size = self.o.char_size or 12
+    self.space_length = self.o.space_length or self.dash_length
+    self.method = self.o.method or "between"
+    return self
+end
+
+function LineGroup:draw_between()
+    for i = 1, self.len_vec2s do
+        for j = i + 1, self.len_vec2s do
+            local line = Line.new(self.vec2s[i], self.vec2s[j], self.o)
+            if self.style == "normal" then
+                line:draw_normal()
+            elseif self.style == "dashed" then
+                line:draw_dashed()
+            elseif self.style == "dotted" then
+                line:draw_dotted()
+            elseif self.style == "char" then
+                line:draw_char()
+            end
+        end
+    end
+end
+
+function LineGroup:draw_from_to()
+    for i = 1, self.len_vec2s do
+        local line = Line.new(self.vec2s[1], self.vec2s[i], self.o)
+        if self.style == "normal" then
+            line:draw_normal()
+        elseif self.style == "dashed" then
+            line:draw_dashed()
+        elseif self.style == "dotted" then
+            line:draw_dotted()
+        elseif self.style == "char" then
+            line:draw_char()
+        end
+    end
+end
+
+function LineGroup:draw()
+    if self.method == "between" then
+        self:draw_between()
+    elseif self.method == "from-to" then
+        self:draw_from_to()
+    end
+end
+
+function LineGroup:print(places)
+    places = places or 2
+
+    local element_id = tostring(self.element_id)
+    local class_id = tostring(self.class_id)
+    local len_vec2s = tostring(self.len_vec2s)
+    local color = tostring(Utils.table_to_string(self.color, true, places))
+    local width = tostring(MathUtils.truncate(self.width, places))
+    local style = self.style
+    local dash_length = tostring(MathUtils.truncate(self.dash_length, places))
+    local dot_radius = tostring(MathUtils.truncate(self.dot_radius, places))
+    local char = self.char
+    local char_vertex = self.char_vertex
+    local char_vertex_nudge = Utils.table_to_string(self.char_vertex_nudge, true, places)
+    local char_size = tostring(MathUtils.truncate(self.char_size, places))
+    local space_length = tostring(MathUtils.truncate(self.space_length, places))
+
+    print("-- LineGroup " .. element_id .. ":" .. class_id .. " --")
+    print("  element_id: " .. element_id)
+    print("  class_id: " .. class_id)
+    print("  len_vec2s: " .. len_vec2s)
+    for i, vec2 in ipairs(self.vec2s) do
+        local x = tostring(MathUtils.truncate(vec2.x, places))
+        local y = tostring(MathUtils.truncate(vec2.y, places))
+        print("vec2_" .. i .. ": " .. x .. ", y = " .. y .. " }")
+    end
+    print("  color: " .. color)
+    print("  width: " .. width)
+    print("  style: " .. style)
+    print("  dash_length: " .. dash_length)
+    print("  dot_radius: " .. dot_radius)
+    print("  char: " .. char)
+    print("  char_vertex: " .. char_vertex)
+    print("  char_vertex nudge:" .. char_vertex_nudge)
+    print("  char_size: " .. char_size)
+    print("  space_length: " .. space_length)
+    print("")
+end
 function button(x, y, width, options)
     -- Error Handling
     local function checkMutuallyExclusiveArgs(arg1Name, arg1, arg2Name, arg2)
@@ -831,8 +1454,6 @@ function tile_button_fn(func, r, c)
         end
     end
 end
-
-
 Debug = {}
 
 function Debug.Logger()
@@ -883,8 +1504,8 @@ function Debug.Logger()
         text("_________________", theme.text)
         translate { 0, -20 }
 
-        for i, s in ipairs(queue) do
-            text(i .. ": " .. s, theme.text)
+        for _, s in ipairs(queue) do
+            text("> " .. s, theme.text)
             translate { 0, -14 }
         end
     end
@@ -893,8 +1514,6 @@ function Debug.Logger()
 end
 
 print, tprint, print_all = Debug.Logger()
-
-
 Graph = {}
 Graph.__index = Graph
 
@@ -920,7 +1539,6 @@ function Graph:draw()
 end
 
 
-
 -- AUDULUS-CANVAS LIBRARY ----------------------------------------------
 -- Version: 0.0.2-alpha
 -- Updated: 2023.12.26
@@ -933,17 +1551,11 @@ end
 -- 4. Set a custom W(idth) and H(eight) in the inspector panel
 -- 5. Write your code in the CODE block below
 
-o = Origin.new("c", {show = true, type = "cross", width = 4, color = theme.text})
+o = Origin.new(\"c\", {show = true, type = \"cross\", width = 4, color = theme.text})
 
 -- CODE ----------------------------------------------------------------
-
-
-
-
-
 
 -- PRINT CONSOLE -------------------------------------------------------
 
 o:reset()
 print_all()
-

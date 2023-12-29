@@ -12,3 +12,11 @@ end
 function MathUtils.is_positive_int(n)
     return n == math.floor(n) and n >= 0
 end
+
+function MathUtils.div(a, b)
+    return b ~= 0 and a / b or 0
+end
+
+function MathUtils.mod(a, b)
+    return b ~= 0 and a % b or 0
+end

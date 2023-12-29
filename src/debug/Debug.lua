@@ -48,8 +48,8 @@ function Debug.Logger()
         text("_________________", theme.text)
         translate { 0, -20 }
 
-        for i, s in ipairs(queue) do
-            text(i .. ": " .. s, theme.text)
+        for _, s in ipairs(queue) do
+            text("> " .. s, theme.text)
             translate { 0, -14 }
         end
     end

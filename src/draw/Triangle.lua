@@ -1,17 +1,17 @@
 Triangle = {}
 Triangle.__index = Triangle
 
-function Triangle.new(vec2_a, vec2_b, vec2_c)
+function Triangle.new(vec2_a, vec2_b, vec2_c, color)
     local self = setmetatable({}, Triangle)
     self.vec2_a = vec2_a or { x = 0, y = 0 }
     self.vec2_b = vec2_b or { x = 0, y = 0 }
     self.vec2_c = vec2_c or { x = 0, y = 0 }
+    self.color = color or theme.text
     return self
 end
 
-function Triangle:draw(color)
-    color = color or theme.text
-    local paint = color_paint(color)
+function Triangle:draw()
+    local paint = color_paint(self.color)
     move_to { self.vec2_a.x, self.vec2_a.y }
     line_to { self.vec2_b.x, self.vec2_b.y }
     line_to { self.vec2_c.x, self.vec2_c.y }
@@ -40,14 +40,17 @@ end
 
 function Triangle:Set_vec2_a(x, y)
     self.vec2_a:Set(x, y)
+    return self
 end
 
 function Triangle:Set_vec2_b(x, y)
     self.vec2_b:Set(x, y)
+    return self
 end
 
 function Triangle:Set_vec2_c(x, y)
     self.vec2_c:Set(x, y)
+    return self
 end
 
 function Triangle:centroid()
@@ -125,18 +128,19 @@ function Triangle:scale(scalar)
     local centroid = self:centroid()
 
     return Triangle.new(
-        self.vec2_a:scale_about(centroid, scalar),
-        self.vec2_b:scale_about(centroid, scalar),
-        self.vec2_c:scale_about(centroid, scalar)
+        self.vec2_a:scale_about(scalar, centroid),
+        self.vec2_b:scale_about(scalar, centroid),
+        self.vec2_c:scale_about(scalar, centroid)
     )
 end
 
 function Triangle:Scale(scalar)
     local centroid = self:centroid()
 
-    self.vec2_a = self.vec2_a:scale_about(centroid, scalar)
-    self.vec2_b = self.vec2_b:scale_about(centroid, scalar)
-    self.vec2_c = self.vec2_c:scale_about(centroid, scalar)
+    self.vec2_a:Scale_about(scalar, centroid)
+    self.vec2_b:Scale_about(scalar, centroid)
+    self.vec2_c:Scale_about(scalar, centroid)
+    return self
 end
 
 function Triangle:rotate(angle)
