@@ -49,7 +49,15 @@ function Debug.Logger()
         translate { 0, -20 }
 
         for _, s in ipairs(queue) do
-            text("> " .. s, theme.text)
+            if s:sub(1, 3) == "-- " then
+                text("> " .. s, theme.greenHighlight)
+            elseif s:sub(1, 3) == ":: " then
+                text("> " .. s, theme.azureHighlight)
+            elseif string.match(s, "^:%S") then
+                text("> " .. s, ColorUtils.theme_yellow)
+            else
+                text("> " .. s, theme.text)
+            end
             translate { 0, -14 }
         end
     end
@@ -58,3 +66,16 @@ function Debug.Logger()
 end
 
 print, tprint, print_all = Debug.Logger()
+
+function Debug.print_docstring(docstring)
+    local newline = "\n"
+    local buffer = ""
+    for i = 1, #docstring do
+        if docstring:sub(i, i) == newline then
+            print(buffer)
+            buffer = ""
+        else
+            buffer = buffer .. docstring:sub(i, i)
+        end
+    end
+end
