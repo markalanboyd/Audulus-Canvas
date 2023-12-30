@@ -1,6 +1,3 @@
--- TODO Add nudge to vertex?
--- TODO Add consistent error messages
-
 Line = {}
 Line.__index = Line
 
@@ -218,9 +215,19 @@ function Line:Scale(scaleFactor)
     self.vec2_b = translated_b
 end
 
+function Line:Flip()
+    self.vec2_a:Set(-self.vec2_a.x, -self.vec2_a.y)
+    self.vec2_b:Set(-self.vec2_b.x, -self.vec2_b.y)
+end
+
 function Line:Flip_x()
-    self.vec2_a = -self.vec2_a
-    self.vec2_b:Rotate()
+    self.vec2_a:Set(self.vec2_a.x, -self.vec2_a.y)
+    self.vec2_b:Set(self.vec2_b.x, -self.vec2_b.y)
+end
+
+function Line:Flip_y()
+    self.vec2_a:Set(-self.vec2_a.x, self.vec2_a.y)
+    self.vec2_b:Set(-self.vec2_b.x, self.vec2_b.y)
 end
 
 function Line:print(places)
