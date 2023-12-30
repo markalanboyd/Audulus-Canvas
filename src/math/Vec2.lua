@@ -1,5 +1,3 @@
--- TODO file structure like printing for method
-
 Vec2 = {}
 Vec2.__index = Vec2
 
@@ -74,7 +72,126 @@ function Vec2.__concat(a, b)
     return Vec2.new(x, y)
 end
 
--- Static Methods --
+function Vec2.docs()
+    local docstring =
+        "-- Vec2 Class Documentation -- \n" ..
+        "Represents a 2D vector or coordinate pair {x, y}. Commonly used\n" ..
+        "in 2D graphics, game development, and physics simulations.\n" ..
+        "\n" ..
+        ":: Attributes ::\n" ..
+        ":type (string)\n" ..
+        "    'Vec2'\n" ..
+        ":element_id (number)\n" ..
+        "    A globally unique integer id incremented from Element.id.\n" ..
+        ":class_id: (number)\n" ..
+        "    A unique class id incremented from Vec2.id.\n" ..
+        ":x (number)\n" ..
+        "    x coordinate\n" ..
+        ":y (number)\n" ..
+        "    y coordinate\n" ..
+        "\n" ..
+        ":: Static Methods ::\n" ..
+        ":is_single_num(a, b)\n" ..
+        "     return true if a is a number and b is nil.\n" ..
+        ":is_vec2(obj)\n" ..
+        "     return true if obj is of type Vec2.\n" ..
+        ":is_xy_pair(x, y)\n" ..
+        "     return true if x and y are both numbers.\n" ..
+        ":parse_other(a, b, func_name)\n" ..
+        "    returns a Vec2 from the arguments {a, b}.\n" ..
+        "    errors referencing func_name if invalid arguments\n" ..
+        "\n" ..
+        ":: Instance Methods ::\n" ..
+        ":add(a, b)\n" ..
+        "    Adds a given value or Vec2 to this vector.\n" ..
+        "    If a is a number and b is nil, adds a to both x and y.\n" ..
+        "    If a and b are numbers, adds them to x and y respectively.\n" ..
+        "    If a is a Vec2, adds its x and y to this vector's x and y.\n" ..
+        "    Returns a new Vec2.\n" ..
+        ":Add(a, b)\n" ..
+        "    Adds a given value or Vec2 to this vector, modifying it.\n" ..
+        "    If a is a number and b is nil, adds a to both x and y.\n" ..
+        "    If a and b are numbers, adds them to x and y respectively.\n" ..
+        "    If a is a Vec2, adds its x and y to this vector's x and y.\n" ..
+        "    Returns self.\n" ..
+        ":angle(a, b)\n" ..
+        "    Calculates the angle between this vector and another Vec2 or point.\n" ..
+        "    The other vector or point is defined by a and b.\n" ..
+        "    Returns the angle in radians.\n" ..
+        ":distance(a, b)\n" ..
+        "    Computes the distance from this vector to another Vec2 or point.\n" ..
+        "    The other vector or point is defined by a and b.\n" ..
+        "    Returns the distance as a number.\n" ..
+        ":div(a, b)\n" ..
+        "    Divides this vector by a given value or Vec2.\n" ..
+        "    If a is a number and b is nil, divides both x and y by a.\n" ..
+        "    If a and b are numbers, divides x by a and y by b respectively.\n" ..
+        "    If a is a Vec2, divides x by a.x and y by a.y.\n" ..
+        "    Returns a new Vec2.\n" ..
+        ":Div(a, b)\n" ..
+        "    Divides this vector by a given value or Vec2, modifying it.\n" ..
+        "    If a is a number and b is nil, divides both x and y by a.\n" ..
+        "    If a and b are numbers, divides x by a and y by b respectively.\n" ..
+        "    If a is a Vec2, divides x by a.x and y by a.y.\n" ..
+        "    Returns self.\n" ..
+        ":dot(a, b)\n" ..
+        "    Calculates the dot product with another Vec2 or point.\n" ..
+        "    The other vector or point is defined by a and b.\n" ..
+        "    Returns the dot product as a number.\n" ..
+        ":magnitude()\n" ..
+        "    Returns the magnitude (length) of the vector.\n" ..
+        ":mod(a, b)\n" ..
+        "    Applies modulus operation on the vector's components.\n" ..
+        "    If a is a number and b is nil, applies modulus to both x and y.\n" ..
+        "    If a and b are numbers, applies to x and y respectively.\n" ..
+        "    If a is a Vec2, applies to x with a.x and y with a.y.\n" ..
+        "    Returns a new Vec2.\n" ..
+        ":Mod(a, b)\n" ..
+        "    Modifies this vector by applying modulus operation.\n" ..
+        "    Follows same rules as :mod(a, b) method.\n" ..
+        "    Returns self.\n" ..
+        ":mult(a, b)\n" ..
+        "    Multiplies the vector by a given value or Vec2.\n" ..
+        "    Follows same rules as :add(a, b) for multiplication.\n" ..
+        "    Returns a new Vec2.\n" ..
+        ":Mult(a, b)\n" ..
+        "    Multiplies this vector, modifying its components.\n" ..
+        "    Follows same rules as :Mult(a, b) for multiplication.\n" ..
+        "    Returns self.\n" ..
+        ":neg()\n" ..
+        "    Returns a new Vec2 that is the negation of this vector.\n" ..
+        ":Neg()\n" ..
+        "    Negates this vector's components, modifying it.\n" ..
+        "    Returns self.\n" ..
+        ":normalize()\n" ..
+        "    Returns a new Vec2 that is the normalized version of this vector.\n" ..
+        "    Normalization adjusts the vector to unit length.\n" ..
+        ":Normalize()\n" ..
+        "    Normalizes this vector, modifying its components.\n" ..
+        "    Adjusts the vector to unit length and returns self.\n" ..
+        ":rotate(angle)\n" ..
+        "    Rotates the vector by a given angle in radians.\n" ..
+        "    Returns a new Vec2 representing the rotated vector.\n" ..
+        ":Rotate(angle)\n" ..
+        "    Rotates this vector by a given angle in radians, modifying it.\n" ..
+        "    Returns self.\n" ..
+        ":scale(factor)\n" ..
+        "    Scales the vector by a given factor.\n" ..
+        "    Returns a new Vec2 representing the scaled vector.\n" ..
+        ":Scale(factor)\n" ..
+        "    Scales this vector by a given factor, modifying its components.\n" ..
+        "    Returns self.\n" ..
+        ":sub(a, b)\n" ..
+        "    Subtracts a given value or Vec2 from this vector.\n" ..
+        "    Follows same rules as :add(a, b) for subtraction.\n" ..
+        "    Returns a new Vec2.\n" ..
+        ":Sub(a, b)\n" ..
+        "    Subtracts a given value or Vec2 from this vector, modifying it.\n" ..
+        "    Follows same rules as :Add(a, b) for subtraction.\n" ..
+        "    Returns self.\n" ..
+        "\n"
+    Debug.print_docstring(docstring)
+end
 
 function Vec2.is_single_num(a, b)
     return type(a) == "number" and not b
