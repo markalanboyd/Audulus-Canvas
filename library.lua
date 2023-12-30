@@ -5,6 +5,8 @@ ColorTables = {}
 ColorTables.htmlColors = { indianred = { 205, 92, 92, 1 }, lightcoral = { 240, 128, 128, 1 }, salmon = { 250, 128, 114, 1 }, darksalmon = { 233, 150, 122, 1 }, lightsalmon = { 255, 160, 122, 1 }, crimson = { 220, 20, 60, 1 }, red = { 255, 0, 0, 1 }, firebrick = { 178, 34, 34, 1 }, darkred = { 139, 0, 0, 1 }, pink = { 255, 192, 203, 1 }, lightpink = { 255, 182, 193, 1 }, hotpink = { 255, 105, 180, 1 }, deeppink = { 255, 20, 147, 1 }, mediumvioletred = { 199, 21, 133, 1 }, palevioletred = { 219, 112, 147, 1 }, coral = { 255, 127, 80, 1 }, tomato = { 255, 99, 71, 1 }, orangered = { 255, 69, 0, 1 }, darkorange = { 255, 140, 0, 1 }, orange = { 255, 165, 0, 1 }, gold = { 255, 215, 0, 1 }, yellow = { 255, 255, 0, 1 }, lightyellow = { 255, 255, 224, 1 }, lemonchiffon = { 255, 250, 205, 1 }, lightgoldenrodyellow = { 250, 250, 210, 1 }, papayawhip = { 255, 239, 213, 1 }, moccasin = { 255, 228, 181, 1 }, peachpuff = { 255, 218, 185, 1 }, palegoldenrod = { 238, 232, 170, 1 }, khaki = { 240, 230, 140, 1 }, darkkhaki = { 189, 183, 107, 1 }, lavender = { 230, 230, 250, 1 }, thistle = { 216, 191, 216, 1 }, plum = { 221, 160, 221, 1 }, violet = { 238, 130, 238, 1 }, orchid = { 218, 112, 214, 1 }, fuchsia = { 255, 0, 255, 1 }, magenta = { 255, 0, 255, 1 }, mediumorchid = { 186, 85, 211, 1 }, mediumpurple = { 147, 112, 219, 1 }, rebeccapurple = { 102, 51, 153, 1 }, blueviolet = { 138, 43, 226, 1 }, darkviolet = { 148, 0, 211, 1 }, darkorchid = { 153, 50, 204, 1 }, darkmagenta = { 139, 0, 139, 1 }, purple = { 128, 0, 128, 1 }, indigo = { 75, 0, 130, 1 }, slateblue = { 106, 90, 205, 1 }, darkslateblue = { 72, 61, 139, 1 }, mediumslateblue = { 123, 104, 238, 1 }, greenyellow = { 173, 255, 47, 1 }, chartreuse = { 127, 255, 0, 1 }, lawngreen = { 124, 252, 0, 1 }, lime = { 0, 255, 0, 1 }, limegreen = { 50, 205, 50, 1 }, palegreen = { 152, 251, 152, 1 }, lightgreen = { 144, 238, 144, 1 }, mediumspringgreen = { 0, 250, 154, 1 }, springgreen = { 0, 255, 127, 1 }, mediumseagreen = { 60, 179, 113, 1 }, seagreen = { 46, 139, 87, 1 }, forestgreen = { 34, 139, 34, 1 }, green = { 0, 128, 0, 1 }, darkgreen = { 0, 100, 0, 1 }, yellowgreen = { 154, 205, 50, 1 }, olivedrab = { 107, 142, 35, 1 }, olive = { 128, 128, 0, 1 }, darkolivegreen = { 85, 107, 47, 1 }, mediumaquamarine = { 102, 205, 170, 1 }, darkseagreen = { 143, 188, 139, 1 }, lightseagreen = { 32, 178, 170, 1 }, darkcyan = { 0, 139, 139, 1 }, teal = { 0, 128, 128, 1 }, aqua = { 0, 255, 255, 1 }, cyan = { 0, 255, 255, 1 }, lightcyan = { 224, 255, 255, 1 }, paleturquoise = { 175, 238, 238, 1 }, aquamarine = { 127, 255, 212, 1 }, turquoise = { 64, 224, 208, 1 }, mediumturquoise = { 72, 209, 204, 1 }, darkturquoise = { 0, 206, 209, 1 }, cadetblue = { 95, 158, 160, 1 }, steelblue = { 70, 130, 180, 1 }, lightsteelblue = { 176, 196, 222, 1 }, powderblue = { 176, 224, 230, 1 }, lightblue = { 173, 216, 230, 1 }, skyblue = { 135, 206, 235, 1 }, lightskyblue = { 135, 206, 250, 1 }, deepskyblue = { 0, 191, 255, 1 }, dodgerblue = { 30, 144, 255, 1 }, cornflowerblue = { 100, 149, 237, 1 }, royalblue = { 65, 105, 225, 1 }, blue = { 0, 0, 255, 1 }, mediumblue = { 0, 0, 205, 1 }, darkblue = { 0, 0, 139, 1 }, navy = { 0, 0, 128, 1 }, midnightblue = { 25, 25, 112, 1 }, cornsilk = { 255, 248, 220, 1 }, blanchedalmond = { 255, 235, 205, 1 }, bisque = { 255, 228, 196, 1 }, navajowhite = { 255, 222, 173, 1 }, wheat = { 245, 222, 179, 1 }, burlywood = { 222, 184, 135, 1 }, tan = { 210, 180, 140, 1 }, rosybrown = { 188, 143, 143, 1 }, sandybrown = { 244, 164, 96, 1 }, goldenrod = { 218, 165, 32, 1 }, darkgoldenrod = { 184, 134, 11, 1 }, peru = { 205, 133, 63, 1 }, chocolate = { 210, 105, 30, 1 }, saddlebrown = { 139, 69, 19, 1 }, sienna = { 160, 82, 45, 1 }, brown = { 165, 42, 42, 1 }, maroon = { 128, 0, 0, 1 }, white = { 255, 255, 255, 1 }, snow = { 255, 250, 250, 1 }, honeydew = { 240, 255, 240, 1 }, mintcream = { 245, 255, 250, 1 }, azure = { 240, 255, 255, 1 }, aliceblue = { 240, 248, 255, 1 }, ghostwhite = { 248, 248, 255, 1 }, whitesmoke = { 245, 245, 245, 1 }, seashell = { 255, 245, 238, 1 }, beige = { 245, 245, 220, 1 }, oldlace = { 253, 245, 230, 1 }, floralwhite = { 255, 250, 240, 1 }, ivory = { 255, 255, 240, 1 }, antiquewhite = { 250, 235, 215, 1 }, linen = { 250, 240, 230, 1 }, lavenderblush = { 255, 240, 245, 1 }, mistyrose = { 255, 228, 225, 1 }, gainsboro = { 220, 220, 220, 1 }, lightgray = { 211, 211, 211, 1 }, silver = { 192, 192, 192, 1 }, darkgray = { 169, 169, 169, 1 }, gray = { 128, 128, 128, 1 }, dimgray = { 105, 105, 105, 1 }, lightslategray = { 119, 136, 153, 1 }, slategray = { 112, 128, 144, 1 }, darkslategray = { 47, 79, 79, 1 }, black = { 0, 0, 0, 1 } }
 ColorUtils = {}
 
+ColorUtils.theme_yellow = { 0.83, 1, 0, 1 }
+
 function ColorUtils.is_valid_hex_code(s)
     s = s:gsub("#", "")
     local invalidChars = string.match(s, "[^0-9a-fA-F]+")
@@ -206,7 +208,126 @@ function Vec2.__concat(a, b)
     return Vec2.new(x, y)
 end
 
--- Static Methods --
+function Vec2.docs()
+    local docstring =
+        "-- Vec2 Class Documentation -- \n" ..
+        "Represents a 2D vector or coordinate pair {x, y}. Commonly used\n" ..
+        "in 2D graphics, game development, and physics simulations.\n" ..
+        "\n" ..
+        ":: Attributes ::\n" ..
+        ":type (string)\n" ..
+        "    'Vec2'\n" ..
+        ":element_id (number)\n" ..
+        "    A globally unique integer id incremented from Element.id.\n" ..
+        ":class_id: (number)\n" ..
+        "    A unique class id incremented from Vec2.id.\n" ..
+        ":x (number)\n" ..
+        "    x coordinate\n" ..
+        ":y (number)\n" ..
+        "    y coordinate\n" ..
+        "\n" ..
+        ":: Static Methods ::\n" ..
+        ":is_single_num(a, b)\n" ..
+        "     return true if a is a number and b is nil.\n" ..
+        ":is_vec2(obj)\n" ..
+        "     return true if obj is of type Vec2.\n" ..
+        ":is_xy_pair(x, y)\n" ..
+        "     return true if x and y are both numbers.\n" ..
+        ":parse_other(a, b, func_name)\n" ..
+        "    returns a Vec2 from the arguments {a, b}.\n" ..
+        "    errors referencing func_name if invalid arguments\n" ..
+        "\n" ..
+        ":: Instance Methods ::\n" ..
+        ":add(a, b)\n" ..
+        "    Adds a given value or Vec2 to this vector.\n" ..
+        "    If a is a number and b is nil, adds a to both x and y.\n" ..
+        "    If a and b are numbers, adds them to x and y respectively.\n" ..
+        "    If a is a Vec2, adds its x and y to this vector's x and y.\n" ..
+        "    Returns a new Vec2.\n" ..
+        ":Add(a, b)\n" ..
+        "    Adds a given value or Vec2 to this vector, modifying it.\n" ..
+        "    If a is a number and b is nil, adds a to both x and y.\n" ..
+        "    If a and b are numbers, adds them to x and y respectively.\n" ..
+        "    If a is a Vec2, adds its x and y to this vector's x and y.\n" ..
+        "    Returns self.\n" ..
+        ":angle(a, b)\n" ..
+        "    Calculates the angle between this vector and another Vec2 or point.\n" ..
+        "    The other vector or point is defined by a and b.\n" ..
+        "    Returns the angle in radians.\n" ..
+        ":distance(a, b)\n" ..
+        "    Computes the distance from this vector to another Vec2 or point.\n" ..
+        "    The other vector or point is defined by a and b.\n" ..
+        "    Returns the distance as a number.\n" ..
+        ":div(a, b)\n" ..
+        "    Divides this vector by a given value or Vec2.\n" ..
+        "    If a is a number and b is nil, divides both x and y by a.\n" ..
+        "    If a and b are numbers, divides x by a and y by b respectively.\n" ..
+        "    If a is a Vec2, divides x by a.x and y by a.y.\n" ..
+        "    Returns a new Vec2.\n" ..
+        ":Div(a, b)\n" ..
+        "    Divides this vector by a given value or Vec2, modifying it.\n" ..
+        "    If a is a number and b is nil, divides both x and y by a.\n" ..
+        "    If a and b are numbers, divides x by a and y by b respectively.\n" ..
+        "    If a is a Vec2, divides x by a.x and y by a.y.\n" ..
+        "    Returns self.\n" ..
+        ":dot(a, b)\n" ..
+        "    Calculates the dot product with another Vec2 or point.\n" ..
+        "    The other vector or point is defined by a and b.\n" ..
+        "    Returns the dot product as a number.\n" ..
+        ":magnitude()\n" ..
+        "    Returns the magnitude (length) of the vector.\n" ..
+        ":mod(a, b)\n" ..
+        "    Applies modulus operation on the vector's components.\n" ..
+        "    If a is a number and b is nil, applies modulus to both x and y.\n" ..
+        "    If a and b are numbers, applies to x and y respectively.\n" ..
+        "    If a is a Vec2, applies to x with a.x and y with a.y.\n" ..
+        "    Returns a new Vec2.\n" ..
+        ":Mod(a, b)\n" ..
+        "    Modifies this vector by applying modulus operation.\n" ..
+        "    Follows same rules as :mod(a, b) method.\n" ..
+        "    Returns self.\n" ..
+        ":mult(a, b)\n" ..
+        "    Multiplies the vector by a given value or Vec2.\n" ..
+        "    Follows same rules as :add(a, b) for multiplication.\n" ..
+        "    Returns a new Vec2.\n" ..
+        ":Mult(a, b)\n" ..
+        "    Multiplies this vector, modifying its components.\n" ..
+        "    Follows same rules as :Mult(a, b) for multiplication.\n" ..
+        "    Returns self.\n" ..
+        ":neg()\n" ..
+        "    Returns a new Vec2 that is the negation of this vector.\n" ..
+        ":Neg()\n" ..
+        "    Negates this vector's components, modifying it.\n" ..
+        "    Returns self.\n" ..
+        ":normalize()\n" ..
+        "    Returns a new Vec2 that is the normalized version of this vector.\n" ..
+        "    Normalization adjusts the vector to unit length.\n" ..
+        ":Normalize()\n" ..
+        "    Normalizes this vector, modifying its components.\n" ..
+        "    Adjusts the vector to unit length and returns self.\n" ..
+        ":rotate(angle)\n" ..
+        "    Rotates the vector by a given angle in radians.\n" ..
+        "    Returns a new Vec2 representing the rotated vector.\n" ..
+        ":Rotate(angle)\n" ..
+        "    Rotates this vector by a given angle in radians, modifying it.\n" ..
+        "    Returns self.\n" ..
+        ":scale(factor)\n" ..
+        "    Scales the vector by a given factor.\n" ..
+        "    Returns a new Vec2 representing the scaled vector.\n" ..
+        ":Scale(factor)\n" ..
+        "    Scales this vector by a given factor, modifying its components.\n" ..
+        "    Returns self.\n" ..
+        ":sub(a, b)\n" ..
+        "    Subtracts a given value or Vec2 from this vector.\n" ..
+        "    Follows same rules as :add(a, b) for subtraction.\n" ..
+        "    Returns a new Vec2.\n" ..
+        ":Sub(a, b)\n" ..
+        "    Subtracts a given value or Vec2 from this vector, modifying it.\n" ..
+        "    Follows same rules as :Add(a, b) for subtraction.\n" ..
+        "    Returns self.\n" ..
+        "\n"
+    Debug.print_docstring(docstring)
+end
 
 function Vec2.is_single_num(a, b)
     return type(a) == "number" and not b
@@ -1505,7 +1626,15 @@ function Debug.Logger()
         translate { 0, -20 }
 
         for _, s in ipairs(queue) do
-            text("> " .. s, theme.text)
+            if s:sub(1, 3) == "-- " then
+                text("> " .. s, theme.greenHighlight)
+            elseif s:sub(1, 3) == ":: " then
+                text("> " .. s, theme.azureHighlight)
+            elseif string.match(s, "^:%S") then
+                text("> " .. s, ColorUtils.theme_yellow)
+            else
+                text("> " .. s, theme.text)
+            end
             translate { 0, -14 }
         end
     end
@@ -1514,6 +1643,19 @@ function Debug.Logger()
 end
 
 print, tprint, print_all = Debug.Logger()
+
+function Debug.print_docstring(docstring)
+    local newline = "\n"
+    local buffer = ""
+    for i = 1, #docstring do
+        if docstring:sub(i, i) == newline then
+            print(buffer)
+            buffer = ""
+        else
+            buffer = buffer .. docstring:sub(i, i)
+        end
+    end
+end
 Graph = {}
 Graph.__index = Graph
 
