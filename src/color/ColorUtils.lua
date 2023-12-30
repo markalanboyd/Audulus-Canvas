@@ -1,5 +1,7 @@
 ColorUtils = {}
 
+ColorUtils.theme_yellow = { 0.83, 1, 0, 1 }
+
 function ColorUtils.is_valid_hex_code(s)
     s = s:gsub("#", "")
     local invalidChars = string.match(s, "[^0-9a-fA-F]+")
