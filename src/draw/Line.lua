@@ -215,19 +215,19 @@ function Line:Scale(scaleFactor)
     self.vec2_b = translated_b
 end
 
-function Line:Flip()
+function Line:Mirror_Across_Origin()
     self.vec2_a:Set(-self.vec2_a.x, -self.vec2_a.y)
     self.vec2_b:Set(-self.vec2_b.x, -self.vec2_b.y)
 end
 
-function Line:Flip_x()
-    self.vec2_a:Set(self.vec2_a.x, -self.vec2_a.y)
-    self.vec2_b:Set(self.vec2_b.x, -self.vec2_b.y)
+function Line:Mirror_Across_X()
+    self.vec2_a:Set_Y(-self.vec2_a.y)
+    self.vec2_b:Set_Y(-self.vec2_b.y)
 end
 
-function Line:Flip_y()
-    self.vec2_a:Set(-self.vec2_a.x, self.vec2_a.y)
-    self.vec2_b:Set(-self.vec2_b.x, self.vec2_b.y)
+function Line:Mirror_Across_Y()
+    self.vec2_a:Set_X(-self.vec2_a.x)
+    self.vec2_b:Set_X(-self.vec2_b.x)
 end
 
 function Line:print(places)
