@@ -25,6 +25,20 @@ function Math.mod_to_theta(mod)
     return mod * math.pi * 2
 end
 
+function Math.deg_to_rad(degrees)
+    return degrees * math.pi / 180
+end
+
+function Math.clamp(value, min, max)
+    return math.min(math.max(value, min), max)
+end
+
+function Math.soft_clamp(value, min, max)
+    local mid = (min + max) / 2
+    local range = (max - min) / 2
+    return mid + range * math.tanh(2 * (value - mid) / range)
+end
+
 function Math.docs()
     local docstring =
         "-- Math Class Documentation -- \n" ..
