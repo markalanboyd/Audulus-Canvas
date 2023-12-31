@@ -49,12 +49,30 @@ function Debug.Logger()
         translate { 0, -20 }
 
         for _, s in ipairs(queue) do
-            if s:sub(1, 3) == "-- " then
+            if s:sub(1, 3) == "-- " or s:sub(1, 1) == "." then
                 text("> " .. s, theme.greenHighlight)
             elseif s:sub(1, 3) == ":: " then
                 text("> " .. s, theme.azureHighlight)
             elseif string.match(s, "^:%S") then
                 text("> " .. s, ColorUtils.theme_yellow)
+            elseif s:sub(1, 9) == "    param" then
+                local scale_factor = 0.75
+                local dim_green = {
+                    theme.greenHighlight[1] * scale_factor,
+                    theme.greenHighlight[2] * scale_factor,
+                    theme.greenHighlight[3] * scale_factor,
+                    theme.greenHighlight[4]
+                }
+                text("> " .. s, dim_green)
+            elseif s:sub(1, 11) == "    Returns" then
+                local scale_factor = 0.8 -- 50% darker
+                local dim_red = {
+                    theme.redHighlight[1] * scale_factor,
+                    theme.redHighlight[2] * scale_factor,
+                    theme.redHighlight[3] * scale_factor,
+                    theme.redHighlight[4]
+                }
+                text("> " .. s, dim_red)
             else
                 text("> " .. s, theme.text)
             end
