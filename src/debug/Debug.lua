@@ -20,7 +20,7 @@ function Debug.Logger()
     end
 
     local function truncate_and_add_to_queue(places, ...)
-        if not MathUtils.is_positive_int(places) then
+        if not Math.is_positive_int(places) then
             error("Error: First argument 'places' must be a positive integer")
         end
         local statements = {}
@@ -32,7 +32,7 @@ function Debug.Logger()
             else
                 statements[i] = (type(arg) == "table")
                     and Utils.table_to_string(arg, true, places)
-                    or tostring(MathUtils.truncate(arg, places))
+                    or tostring(Math.truncate(arg, places))
             end
         end
 
@@ -41,6 +41,8 @@ function Debug.Logger()
 
     local function print_queue()
         translate { 0, -30 }
+        text(_VERSION, theme.azureHighlight)
+        translate { 0, -20 }
         text("Memory usage: " .. Utils.get_peak_memory(10) .. "KB", theme.text)
         translate { 0, -20 }
         text("Print Queue Output", theme.text)

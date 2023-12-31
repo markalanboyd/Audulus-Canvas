@@ -61,6 +61,16 @@ function Point.new(vec2, options)
     return self
 end
 
+function Point:clone()
+    local new_point = Point.new(self.vec2)
+    for key, value in pairs(self) do
+        if key ~= "vec2" then
+            new_point[key] = value
+        end
+    end
+    return new_point
+end
+
 function Point:draw_normal()
     fill_circle(
         { self.vec2.x, self.vec2.y },
@@ -83,4 +93,16 @@ function Point:draw()
     elseif self.style == "stroke" then
         self:draw_stroke()
     end
+end
+
+function Point:rotate(angle, pivot)
+    local new_vec2 = self.vec2:rotate(angle, pivot)
+    local new_point = self:clone()
+    new_point.vec2 = new_vec2
+    return new_point
+end
+
+function Point:Rotate(angle, pivot)
+    self.vec2:Rotate(angle, pivot)
+    return self
 end
