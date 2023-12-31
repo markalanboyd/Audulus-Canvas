@@ -1,6 +1,3 @@
--- TODO Add nudge to vertex?
--- TODO Add consistent error messages
-
 Line = {}
 Line.__index = Line
 
@@ -218,9 +215,19 @@ function Line:Scale(scaleFactor)
     self.vec2_b = translated_b
 end
 
-function Line:Flip_x()
-    self.vec2_a = -self.vec2_a
-    self.vec2_b:Rotate()
+function Line:Mirror_Across_Origin()
+    self.vec2_a:Set(-self.vec2_a.x, -self.vec2_a.y)
+    self.vec2_b:Set(-self.vec2_b.x, -self.vec2_b.y)
+end
+
+function Line:Mirror_Across_X()
+    self.vec2_a:Set_Y(-self.vec2_a.y)
+    self.vec2_b:Set_Y(-self.vec2_b.y)
+end
+
+function Line:Mirror_Across_Y()
+    self.vec2_a:Set_X(-self.vec2_a.x)
+    self.vec2_b:Set_X(-self.vec2_b.x)
 end
 
 function Line:print(places)
@@ -228,20 +235,20 @@ function Line:print(places)
 
     local element_id = tostring(self.element_id)
     local class_id = self.class_id
-    local ax = tostring(MathUtils.truncate(self.vec2_a.x, places))
-    local ay = tostring(MathUtils.truncate(self.vec2_a.y, places))
-    local bx = tostring(MathUtils.truncate(self.vec2_b.x, places))
-    local by = tostring(MathUtils.truncate(self.vec2_b.y, places))
+    local ax = tostring(Math.truncate(self.vec2_a.x, places))
+    local ay = tostring(Math.truncate(self.vec2_a.y, places))
+    local bx = tostring(Math.truncate(self.vec2_b.x, places))
+    local by = tostring(Math.truncate(self.vec2_b.y, places))
     local color = tostring(Utils.table_to_string(self.color, true, places))
-    local width = tostring(MathUtils.truncate(self.width, places))
+    local width = tostring(Math.truncate(self.width, places))
     local style = self.style
-    local dash_length = tostring(MathUtils.truncate(self.dash_length, places))
-    local dot_radius = tostring(MathUtils.truncate(self.dot_radius, places))
+    local dash_length = tostring(Math.truncate(self.dash_length, places))
+    local dot_radius = tostring(Math.truncate(self.dot_radius, places))
     local char = self.char
     local char_vertex = self.char_vertex
     local char_vertex_nudge = self.char_vertex_nudge
-    local char_size = tostring(MathUtils.truncate(self.char_size, places))
-    local space_length = tostring(MathUtils.truncate(self.space_length, places))
+    local char_size = tostring(Math.truncate(self.char_size, places))
+    local space_length = tostring(Math.truncate(self.space_length, places))
 
     print("-- Line " .. element_id .. ":" .. class_id .. " --")
     print("  element_id: " .. element_id)
@@ -346,23 +353,23 @@ function LineGroup:print(places)
     local class_id = tostring(self.class_id)
     local len_vec2s = tostring(self.len_vec2s)
     local color = tostring(Utils.table_to_string(self.color, true, places))
-    local width = tostring(MathUtils.truncate(self.width, places))
+    local width = tostring(Math.truncate(self.width, places))
     local style = self.style
-    local dash_length = tostring(MathUtils.truncate(self.dash_length, places))
-    local dot_radius = tostring(MathUtils.truncate(self.dot_radius, places))
+    local dash_length = tostring(Math.truncate(self.dash_length, places))
+    local dot_radius = tostring(Math.truncate(self.dot_radius, places))
     local char = self.char
     local char_vertex = self.char_vertex
     local char_vertex_nudge = Utils.table_to_string(self.char_vertex_nudge, true, places)
-    local char_size = tostring(MathUtils.truncate(self.char_size, places))
-    local space_length = tostring(MathUtils.truncate(self.space_length, places))
+    local char_size = tostring(Math.truncate(self.char_size, places))
+    local space_length = tostring(Math.truncate(self.space_length, places))
 
     print("-- LineGroup " .. element_id .. ":" .. class_id .. " --")
     print("  element_id: " .. element_id)
     print("  class_id: " .. class_id)
     print("  len_vec2s: " .. len_vec2s)
     for i, vec2 in ipairs(self.vec2s) do
-        local x = tostring(MathUtils.truncate(vec2.x, places))
-        local y = tostring(MathUtils.truncate(vec2.y, places))
+        local x = tostring(Math.truncate(vec2.x, places))
+        local y = tostring(Math.truncate(vec2.y, places))
         print("vec2_" .. i .. ": " .. x .. ", y = " .. y .. " }")
     end
     print("  color: " .. color)

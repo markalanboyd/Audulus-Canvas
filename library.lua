@@ -71,7 +71,7 @@ function Utils.table_to_string(t, truncate, places)
     local parts = {}
     local function process_value(v)
         if truncate and type(v) == "number" then
-            return MathUtils.truncate(v, places)
+            return Math.truncate(v, places)
         elseif type(v) == "table" then
             return Utils.table_to_string(v, truncate, places)
         else
@@ -110,30 +110,6 @@ function Utils.get_peak_memory(interval)
 
     return _PeakMemory
 end
-MathUtils = {}
-
-function MathUtils.round(n, places)
-    local s = "%." .. places .. "f"
-    return tonumber(string.format(s, n))
-end
-
-function MathUtils.truncate(n, places)
-    return math.floor(n * 10 ^ places) / 10 ^ places
-end
-
-function MathUtils.is_positive_int(n)
-    return n == math.floor(n) and n >= 0
-end
-
-function MathUtils.div(a, b)
-    return b ~= 0 and a / b or 0
-end
-
-function MathUtils.mod(a, b)
-    return b ~= 0 and a % b or 0
-end
--- TODO file structure like printing for method
-
 Vec2 = {}
 Vec2.__index = Vec2
 
@@ -150,6 +126,66 @@ function Vec2.new(x, y)
     self.x = x or 0
     self.y = y or 0
     return self
+end
+
+-- Metamethods --
+
+function Vec2.__add(a, b)
+    return Vec2.new(a.x + b.x, a.y + b.y)
+end
+
+function Vec2.__sub(a, b)
+    return Vec2.new(a.x - b.x, a.y - b.y)
+end
+
+function Vec2.__mul(a, b)
+    return Vec2.new(a.x * b.x, a.y * b.y)
+end
+
+function Vec2.__div(a, b)
+    local x = b.x ~= 0 and a.x / b.x or 0
+    local y = b.y ~= 0 and a.y / b.y or 0
+    return Vec2.new(x, y)
+end
+
+function Vec2.__mod(a, b)
+    local x = b.x ~= 0 and a.x % b.x or 0
+    local y = b.y ~= 0 and a.y % b.y or 0
+    return Vec2.new(x, y)
+end
+
+function Vec2.__unm(a)
+    return Vec2.new(-a.x, -a.y)
+end
+
+function Vec2.__pow(a, b)
+    return Vec2.new(a.x ^ b.x, a.y ^ b.y)
+end
+
+function Vec2.__eq(a, b)
+    return a.x == b.x and a.y == b.y
+end
+
+function Vec2.__lt(a, b)
+    return a:magnitude() < b:magnitude()
+end
+
+function Vec2.__le(a, b)
+    return a:magnitude() <= b:magnitude()
+end
+
+function Vec2.__tostring(a)
+    return "{ x = " .. a.x .. ", y = " .. a.y .. " }"
+end
+
+function Vec2.__concat(a, b)
+    local x = tonumber(tostring(a.x) .. tostring(b.x))
+    local y = tonumber(tostring(a.y) .. tostring(b.y))
+    return Vec2.new(x, y)
+end
+
+function Vec2.is_single_num(a, b)
+    return type(a) == "number" and not b
 end
 
 function Vec2.is_vec2(obj)
@@ -236,18 +272,18 @@ end
 function Vec2:div(a, b)
     if Vec2.is_single_num(a, b) then
         return Vec2.new(
-            MathUtils.div(self.x, a),
-            MathUtils.div(self.y, a)
+            Math.div(self.x, a),
+            Math.div(self.y, a)
         )
     elseif Vec2.is_xy_pair(a, b) then
         return Vec2.new(
-            MathUtils.div(self.x, a),
-            MathUtils.div(self.y, b)
+            Math.div(self.x, a),
+            Math.div(self.y, b)
         )
     elseif Vec2.is_vec2(a) then
         return Vec2.new(
-            MathUtils.div(self.x, a.x),
-            MathUtils.div(self.y, a.y)
+            Math.div(self.x, a.x),
+            Math.div(self.y, a.y)
         )
     else
         error("Invalid arguments for Vec2:div")
@@ -256,14 +292,14 @@ end
 
 function Vec2:Div(a, b)
     if Vec2.is_single_num(a, b) then
-        self.x = MathUtils.div(self.x, a)
-        self.y = MathUtils.div(self.y, a)
+        self.x = Math.div(self.x, a)
+        self.y = Math.div(self.y, a)
     elseif Vec2.is_xy_pair(a, b) then
-        self.x = MathUtils.div(self.x, a)
-        self.y = MathUtils.div(self.y, b)
+        self.x = Math.div(self.x, a)
+        self.y = Math.div(self.y, b)
     elseif Vec2.is_vec2(a) then
-        self.x = MathUtils.div(self.x, a.x)
-        self.y = MathUtils.div(self.y, a.y)
+        self.x = Math.div(self.x, a.x)
+        self.y = Math.div(self.y, a.y)
     else
         error("Invalid arguments for Vec2:Div")
     end
@@ -289,18 +325,18 @@ end
 function Vec2:mod(a, b)
     if Vec2.is_single_num(a, b) then
         return Vec2.new(
-            MathUtils.mod(self.x, a),
-            MathUtils.mod(self.y, a)
+            Math.mod(self.x, a),
+            Math.mod(self.y, a)
         )
     elseif Vec2.is_xy_pair(a, b) then
         return Vec2.new(
-            MathUtils.mod(self.x, a),
-            MathUtils.mod(self.y, b)
+            Math.mod(self.x, a),
+            Math.mod(self.y, b)
         )
     elseif Vec2.is_vec2(a) then
         return Vec2.new(
-            MathUtils.mod(self.x, a.x),
-            MathUtils.mod(self.y, a.y)
+            Math.mod(self.x, a.x),
+            Math.mod(self.y, a.y)
         )
     else
         error("Invalid arguments for Vec2:mod")
@@ -309,14 +345,14 @@ end
 
 function Vec2:Mod(a, b)
     if Vec2.is_single_num(a, b) then
-        self.x = MathUtils.mod(self.x, a)
-        self.y = MathUtils.mod(self.y, a)
+        self.x = Math.mod(self.x, a)
+        self.y = Math.mod(self.y, a)
     elseif Vec2.is_xy_pair(a, b) then
-        self.x = MathUtils.mod(self.x, a)
-        self.y = MathUtils.mod(self.y, b)
+        self.x = Math.mod(self.x, a)
+        self.y = Math.mod(self.y, b)
     elseif Vec2.is_vec2(a) then
-        self.x = MathUtils.mod(self.x, a.x)
-        self.y = MathUtils.mod(self.y, a.y)
+        self.x = Math.mod(self.x, a.x)
+        self.y = Math.mod(self.y, a.y)
     else
         error("Invalid arguments for Vec2:mod")
     end
@@ -402,8 +438,8 @@ function Vec2:print(places)
 
     local element_id = tostring(self.element_id)
     local class_id = tostring(self.class_id)
-    local x = tostring(MathUtils.truncate(self.x, places))
-    local y = tostring(MathUtils.truncate(self.y, places))
+    local x = tostring(Math.truncate(self.x, places))
+    local y = tostring(Math.truncate(self.y, places))
 
     print("-- Vec2 " .. element_id .. ":" .. class_id .. " --")
     print("  element_id: " .. element_id)
@@ -492,13 +528,13 @@ function Vec2:Set(a, b)
     return self
 end
 
-function Vec2:Set_x(a)
-    self.x = a
+function Vec2:Set_X(x)
+    self.x = x
     return self
 end
 
-function Vec2:Set_y(a)
-    self.y = a
+function Vec2:Set_Y(y)
+    self.y = y
     return self
 end
 
@@ -529,40 +565,387 @@ function Vec2:Sub(a, b)
     end
     return self
 end
+
+function Vec2.docs()
+    local docstring =
+        "-- Vec2 Class Documentation -- \n" ..
+        "Represents a 2D vector or coordinate pair {x, y}. Commonly used\n" ..
+        "in 2D graphics, game development, and physics simulations.\n" ..
+        "\n" ..
+        ":: Attributes ::\n" ..
+        ".type (string)\n" ..
+        "    'Vec2'\n" ..
+        ".element_id (number)\n" ..
+        "    A globally unique integer id incremented from Element.id.\n" ..
+        ".class_id: (number)\n" ..
+        "    A unique class id incremented from Vec2.id.\n" ..
+        ".x (number)\n" ..
+        "    x coordinate\n" ..
+        ".y (number)\n" ..
+        "    y coordinate\n" ..
+        "\n" ..
+        ":: Static Methods ::\n" ..
+        ".is_single_num(a, b)\n" ..
+        "    param a (number)\n" ..
+        "        The value to check as a potential sole numeric argument.\n" ..
+        "    param b (number | nil)\n" ..
+        "        An optional second number or nil, to confirm if 'a' stands alone.\n" ..
+        "    Returns\n" ..
+        "        true if 'a' is a number and 'b' is not provided (nil).\n" ..
+        ".is_vec2(obj)\n" ..
+        "    param obj (table)\n" ..
+        "        The object to be checked if it is an instance of Vec2.\n" ..
+        "    Returns\n" ..
+        "        true if obj is of type Vec2.\n" ..
+        ".is_xy_pair(x, y)\n" ..
+        "    param x (number)\n" ..
+        "        The x component of the pair to be checked.\n" ..
+        "    param y (number)\n" ..
+        "        The y component of the pair to be checked.\n" ..
+        "    Returns\n" ..
+        "        true if x and y are both numbers.\n" ..
+        ".parse_other(a, b, func_name)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The first number or Vec2 object to be parsed.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The second number or nil if not applicable.\n" ..
+        "    param func_name (string)\n" ..
+        "        The name of the function calling for context in error messages.\n" ..
+        "    Returns\n" ..
+        "        A new Vec2 instance from the arguments {a, b}.\n" ..
+        "\n" ..
+        ":: Instance Methods ::\n" ..
+        ":add(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The value or Vec2 to be added to this vector.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The value to be added to the y component or nil if not applicable.\n" ..
+        "    Returns\n" ..
+        "        A new Vec2 with added values.\n" ..
+        ":Add(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The value or Vec2 to be added to this vector's components.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The value to be added to the y component or nil if not applicable.\n" ..
+        "    Returns\n" ..
+        "        self, after adding the given values.\n" ..
+        ":angle(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The x component of the Vec2 or the Vec2 itself to find the angle with.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The y component of the Vec2 or nil if 'a' is a Vec2.\n" ..
+        "    Returns\n" ..
+        "        The angle in radians between this vector and another Vec2 or point.\n" ..
+        ":distance(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The x component of the Vec2 or the Vec2 itself to calculate distance from.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The y component of the Vec2 or nil if 'a' is a Vec2.\n" ..
+        "    Returns\n" ..
+        "        The distance as a number from this vector to another Vec2 or point.\n" ..
+        ":div(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The divisor, a number or Vec2's x component.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The divisor for the y component or nil if 'a' is a Vec2.\n" ..
+        "    Returns\n" ..
+        "        A new Vec2 resulting from the division.\n" ..
+        ":Div(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The divisor, a number or Vec2's x component.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The divisor for the y component or nil if 'a' is a Vec2.\n" ..
+        "    Returns\n" ..
+        "        self, after dividing its components by the given values.\n" ..
+        ":dot(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The x component of the Vec2 or the Vec2 itself to dot with.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The y component of the Vec2 or nil if 'a' is a Vec2.\n" ..
+        "    Returns\n" ..
+        "        The dot product as a number with another Vec2 or point.\n" ..
+        ":magnitude()\n" ..
+        "    Returns\n" ..
+        "        The magnitude (length) of the vector as a number.\n" ..
+        ":mod(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The modulus, a number or Vec2's x component.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The modulus for the y component or nil if 'a' is a Vec2.\n" ..
+        "    Returns\n" ..
+        "        A new Vec2 resulting from the modulus operation.\n" ..
+        ":Mod(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The modulus, a number or Vec2's x component.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The modulus for the y component or nil if 'a' is a Vec2.\n" ..
+        "    Returns\n" ..
+        "        self, after applying the modulus operation to its components.\n" ..
+        ":mult(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The multiplier, a number or Vec2's x component.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The multiplier for the y component or nil if 'a' is a Vec2.\n" ..
+        "    Returns\n" ..
+        "        A new Vec2 resulting from the multiplication.\n" ..
+        ":Mult(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The value to multiply the x component by, or a Vec2 whose x component\n" ..
+        "        to multiply with this vector's x component.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The value to multiply the y component by if 'a' is a number;\n" ..
+        "        ignored if 'a' is a Vec2.\n" ..
+        "    Multiplies the vector's components by the specified values or vector.\n" ..
+        "    Modifies the vector in place.\n" ..
+        "    Returns self for method chaining.\n" ..
+        ":neg()\n" ..
+        "    Returns a new Vec2 instance with both x and y components negated.\n" ..
+        ":Neg()\n" ..
+        "    Negates both x and y components of the vector in place.\n" ..
+        "    Returns self for method chaining.\n" ..
+        ":normalize()\n" ..
+        "    Creates a new Vec2 instance with the vector normalized to unit length.\n" ..
+        ":Normalize()\n" ..
+        "    Normalizes the vector in place to unit length.\n" ..
+        "    Returns self for method chaining.\n" ..
+        ":rotate(angle)\n" ..
+        "    param angle (number)\n" ..
+        "        The angle in radians to rotate the vector by.\n" ..
+        "    Returns a new Vec2 instance representing the rotated vector.\n" ..
+        ":Rotate(angle)\n" ..
+        "    param angle (number)\n" ..
+        "        The angle in radians to rotate the vector by.\n" ..
+        "    Rotates the vector in place by the given angle.\n" ..
+        "    Returns self for method chaining.\n" ..
+        ":scale(factor)\n" ..
+        "    param factor (number)\n" ..
+        "        The factor by which to scale the vector's components.\n" ..
+        "    Returns a new Vec2 instance with the vector scaled.\n" ..
+        ":Scale(factor)\n" ..
+        "    param factor (number)\n" ..
+        "        The factor by which to scale the vector's components.\n" ..
+        "    Scales the vector in place by the given factor.\n" ..
+        "    Returns self for method chaining.\n" ..
+        ":Set(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The value to set the x component to or a Vec2 whose x component is used.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The value to set the y component to if a is a number; ignored if a is Vec2.\n" ..
+        "    Sets the vector's components and returns self for method chaining.\n" ..
+        ":Set_X(x)\n" ..
+        "    param x (number)\n" ..
+        "        The value to set the x component to.\n" ..
+        "    Sets the x component of the vector and returns self for method chaining.\n" ..
+        ":Set_Y(y)\n" ..
+        "    param y (number)\n" ..
+        "        The value to set the y component to.\n" ..
+        "    Sets the y component of the vector and returns self for method chaining.\n" ..
+        ":sub(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The number to subtract from x or a Vec2 whose x component is subtracted.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The number to subtract from y if a is a number; ignored if a is Vec2.\n" ..
+        "    Returns a new Vec2 instance with the result of the subtraction.\n" ..
+        ":Sub(a, b)\n" ..
+        "    param a (number | Vec2)\n" ..
+        "        The number to subtract from x or a Vec2 whose x component is subtracted.\n" ..
+        "    param b (number | nil)\n" ..
+        "        The number to subtract from y if a is a number; ignored if a is Vec2.\n" ..
+        "    Subtracts from the vector's components in place and returns self for chaining.\n" ..
+        "\n"
+    Debug.print_docstring(docstring)
+end
+Math = {}
+
+function Math.round(n, places)
+    local s = "%." .. places .. "f"
+    return tonumber(string.format(s, n))
+end
+
+function Math.truncate(n, places)
+    return math.floor(n * 10 ^ places) / 10 ^ places
+end
+
+function Math.is_positive_int(n)
+    return n == math.floor(n) and n >= 0
+end
+
+function Math.div(a, b)
+    return b ~= 0 and a / b or 0
+end
+
+function Math.mod(a, b)
+    return b ~= 0 and a % b or 0
+end
+
+function Math.mod_to_theta(mod)
+    return mod * math.pi * 2
+end
+
+function Math.docs()
+    local docstring =
+        "-- Math Class Documentation -- \n" ..
+        "A collection of mathematical utility functions extending Lua's built-in math module.\n" ..
+        "\n" ..
+        ":: Static Methods ::\n" ..
+        ".round(n, places)\n" ..
+        "    param n (number)\n" ..
+        "        The number to round.\n" ..
+        "    param places (number)\n" ..
+        "        The number of decimal places to round to.\n" ..
+        "    Returns\n" ..
+        "        The number 'n' rounded to 'places' decimal places.\n" ..
+        "\n" ..
+        ".truncate(n, places)\n" ..
+        "    param n (number)\n" ..
+        "        The number to truncate.\n" ..
+        "    param places (number)\n" ..
+        "        The number of decimal places to keep.\n" ..
+        "    Returns\n" ..
+        "        The number 'n' truncated to 'places' decimal places.\n" ..
+        "\n" ..
+        ".is_positive_int(n)\n" ..
+        "    param n (number)\n" ..
+        "        The number to check.\n" ..
+        "    Returns\n" ..
+        "        true if 'n' is a positive integer, false otherwise.\n" ..
+        "\n" ..
+        ".div(a, b)\n" ..
+        "    param a (number)\n" ..
+        "        The dividend.\n" ..
+        "    param b (number)\n" ..
+        "        The divisor.\n" ..
+        "    Returns\n" ..
+        "        The result of division a/b, or 0 if b is 0.\n" ..
+        "\n" ..
+        ".mod(a, b)\n" ..
+        "    param a (number)\n" ..
+        "        The dividend.\n" ..
+        "    param b (number)\n" ..
+        "        The divisor.\n" ..
+        "    Returns\n" ..
+        "        The remainder of a/b, or 0 if b is 0.\n" ..
+        "\n" ..
+        ".mod_to_theta(mod)\n" ..
+        "    param mod (number)\n" ..
+        "        A 0 to 1 modulation signal.\n" ..
+        "    Returns\n" ..
+        "        The equivalent theta value in radians.\n"
+
+    Debug.print_docstring(docstring)
+end
 Element = {}
 
 Element.__index = Element
 
 Element.id = 1
 Point = {}
-Point.__index = Point
 
-function Point.new(vec2, color, size)
+Point.id = 1
+
+Point.attrs = {
+    color = theme.text
+}
+
+Point.styles = {
+    normal = {
+        radius = 2,
+    },
+    stroke = {
+        radius = 3,
+        stroke_width = 1,
+    },
+    char = {
+        char = "o",
+
+    },
+}
+
+Point.__index = function(instance, key)
+    local value = rawget(instance, key)
+    if value ~= nil then
+        return value
+    else
+        local style = rawget(instance, "style") or "normal"
+        local style_val = Point.styles[style][key]
+        if style_val ~= nil then
+            return style_val
+        end
+
+        local attr = Point.attrs[key]
+        if attr ~= nil then
+            return attr
+        end
+    end
+
+    return Point[key]
+end
+
+function Point.new(vec2, options)
     local self = setmetatable({}, Point)
-    self.vec2 = vec2 or { x = 0, y = 0 }
-    self.color = color or { 1, 1, 1, 1 }
-    self.size = size or 2
+    self.type = "Point"
+    self.element_id = Element.id
+    Element.id = Element.id + 1
+    self.class_id = Point.id
+    Point.id = Point.id + 1
+
+    self.vec2 = vec2 or Vec2.new(0, 0)
+    self.o = options or {}
+
+    self.style = self.o.style or "normal"
+    self.color = self.color.size or Point.attrs.color
+
+    for key, value in pairs(self.o) do
+        self[key] = value
+    end
+
     return self
 end
 
-function Point.draw_all(...)
-    local points = Utils.process_args(Point, ...)
-
-    for _, point in ipairs(points) do
-        if getmetatable(point) == Point then
-            point:draw()
-        else
-            error("Invalid argument to Point.draw_all:" ..
-                "Expected a Point instance or a table of Point instances")
+function Point:clone()
+    local new_point = Point.new(self.vec2)
+    for key, value in pairs(self) do
+        if key ~= "vec2" then
+            new_point[key] = value
         end
     end
+    return new_point
+end
+
+function Point:draw_normal()
+    fill_circle(
+        { self.vec2.x, self.vec2.y },
+        self.radius,
+        color_paint(self.color)
+    )
+end
+
+function Point:draw_stroke()
+    stroke_circle(
+        { self.vec2.x, self.vec2.y },
+        self.radius,
+        self.stroke_width,
+        color_paint(self.color))
 end
 
 function Point:draw()
-    fill_circle({ self.vec2.x, self.vec2.y },
-        self.size,
-        color_paint(self.color)
-    )
+    if self.style == "normal" then
+        self:draw_normal()
+    elseif self.style == "stroke" then
+        self:draw_stroke()
+    end
+end
+
+function Point:rotate(angle, pivot)
+    local new_vec2 = self.vec2:rotate(angle, pivot)
+    local new_point = self:clone()
+    new_point.vec2 = new_vec2
+    return new_point
+end
+
+function Point:Rotate(angle, pivot)
+    self.vec2:Rotate(angle, pivot)
+    return self
 end
 Origin = {}
 Origin.__index = Origin
@@ -893,9 +1276,6 @@ function Layer:draw()
         end
     end
 end
--- TODO Add nudge to vertex?
--- TODO Add consistent error messages
-
 Line = {}
 Line.__index = Line
 
@@ -1113,9 +1493,19 @@ function Line:Scale(scaleFactor)
     self.vec2_b = translated_b
 end
 
-function Line:Flip_x()
-    self.vec2_a = -self.vec2_a
-    self.vec2_b:Rotate()
+function Line:Mirror_Across_Origin()
+    self.vec2_a:Set(-self.vec2_a.x, -self.vec2_a.y)
+    self.vec2_b:Set(-self.vec2_b.x, -self.vec2_b.y)
+end
+
+function Line:Mirror_Across_X()
+    self.vec2_a:Set_Y(-self.vec2_a.y)
+    self.vec2_b:Set_Y(-self.vec2_b.y)
+end
+
+function Line:Mirror_Across_Y()
+    self.vec2_a:Set_X(-self.vec2_a.x)
+    self.vec2_b:Set_X(-self.vec2_b.x)
 end
 
 function Line:print(places)
@@ -1123,20 +1513,20 @@ function Line:print(places)
 
     local element_id = tostring(self.element_id)
     local class_id = self.class_id
-    local ax = tostring(MathUtils.truncate(self.vec2_a.x, places))
-    local ay = tostring(MathUtils.truncate(self.vec2_a.y, places))
-    local bx = tostring(MathUtils.truncate(self.vec2_b.x, places))
-    local by = tostring(MathUtils.truncate(self.vec2_b.y, places))
+    local ax = tostring(Math.truncate(self.vec2_a.x, places))
+    local ay = tostring(Math.truncate(self.vec2_a.y, places))
+    local bx = tostring(Math.truncate(self.vec2_b.x, places))
+    local by = tostring(Math.truncate(self.vec2_b.y, places))
     local color = tostring(Utils.table_to_string(self.color, true, places))
-    local width = tostring(MathUtils.truncate(self.width, places))
+    local width = tostring(Math.truncate(self.width, places))
     local style = self.style
-    local dash_length = tostring(MathUtils.truncate(self.dash_length, places))
-    local dot_radius = tostring(MathUtils.truncate(self.dot_radius, places))
+    local dash_length = tostring(Math.truncate(self.dash_length, places))
+    local dot_radius = tostring(Math.truncate(self.dot_radius, places))
     local char = self.char
     local char_vertex = self.char_vertex
     local char_vertex_nudge = self.char_vertex_nudge
-    local char_size = tostring(MathUtils.truncate(self.char_size, places))
-    local space_length = tostring(MathUtils.truncate(self.space_length, places))
+    local char_size = tostring(Math.truncate(self.char_size, places))
+    local space_length = tostring(Math.truncate(self.space_length, places))
 
     print("-- Line " .. element_id .. ":" .. class_id .. " --")
     print("  element_id: " .. element_id)
@@ -1241,23 +1631,23 @@ function LineGroup:print(places)
     local class_id = tostring(self.class_id)
     local len_vec2s = tostring(self.len_vec2s)
     local color = tostring(Utils.table_to_string(self.color, true, places))
-    local width = tostring(MathUtils.truncate(self.width, places))
+    local width = tostring(Math.truncate(self.width, places))
     local style = self.style
-    local dash_length = tostring(MathUtils.truncate(self.dash_length, places))
-    local dot_radius = tostring(MathUtils.truncate(self.dot_radius, places))
+    local dash_length = tostring(Math.truncate(self.dash_length, places))
+    local dot_radius = tostring(Math.truncate(self.dot_radius, places))
     local char = self.char
     local char_vertex = self.char_vertex
     local char_vertex_nudge = Utils.table_to_string(self.char_vertex_nudge, true, places)
-    local char_size = tostring(MathUtils.truncate(self.char_size, places))
-    local space_length = tostring(MathUtils.truncate(self.space_length, places))
+    local char_size = tostring(Math.truncate(self.char_size, places))
+    local space_length = tostring(Math.truncate(self.space_length, places))
 
     print("-- LineGroup " .. element_id .. ":" .. class_id .. " --")
     print("  element_id: " .. element_id)
     print("  class_id: " .. class_id)
     print("  len_vec2s: " .. len_vec2s)
     for i, vec2 in ipairs(self.vec2s) do
-        local x = tostring(MathUtils.truncate(vec2.x, places))
-        local y = tostring(MathUtils.truncate(vec2.y, places))
+        local x = tostring(Math.truncate(vec2.x, places))
+        local y = tostring(Math.truncate(vec2.y, places))
         print("vec2_" .. i .. ": " .. x .. ", y = " .. y .. " }")
     end
     print("  color: " .. color)
@@ -1416,7 +1806,7 @@ function Debug.Logger()
     end
 
     local function truncate_and_add_to_queue(places, ...)
-        if not MathUtils.is_positive_int(places) then
+        if not Math.is_positive_int(places) then
             error("Error: First argument 'places' must be a positive integer")
         end
         local statements = {}
@@ -1428,7 +1818,7 @@ function Debug.Logger()
             else
                 statements[i] = (type(arg) == "table")
                     and Utils.table_to_string(arg, true, places)
-                    or tostring(MathUtils.truncate(arg, places))
+                    or tostring(Math.truncate(arg, places))
             end
         end
 
@@ -1437,6 +1827,8 @@ function Debug.Logger()
 
     local function print_queue()
         translate { 0, -30 }
+        text(_VERSION, theme.azureHighlight)
+        translate { 0, -20 }
         text("Memory usage: " .. Utils.get_peak_memory(10) .. "KB", theme.text)
         translate { 0, -20 }
         text("Print Queue Output", theme.text)
@@ -1444,8 +1836,34 @@ function Debug.Logger()
         text("_________________", theme.text)
         translate { 0, -20 }
 
-        for i, s in ipairs(queue) do
-            text(i .. ": " .. s, theme.text)
+        for _, s in ipairs(queue) do
+            if s:sub(1, 3) == "-- " or s:sub(1, 1) == "." then
+                text("> " .. s, theme.greenHighlight)
+            elseif s:sub(1, 3) == ":: " then
+                text("> " .. s, theme.azureHighlight)
+            elseif string.match(s, "^:%S") then
+                text("> " .. s, ColorUtils.theme_yellow)
+            elseif s:sub(1, 9) == "    param" then
+                local scale_factor = 0.75
+                local dim_green = {
+                    theme.greenHighlight[1] * scale_factor,
+                    theme.greenHighlight[2] * scale_factor,
+                    theme.greenHighlight[3] * scale_factor,
+                    theme.greenHighlight[4]
+                }
+                text("> " .. s, dim_green)
+            elseif s:sub(1, 11) == "    Returns" then
+                local scale_factor = 0.8 -- 50% darker
+                local dim_red = {
+                    theme.redHighlight[1] * scale_factor,
+                    theme.redHighlight[2] * scale_factor,
+                    theme.redHighlight[3] * scale_factor,
+                    theme.redHighlight[4]
+                }
+                text("> " .. s, dim_red)
+            else
+                text("> " .. s, theme.text)
+            end
             translate { 0, -14 }
         end
     end
@@ -1455,7 +1873,18 @@ end
 
 print, tprint, print_all = Debug.Logger()
 
-
+function Debug.print_docstring(docstring)
+    local newline = "\n"
+    local buffer = ""
+    for i = 1, #docstring do
+        if docstring:sub(i, i) == newline then
+            print(buffer)
+            buffer = ""
+        else
+            buffer = buffer .. docstring:sub(i, i)
+        end
+    end
+end
 Graph = {}
 Graph.__index = Graph
 

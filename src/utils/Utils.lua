@@ -33,7 +33,7 @@ function Utils.table_to_string(t, truncate, places)
     local parts = {}
     local function process_value(v)
         if truncate and type(v) == "number" then
-            return MathUtils.truncate(v, places)
+            return Math.truncate(v, places)
         elseif type(v) == "table" then
             return Utils.table_to_string(v, truncate, places)
         else

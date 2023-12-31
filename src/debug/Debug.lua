@@ -20,7 +20,7 @@ function Debug.Logger()
     end
 
     local function truncate_and_add_to_queue(places, ...)
-        if not MathUtils.is_positive_int(places) then
+        if not Math.is_positive_int(places) then
             error("Error: First argument 'places' must be a positive integer")
         end
         local statements = {}
@@ -32,7 +32,7 @@ function Debug.Logger()
             else
                 statements[i] = (type(arg) == "table")
                     and Utils.table_to_string(arg, true, places)
-                    or tostring(MathUtils.truncate(arg, places))
+                    or tostring(Math.truncate(arg, places))
             end
         end
 
@@ -41,6 +41,8 @@ function Debug.Logger()
 
     local function print_queue()
         translate { 0, -30 }
+        text(_VERSION, theme.azureHighlight)
+        translate { 0, -20 }
         text("Memory usage: " .. Utils.get_peak_memory(10) .. "KB", theme.text)
         translate { 0, -20 }
         text("Print Queue Output", theme.text)
@@ -49,12 +51,30 @@ function Debug.Logger()
         translate { 0, -20 }
 
         for _, s in ipairs(queue) do
-            if s:sub(1, 3) == "-- " then
+            if s:sub(1, 3) == "-- " or s:sub(1, 1) == "." then
                 text("> " .. s, theme.greenHighlight)
             elseif s:sub(1, 3) == ":: " then
                 text("> " .. s, theme.azureHighlight)
             elseif string.match(s, "^:%S") then
                 text("> " .. s, ColorUtils.theme_yellow)
+            elseif s:sub(1, 9) == "    param" then
+                local scale_factor = 0.75
+                local dim_green = {
+                    theme.greenHighlight[1] * scale_factor,
+                    theme.greenHighlight[2] * scale_factor,
+                    theme.greenHighlight[3] * scale_factor,
+                    theme.greenHighlight[4]
+                }
+                text("> " .. s, dim_green)
+            elseif s:sub(1, 11) == "    Returns" then
+                local scale_factor = 0.8 -- 50% darker
+                local dim_red = {
+                    theme.redHighlight[1] * scale_factor,
+                    theme.redHighlight[2] * scale_factor,
+                    theme.redHighlight[3] * scale_factor,
+                    theme.redHighlight[4]
+                }
+                text("> " .. s, dim_red)
             else
                 text("> " .. s, theme.text)
             end
