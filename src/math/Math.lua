@@ -24,6 +24,14 @@ function Math.mod_to_theta(mod)
     return mod * math.pi * 2
 end
 
+function Math.pow(base, exponent)
+    if base < 0 and exponent ~= math.floor(exponent) then
+        return 0
+    else
+        return base ^ exponent
+    end
+end
+
 function Math.round(n, places)
     local s = "%." .. places .. "f"
     return tonumber(string.format(s, n))
@@ -88,6 +96,14 @@ function Math.docs()
         "        A 0 to 1 modulation signal.\n" ..
         "    Returns\n" ..
         "        The equivalent theta value in radians.\n" ..
+        "\n" ..
+        ".pow(base, exponent)\n" ..
+        "    param base (number)\n" ..
+        "        The base number to be raised to a power.\n" ..
+        "    param exponent (number)\n" ..
+        "        The exponent to which the base number is raised.\n" ..
+        "    Returns\n" ..
+        "        The result of raising 'base' to the power of 'exponent'. If 'base' is negative and 'exponent' is not an integer, returns 0 to prevent NaN results.\n" ..
         "\n" ..
         ".round(n, places)\n" ..
         "    param n (number)\n" ..
