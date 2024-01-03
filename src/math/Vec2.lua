@@ -47,7 +47,7 @@ function Vec2.__unm(a)
 end
 
 function Vec2.__pow(a, b)
-    return Vec2.new(a.x ^ b.x, a.y ^ b.y)
+    return Vec2.new(Math.pow(a.x, b.x), Math.pow(a.y, b.y))
 end
 
 function Vec2.__eq(a, b)
@@ -77,7 +77,11 @@ function Vec2.is_single_num(a, b)
 end
 
 function Vec2.is_vec2(obj)
-    return obj.type == "Vec2"
+    if type(obj) == "table" then
+        return obj.type == "Vec2"
+    else
+        return false
+    end
 end
 
 function Vec2.is_xy_pair(x, y)
@@ -99,24 +103,24 @@ end
 -- Instance Methods --
 
 function Vec2:add(a, b)
-    if Vec2.is_single_num(a, b) then
-        return Vec2.new(self.x + a, self.y + b)
+    if Vec2.is_vec2(a) then
+        return Vec2.new(self.x + a.x, self.y + a.y)
+    elseif Vec2.is_single_num(a, b) then
+        return Vec2.new(self.x + a, self.y + a)
     elseif Vec2.is_xy_pair(a, b) then
         return Vec2.new(self.x + a, self.y + b)
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(self.x + a.x, self.y + a.y)
     else
         error("Invalid arguments for Vec2:add")
     end
 end
 
 function Vec2:Add(a, b)
-    if Vec2.is_single_num(a, b) then
-        self.x = self.x + a
-        self.y = self.y + a
-    elseif Vec2.is_vec2(a) then
+    if Vec2.is_vec2(a) then
         self.x = self.x + a.x
         self.y = self.y + a.y
+    elseif Vec2.is_single_num(a, b) then
+        self.x = self.x + a
+        self.y = self.y + a
     elseif Vec2.is_xy_pair(a, b) then
         self.x = self.x + a
         self.y = self.y + b
@@ -141,15 +145,15 @@ function Vec2:distance(a, b)
     local dx
     local dy
 
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        dx = self.x - a.x
+        dy = self.y - a.y
+    elseif Vec2.is_single_num(a, b) then
         dx = self.x - a
         dy = self.y - a
     elseif Vec2.is_xy_pair(a, b) then
         dx = self.x - a
         dy = self.y - b
-    elseif Vec2.is_vec2(a) then
-        dx = self.x - a.x
-        dy = self.y - a.y
     else
         error("Incorrect arguments to Vec2:distance")
     end
@@ -158,7 +162,12 @@ function Vec2:distance(a, b)
 end
 
 function Vec2:div(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return Vec2.new(
+            Math.div(self.x, a.x),
+            Math.div(self.y, a.y)
+        )
+    elseif Vec2.is_single_num(a, b) then
         return Vec2.new(
             Math.div(self.x, a),
             Math.div(self.y, a)
@@ -168,26 +177,21 @@ function Vec2:div(a, b)
             Math.div(self.x, a),
             Math.div(self.y, b)
         )
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(
-            Math.div(self.x, a.x),
-            Math.div(self.y, a.y)
-        )
     else
         error("Invalid arguments for Vec2:div")
     end
 end
 
 function Vec2:Div(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = Math.div(self.x, a.x)
+        self.y = Math.div(self.y, a.y)
+    elseif Vec2.is_single_num(a, b) then
         self.x = Math.div(self.x, a)
         self.y = Math.div(self.y, a)
     elseif Vec2.is_xy_pair(a, b) then
         self.x = Math.div(self.x, a)
         self.y = Math.div(self.y, b)
-    elseif Vec2.is_vec2(a) then
-        self.x = Math.div(self.x, a.x)
-        self.y = Math.div(self.y, a.y)
     else
         error("Invalid arguments for Vec2:Div")
     end
@@ -195,12 +199,12 @@ function Vec2:Div(a, b)
 end
 
 function Vec2:dot(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return self.x * a.x + self.y * a.y
+    elseif Vec2.is_single_num(a, b) then
         return self.x * a + self.y * a
     elseif Vec2.is_xy_pair(a, b) then
         return self.x * a + self.y * b
-    elseif Vec2.is_vec2(a) then
-        return self.x * a.x + self.y * a.y
     else
         error("Invalid arguments to Vec2:dot")
     end
@@ -211,7 +215,12 @@ function Vec2:magnitude()
 end
 
 function Vec2:mod(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return Vec2.new(
+            Math.mod(self.x, a.x),
+            Math.mod(self.y, a.y)
+        )
+    elseif Vec2.is_single_num(a, b) then
         return Vec2.new(
             Math.mod(self.x, a),
             Math.mod(self.y, a)
@@ -221,53 +230,48 @@ function Vec2:mod(a, b)
             Math.mod(self.x, a),
             Math.mod(self.y, b)
         )
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(
-            Math.mod(self.x, a.x),
-            Math.mod(self.y, a.y)
-        )
     else
         error("Invalid arguments for Vec2:mod")
     end
 end
 
 function Vec2:Mod(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = Math.mod(self.x, a.x)
+        self.y = Math.mod(self.y, a.y)
+    elseif Vec2.is_single_num(a, b) then
         self.x = Math.mod(self.x, a)
         self.y = Math.mod(self.y, a)
     elseif Vec2.is_xy_pair(a, b) then
         self.x = Math.mod(self.x, a)
         self.y = Math.mod(self.y, b)
-    elseif Vec2.is_vec2(a) then
-        self.x = Math.mod(self.x, a.x)
-        self.y = Math.mod(self.y, a.y)
     else
         error("Invalid arguments for Vec2:mod")
     end
 end
 
 function Vec2:mult(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return Vec2.new(self.x * a.x, self.y * a.y)
+    elseif Vec2.is_single_num(a, b) then
         return Vec2.new(self.x * a, self.y * a)
     elseif Vec2.is_xy_pair(a, b) then
         return Vec2.new(self.x * a, self.y * b)
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(self.x * a.x, self.y * a.y)
     else
         error("Invalid arguments for Vec2:mult")
     end
 end
 
 function Vec2:Mult(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = self.x * a.x
+        self.y = self.y * a.y
+    elseif Vec2.is_single_num(a, b) then
         self.x = self.x * a
         self.y = self.y * a
     elseif Vec2.is_xy_pair(a, b) then
         self.x = self.x * a
         self.y = self.y * b
-    elseif Vec2.is_vec2(a) then
-        self.x = self.x * a.x
-        self.y = self.y * a.y
     else
         error("Invalid arguments for Vec2:Mult")
     end
@@ -294,27 +298,27 @@ function Vec2:normalize()
 end
 
 function Vec2:pow(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return Vec2.new(self.x ^ a.x, self.y ^ a.y)
+    elseif Vec2.is_single_num(a, b) then
         return Vec2.new(self.x ^ a, self.y ^ a)
     elseif Vec2.is_xy_pair(a, b) then
         return Vec2.new(self.x ^ a, self.y ^ b)
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(self.x ^ a.x, self.y ^ a.y)
     else
         error("Invalid arguments for Vec2:pow")
     end
 end
 
 function Vec2:Pow(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = self.x ^ a.x
+        self.y = self.y ^ a.y
+    elseif Vec2.is_single_num(a, b) then
         self.x = self.x ^ a
         self.y = self.y ^ a
     elseif Vec2.is_xy_pair(a, b) then
         self.x = self.x ^ a
         self.y = self.y ^ b
-    elseif Vec2.is_vec2(a) then
-        self.x = self.x ^ a.x
-        self.y = self.y ^ a.y
     else
         error("Invalid arguments for Vec2:Pow")
     end
@@ -365,7 +369,12 @@ function Vec2:Rotate(angle, pivot)
 end
 
 function Vec2:scale_about(scalar, a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return Vec2.new(
+            a.x + (self.x - a.x) * scalar,
+            a.y + (self.y - a.y) * scalar
+        )
+    elseif Vec2.is_single_num(a, b) then
         return Vec2.new(
             a + (self.x - a) * scalar,
             a + (self.y - a) * scalar
@@ -375,41 +384,36 @@ function Vec2:scale_about(scalar, a, b)
             a + (self.x - a) * scalar,
             b + (self.y - b) * scalar
         )
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(
-            a.x + (self.x - a.x) * scalar,
-            a.y + (self.y - a.x) * scalar
-        )
     else
         error("Invalid arguments to Vec2:scale_about")
     end
 end
 
 function Vec2:Scale_about(scalar, a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = a.x + (self.x - a.x) * scalar
+        self.y = a.y + (self.y - a.y) * scalar
+    elseif Vec2.is_single_num(a, b) then
         self.x = a + (self.x - a) * scalar
         self.y = a + (self.y - a) * scalar
     elseif Vec2.is_xy_pair(a, b) then
         self.x = a + (self.x - a) * scalar
         self.y = b + (self.y - b) * scalar
-    elseif Vec2.is_vec2(a) then
-        self.x = a.x + (self.x - a.x) * scalar
-        self.y = a.y + (self.y - a.x) * scalar
     else
         error("Invalid arguments to Vec2:Scale_about")
     end
 end
 
 function Vec2:Set(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = a.x
+        self.y = a.y
+    elseif Vec2.is_single_num(a, b) then
         self.x = a
         self.y = a
     elseif Vec2.is_xy_pair(a, b) then
         self.x = a
         self.y = b
-    elseif Vec2.is_vec2(a) then
-        self.x = a.x
-        self.y = a.y
     else
         error("Invalid arguments for Vec2:set")
     end
@@ -427,31 +431,35 @@ function Vec2:Set_Y(y)
 end
 
 function Vec2:sub(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return Vec2.new(self.x - a.x, self.y - a.y)
+    elseif Vec2.is_single_num(a, b) then
         return Vec2.new(self.x - a, self.y - a)
     elseif Vec2.is_xy_pair(a, b) then
         return Vec2.new(self.x - a, self.y - b)
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(self.x - a.x, self.y - a.y)
     else
         error("Invalid arguments for Vec2:sub")
     end
 end
 
 function Vec2:Sub(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = self.x - a.x
+        self.y = self.y - a.y
+    elseif Vec2.is_single_num(a, b) then
         self.x = self.x - a
         self.y = self.y - a
     elseif Vec2.is_xy_pair(a, b) then
         self.x = self.x - a
         self.y = self.y - b
-    elseif Vec2.is_vec2(a) then
-        self.x = self.x - a.x
-        self.y = self.y - a.y
     else
         error("Invalid arguments for Vec2:Sub")
     end
     return self
+end
+
+function Vec2:squared_magnitude()
+    return self.x * self.x + self.y * self.y
 end
 
 function Vec2.docs()
@@ -640,6 +648,13 @@ function Vec2.docs()
         "    param b (number | nil)\n" ..
         "        The number to subtract from y if a is a number; ignored if a is Vec2.\n" ..
         "    Subtracts from the vector's components in place and returns self for chaining.\n" ..
+        "\n" ..
+        ":squared_magnitude()\n" ..
+        "    Calculates the squared magnitude of the vector.\n" ..
+        "    Returns\n" ..
+        "        The squared magnitude of the vector, calculated as the sum of the squares of its x and y components (self.x * self.x + self.y * self.y).\n" ..
+        "        This method avoids the computational cost of a square root operation and is useful for comparing vector lengths or performing threshold checks.\n" ..
         "\n"
+
     Debug.print_docstring(docstring)
 end
