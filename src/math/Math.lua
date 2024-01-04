@@ -48,88 +48,89 @@ function Math.truncate(n, places)
 end
 
 function Math.docs()
-    local docstring =
-        "-- Math Class Documentation -- \n" ..
-        "A collection of mathematical utility functions extending Lua's built-in math module.\n" ..
-        "\n" ..
-        ":: Static Methods ::\n" ..
-        ".clamp(value, min, max)\n" ..
-        "    param value (number)\n" ..
-        "        The number to clamp.\n" ..
-        "    param min (number)\n" ..
-        "        The minimum value.\n" ..
-        "    param max (number)\n" ..
-        "        The maximum value.\n" ..
-        "    Returns\n" ..
-        "        The clamped value within the range [min, max].\n" ..
-        "\n" ..
-        ".deg_to_rad(degrees)\n" ..
-        "    param degrees (number)\n" ..
-        "        The angle in degrees.\n" ..
-        "    Returns\n" ..
-        "        The angle in radians.\n" ..
-        "\n" ..
-        ".div(a, b)\n" ..
-        "    param a (number)\n" ..
-        "        The dividend.\n" ..
-        "    param b (number)\n" ..
-        "        The divisor.\n" ..
-        "    Returns\n" ..
-        "        The result of division a/b, or 0 if b is 0.\n" ..
-        "\n" ..
-        ".is_positive_int(n)\n" ..
-        "    param n (number)\n" ..
-        "        The number to check.\n" ..
-        "    Returns\n" ..
-        "        true if 'n' is a positive integer, false otherwise.\n" ..
-        "\n" ..
-        ".mod(a, b)\n" ..
-        "    param a (number)\n" ..
-        "        The dividend.\n" ..
-        "    param b (number)\n" ..
-        "        The divisor.\n" ..
-        "    Returns\n" ..
-        "        The remainder of a/b, or 0 if b is 0.\n" ..
-        "\n" ..
-        ".mod_to_theta(mod)\n" ..
-        "    param mod (number)\n" ..
-        "        A 0 to 1 modulation signal.\n" ..
-        "    Returns\n" ..
-        "        The equivalent theta value in radians.\n" ..
-        "\n" ..
-        ".pow(base, exponent)\n" ..
-        "    param base (number)\n" ..
-        "        The base number to be raised to a power.\n" ..
-        "    param exponent (number)\n" ..
-        "        The exponent to which the base number is raised.\n" ..
-        "    Returns\n" ..
-        "        The result of raising 'base' to the power of 'exponent'. If 'base' is negative and 'exponent' is not an integer, returns 0 to prevent NaN results.\n" ..
-        "\n" ..
-        ".round(n, places)\n" ..
-        "    param n (number)\n" ..
-        "        The number to round.\n" ..
-        "    param places (number)\n" ..
-        "        The number of decimal places to round to.\n" ..
-        "    Returns\n" ..
-        "        The number 'n' rounded to 'places' decimal places.\n" ..
-        "\n" ..
-        ".soft_clamp(value, min, max)\n" ..
-        "    param value (number)\n" ..
-        "        The number to soft clamp.\n" ..
-        "    param min (number)\n" ..
-        "        The minimum value.\n" ..
-        "    param max (number)\n" ..
-        "        The maximum value.\n" ..
-        "    Returns\n" ..
-        "        The softly clamped value within the range [min, max].\n" ..
-        "\n" ..
-        ".truncate(n, places)\n" ..
-        "    param n (number)\n" ..
-        "        The number to truncate.\n" ..
-        "    param places (number)\n" ..
-        "        The number of decimal places to keep.\n" ..
-        "    Returns\n" ..
-        "        The number 'n' truncated to 'places' decimal places.\n"
+    local docstring = [[
+-- Math Class Documentation --
+A collection of mathematical utility functions extending Lua's built-in math module.
+
+:: Static Methods ::
+.clamp(value, min, max)
+    param value (number)
+        The number to clamp.
+    param min (number)
+        The minimum value.
+    param max (number)
+        The maximum value.
+    Returns
+        The clamped value within the range [min, max].
+
+.deg_to_rad(degrees)
+    param degrees (number)
+        The angle in degrees.
+    Returns
+        The angle in radians.
+
+.div(a, b)
+    param a (number)
+        The dividend.
+    param b (number)
+        The divisor.
+    Returns
+        The result of division a/b, or 0 if b is 0.
+
+.is_positive_int(n)
+    param n (number)
+        The number to check.
+    Returns
+        true if 'n' is a positive integer, false otherwise.
+
+.mod(a, b)
+    param a (number)
+        The dividend.
+    param b (number)
+        The divisor.
+    Returns
+        The remainder of a/b, or 0 if b is 0.
+
+.mod_to_theta(mod)
+    param mod (number)
+        A 0 to 1 modulation signal.
+    Returns
+        The equivalent theta value in radians.
+
+.pow(base, exponent)
+    param base (number)
+        The base number to be raised to a power.
+    param exponent (number)
+        The exponent to which the base number is raised.
+    Returns
+        The result of raising 'base' to the power of 'exponent'. If 'base' is negative and 'exponent' is not an integer, returns 0 to prevent NaN results.
+
+.round(n, places)
+    param n (number)
+        The number to round.
+    param places (number)
+        The number of decimal places to round to.
+    Returns
+        The number 'n' rounded to 'places' decimal places.
+
+.soft_clamp(value, min, max)
+    param value (number)
+        The number to soft clamp.
+    param min (number)
+        The minimum value.
+    param max (number)
+        The maximum value.
+    Returns
+        The softly clamped value within the range [min, max].
+
+.truncate(n, places)
+    param n (number)
+        The number to truncate.
+    param places (number)
+        The number of decimal places to keep.
+    Returns
+        The number 'n' truncated to 'places' decimal places.
+]]
 
     Debug.print_docstring(docstring)
 end
