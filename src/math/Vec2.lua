@@ -1,3 +1,12 @@
+-- -- TODO Rewrite docs like this:
+
+-- local docstring = [[
+--     The divisor for the y component or nil if 'a' is a Vec2.
+--     Returns
+--     self, after dividing its components by the given values.
+--     -- More lines here
+-- ]]
+
 Vec2 = {}
 Vec2.__index = Vec2
 
@@ -47,7 +56,7 @@ function Vec2.__unm(a)
 end
 
 function Vec2.__pow(a, b)
-    return Vec2.new(a.x ^ b.x, a.y ^ b.y)
+    return Vec2.new(Math.pow(a.x, b.x), Math.pow(a.y, b.y))
 end
 
 function Vec2.__eq(a, b)
@@ -77,7 +86,11 @@ function Vec2.is_single_num(a, b)
 end
 
 function Vec2.is_vec2(obj)
-    return obj.type == "Vec2"
+    if type(obj) == "table" then
+        return obj.type == "Vec2"
+    else
+        return false
+    end
 end
 
 function Vec2.is_xy_pair(x, y)
@@ -99,24 +112,24 @@ end
 -- Instance Methods --
 
 function Vec2:add(a, b)
-    if Vec2.is_single_num(a, b) then
-        return Vec2.new(self.x + a, self.y + b)
+    if Vec2.is_vec2(a) then
+        return Vec2.new(self.x + a.x, self.y + a.y)
+    elseif Vec2.is_single_num(a, b) then
+        return Vec2.new(self.x + a, self.y + a)
     elseif Vec2.is_xy_pair(a, b) then
         return Vec2.new(self.x + a, self.y + b)
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(self.x + a.x, self.y + a.y)
     else
         error("Invalid arguments for Vec2:add")
     end
 end
 
 function Vec2:Add(a, b)
-    if Vec2.is_single_num(a, b) then
-        self.x = self.x + a
-        self.y = self.y + a
-    elseif Vec2.is_vec2(a) then
+    if Vec2.is_vec2(a) then
         self.x = self.x + a.x
         self.y = self.y + a.y
+    elseif Vec2.is_single_num(a, b) then
+        self.x = self.x + a
+        self.y = self.y + a
     elseif Vec2.is_xy_pair(a, b) then
         self.x = self.x + a
         self.y = self.y + b
@@ -141,15 +154,15 @@ function Vec2:distance(a, b)
     local dx
     local dy
 
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        dx = self.x - a.x
+        dy = self.y - a.y
+    elseif Vec2.is_single_num(a, b) then
         dx = self.x - a
         dy = self.y - a
     elseif Vec2.is_xy_pair(a, b) then
         dx = self.x - a
         dy = self.y - b
-    elseif Vec2.is_vec2(a) then
-        dx = self.x - a.x
-        dy = self.y - a.y
     else
         error("Incorrect arguments to Vec2:distance")
     end
@@ -158,7 +171,12 @@ function Vec2:distance(a, b)
 end
 
 function Vec2:div(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return Vec2.new(
+            Math.div(self.x, a.x),
+            Math.div(self.y, a.y)
+        )
+    elseif Vec2.is_single_num(a, b) then
         return Vec2.new(
             Math.div(self.x, a),
             Math.div(self.y, a)
@@ -168,26 +186,21 @@ function Vec2:div(a, b)
             Math.div(self.x, a),
             Math.div(self.y, b)
         )
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(
-            Math.div(self.x, a.x),
-            Math.div(self.y, a.y)
-        )
     else
         error("Invalid arguments for Vec2:div")
     end
 end
 
 function Vec2:Div(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = Math.div(self.x, a.x)
+        self.y = Math.div(self.y, a.y)
+    elseif Vec2.is_single_num(a, b) then
         self.x = Math.div(self.x, a)
         self.y = Math.div(self.y, a)
     elseif Vec2.is_xy_pair(a, b) then
         self.x = Math.div(self.x, a)
         self.y = Math.div(self.y, b)
-    elseif Vec2.is_vec2(a) then
-        self.x = Math.div(self.x, a.x)
-        self.y = Math.div(self.y, a.y)
     else
         error("Invalid arguments for Vec2:Div")
     end
@@ -195,14 +208,57 @@ function Vec2:Div(a, b)
 end
 
 function Vec2:dot(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return self.x * a.x + self.y * a.y
+    elseif Vec2.is_single_num(a, b) then
         return self.x * a + self.y * a
     elseif Vec2.is_xy_pair(a, b) then
         return self.x * a + self.y * b
-    elseif Vec2.is_vec2(a) then
-        return self.x * a.x + self.y * a.y
     else
         error("Invalid arguments to Vec2:dot")
+    end
+end
+
+function Vec2:lerp(t, a, b)
+    if Vec2.is_vec2(a) then
+        return Vec2.new(
+            (1 - t) * self.x + t * a.x,
+            (1 - t) * self.y + t * a.y
+        )
+    elseif Vec2.is_single_num(a, b) then
+        return Vec2.new(
+            (1 - t) * self.x + t * a,
+            (1 - t) * self.y + t * a
+        )
+    elseif Vec2.is_xy_pair(a, b) then
+        return Vec2.new(
+            (1 - t) * self.x + t * a,
+            (1 - t) * self.y + t * b
+        )
+    else
+        error("Invalid arguments to Vec2:lerp")
+    end
+end
+
+function Vec2:lerp_clamped(t, a, b)
+    t = Math.clamp(t, 0, 1)
+    if Vec2.is_vec2(a) then
+        return Vec2.new(
+            (1 - t) * self.x + t * a.x,
+            (1 - t) * self.y + t * a.y
+        )
+    elseif Vec2.is_single_num(a, b) then
+        return Vec2.new(
+            (1 - t) * self.x + t * a,
+            (1 - t) * self.y + t * a
+        )
+    elseif Vec2.is_xy_pair(a, b) then
+        return Vec2.new(
+            (1 - t) * self.x + t * a,
+            (1 - t) * self.y + t * b
+        )
+    else
+        error("Invalid arguments to Vec2:lerp_clamped")
     end
 end
 
@@ -211,7 +267,12 @@ function Vec2:magnitude()
 end
 
 function Vec2:mod(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return Vec2.new(
+            Math.mod(self.x, a.x),
+            Math.mod(self.y, a.y)
+        )
+    elseif Vec2.is_single_num(a, b) then
         return Vec2.new(
             Math.mod(self.x, a),
             Math.mod(self.y, a)
@@ -221,53 +282,48 @@ function Vec2:mod(a, b)
             Math.mod(self.x, a),
             Math.mod(self.y, b)
         )
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(
-            Math.mod(self.x, a.x),
-            Math.mod(self.y, a.y)
-        )
     else
         error("Invalid arguments for Vec2:mod")
     end
 end
 
 function Vec2:Mod(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = Math.mod(self.x, a.x)
+        self.y = Math.mod(self.y, a.y)
+    elseif Vec2.is_single_num(a, b) then
         self.x = Math.mod(self.x, a)
         self.y = Math.mod(self.y, a)
     elseif Vec2.is_xy_pair(a, b) then
         self.x = Math.mod(self.x, a)
         self.y = Math.mod(self.y, b)
-    elseif Vec2.is_vec2(a) then
-        self.x = Math.mod(self.x, a.x)
-        self.y = Math.mod(self.y, a.y)
     else
         error("Invalid arguments for Vec2:mod")
     end
 end
 
 function Vec2:mult(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return Vec2.new(self.x * a.x, self.y * a.y)
+    elseif Vec2.is_single_num(a, b) then
         return Vec2.new(self.x * a, self.y * a)
     elseif Vec2.is_xy_pair(a, b) then
         return Vec2.new(self.x * a, self.y * b)
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(self.x * a.x, self.y * a.y)
     else
         error("Invalid arguments for Vec2:mult")
     end
 end
 
 function Vec2:Mult(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = self.x * a.x
+        self.y = self.y * a.y
+    elseif Vec2.is_single_num(a, b) then
         self.x = self.x * a
         self.y = self.y * a
     elseif Vec2.is_xy_pair(a, b) then
         self.x = self.x * a
         self.y = self.y * b
-    elseif Vec2.is_vec2(a) then
-        self.x = self.x * a.x
-        self.y = self.y * a.y
     else
         error("Invalid arguments for Vec2:Mult")
     end
@@ -294,27 +350,27 @@ function Vec2:normalize()
 end
 
 function Vec2:pow(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return Vec2.new(self.x ^ a.x, self.y ^ a.y)
+    elseif Vec2.is_single_num(a, b) then
         return Vec2.new(self.x ^ a, self.y ^ a)
     elseif Vec2.is_xy_pair(a, b) then
         return Vec2.new(self.x ^ a, self.y ^ b)
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(self.x ^ a.x, self.y ^ a.y)
     else
         error("Invalid arguments for Vec2:pow")
     end
 end
 
 function Vec2:Pow(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = self.x ^ a.x
+        self.y = self.y ^ a.y
+    elseif Vec2.is_single_num(a, b) then
         self.x = self.x ^ a
         self.y = self.y ^ a
     elseif Vec2.is_xy_pair(a, b) then
         self.x = self.x ^ a
         self.y = self.y ^ b
-    elseif Vec2.is_vec2(a) then
-        self.x = self.x ^ a.x
-        self.y = self.y ^ a.y
     else
         error("Invalid arguments for Vec2:Pow")
     end
@@ -365,7 +421,12 @@ function Vec2:Rotate(angle, pivot)
 end
 
 function Vec2:scale_about(scalar, a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return Vec2.new(
+            a.x + (self.x - a.x) * scalar,
+            a.y + (self.y - a.y) * scalar
+        )
+    elseif Vec2.is_single_num(a, b) then
         return Vec2.new(
             a + (self.x - a) * scalar,
             a + (self.y - a) * scalar
@@ -375,41 +436,36 @@ function Vec2:scale_about(scalar, a, b)
             a + (self.x - a) * scalar,
             b + (self.y - b) * scalar
         )
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(
-            a.x + (self.x - a.x) * scalar,
-            a.y + (self.y - a.x) * scalar
-        )
     else
         error("Invalid arguments to Vec2:scale_about")
     end
 end
 
 function Vec2:Scale_about(scalar, a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = a.x + (self.x - a.x) * scalar
+        self.y = a.y + (self.y - a.y) * scalar
+    elseif Vec2.is_single_num(a, b) then
         self.x = a + (self.x - a) * scalar
         self.y = a + (self.y - a) * scalar
     elseif Vec2.is_xy_pair(a, b) then
         self.x = a + (self.x - a) * scalar
         self.y = b + (self.y - b) * scalar
-    elseif Vec2.is_vec2(a) then
-        self.x = a.x + (self.x - a.x) * scalar
-        self.y = a.y + (self.y - a.x) * scalar
     else
         error("Invalid arguments to Vec2:Scale_about")
     end
 end
 
 function Vec2:Set(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = a.x
+        self.y = a.y
+    elseif Vec2.is_single_num(a, b) then
         self.x = a
         self.y = a
     elseif Vec2.is_xy_pair(a, b) then
         self.x = a
         self.y = b
-    elseif Vec2.is_vec2(a) then
-        self.x = a.x
-        self.y = a.y
     else
         error("Invalid arguments for Vec2:set")
     end
@@ -427,219 +483,240 @@ function Vec2:Set_Y(y)
 end
 
 function Vec2:sub(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        return Vec2.new(self.x - a.x, self.y - a.y)
+    elseif Vec2.is_single_num(a, b) then
         return Vec2.new(self.x - a, self.y - a)
     elseif Vec2.is_xy_pair(a, b) then
         return Vec2.new(self.x - a, self.y - b)
-    elseif Vec2.is_vec2(a) then
-        return Vec2.new(self.x - a.x, self.y - a.y)
     else
         error("Invalid arguments for Vec2:sub")
     end
 end
 
 function Vec2:Sub(a, b)
-    if Vec2.is_single_num(a, b) then
+    if Vec2.is_vec2(a) then
+        self.x = self.x - a.x
+        self.y = self.y - a.y
+    elseif Vec2.is_single_num(a, b) then
         self.x = self.x - a
         self.y = self.y - a
     elseif Vec2.is_xy_pair(a, b) then
         self.x = self.x - a
         self.y = self.y - b
-    elseif Vec2.is_vec2(a) then
-        self.x = self.x - a.x
-        self.y = self.y - a.y
     else
         error("Invalid arguments for Vec2:Sub")
     end
     return self
 end
 
+function Vec2:squared_magnitude()
+    return self.x * self.x + self.y * self.y
+end
+
 function Vec2.docs()
-    local docstring =
-        "-- Vec2 Class Documentation -- \n" ..
-        "Represents a 2D vector or coordinate pair {x, y}. Commonly used\n" ..
-        "in 2D graphics, game development, and physics simulations.\n" ..
-        "\n" ..
-        ":: Attributes ::\n" ..
-        ".type (string)\n" ..
-        "    'Vec2'\n" ..
-        ".element_id (number)\n" ..
-        "    A globally unique integer id incremented from Element.id.\n" ..
-        ".class_id: (number)\n" ..
-        "    A unique class id incremented from Vec2.id.\n" ..
-        ".x (number)\n" ..
-        "    x coordinate\n" ..
-        ".y (number)\n" ..
-        "    y coordinate\n" ..
-        "\n" ..
-        ":: Static Methods ::\n" ..
-        ".is_single_num(a, b)\n" ..
-        "    param a (number)\n" ..
-        "        The value to check as a potential sole numeric argument.\n" ..
-        "    param b (number | nil)\n" ..
-        "        An optional second number or nil, to confirm if 'a' stands alone.\n" ..
-        "    Returns\n" ..
-        "        true if 'a' is a number and 'b' is not provided (nil).\n" ..
-        ".is_vec2(obj)\n" ..
-        "    param obj (table)\n" ..
-        "        The object to be checked if it is an instance of Vec2.\n" ..
-        "    Returns\n" ..
-        "        true if obj is of type Vec2.\n" ..
-        ".is_xy_pair(x, y)\n" ..
-        "    param x (number)\n" ..
-        "        The x component of the pair to be checked.\n" ..
-        "    param y (number)\n" ..
-        "        The y component of the pair to be checked.\n" ..
-        "    Returns\n" ..
-        "        true if x and y are both numbers.\n" ..
-        ".parse_other(a, b, func_name)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The first number or Vec2 object to be parsed.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The second number or nil if not applicable.\n" ..
-        "    param func_name (string)\n" ..
-        "        The name of the function calling for context in error messages.\n" ..
-        "    Returns\n" ..
-        "        A new Vec2 instance from the arguments {a, b}.\n" ..
-        "\n" ..
-        ":: Instance Methods ::\n" ..
-        ":add(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The value or Vec2 to be added to this vector.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The value to be added to the y component or nil if not applicable.\n" ..
-        "    Returns\n" ..
-        "        A new Vec2 with added values.\n" ..
-        ":Add(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The value or Vec2 to be added to this vector's components.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The value to be added to the y component or nil if not applicable.\n" ..
-        "    Returns\n" ..
-        "        self, after adding the given values.\n" ..
-        ":angle(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The x component of the Vec2 or the Vec2 itself to find the angle with.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The y component of the Vec2 or nil if 'a' is a Vec2.\n" ..
-        "    Returns\n" ..
-        "        The angle in radians between this vector and another Vec2 or point.\n" ..
-        ":distance(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The x component of the Vec2 or the Vec2 itself to calculate distance from.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The y component of the Vec2 or nil if 'a' is a Vec2.\n" ..
-        "    Returns\n" ..
-        "        The distance as a number from this vector to another Vec2 or point.\n" ..
-        ":div(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The divisor, a number or Vec2's x component.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The divisor for the y component or nil if 'a' is a Vec2.\n" ..
-        "    Returns\n" ..
-        "        A new Vec2 resulting from the division.\n" ..
-        ":Div(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The divisor, a number or Vec2's x component.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The divisor for the y component or nil if 'a' is a Vec2.\n" ..
-        "    Returns\n" ..
-        "        self, after dividing its components by the given values.\n" ..
-        ":dot(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The x component of the Vec2 or the Vec2 itself to dot with.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The y component of the Vec2 or nil if 'a' is a Vec2.\n" ..
-        "    Returns\n" ..
-        "        The dot product as a number with another Vec2 or point.\n" ..
-        ":magnitude()\n" ..
-        "    Returns\n" ..
-        "        The magnitude (length) of the vector as a number.\n" ..
-        ":mod(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The modulus, a number or Vec2's x component.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The modulus for the y component or nil if 'a' is a Vec2.\n" ..
-        "    Returns\n" ..
-        "        A new Vec2 resulting from the modulus operation.\n" ..
-        ":Mod(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The modulus, a number or Vec2's x component.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The modulus for the y component or nil if 'a' is a Vec2.\n" ..
-        "    Returns\n" ..
-        "        self, after applying the modulus operation to its components.\n" ..
-        ":mult(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The multiplier, a number or Vec2's x component.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The multiplier for the y component or nil if 'a' is a Vec2.\n" ..
-        "    Returns\n" ..
-        "        A new Vec2 resulting from the multiplication.\n" ..
-        ":Mult(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The value to multiply the x component by, or a Vec2 whose x component\n" ..
-        "        to multiply with this vector's x component.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The value to multiply the y component by if 'a' is a number;\n" ..
-        "        ignored if 'a' is a Vec2.\n" ..
-        "    Multiplies the vector's components by the specified values or vector.\n" ..
-        "    Modifies the vector in place.\n" ..
-        "    Returns self for method chaining.\n" ..
-        ":neg()\n" ..
-        "    Returns a new Vec2 instance with both x and y components negated.\n" ..
-        ":Neg()\n" ..
-        "    Negates both x and y components of the vector in place.\n" ..
-        "    Returns self for method chaining.\n" ..
-        ":normalize()\n" ..
-        "    Creates a new Vec2 instance with the vector normalized to unit length.\n" ..
-        ":Normalize()\n" ..
-        "    Normalizes the vector in place to unit length.\n" ..
-        "    Returns self for method chaining.\n" ..
-        ":rotate(angle)\n" ..
-        "    param angle (number)\n" ..
-        "        The angle in radians to rotate the vector by.\n" ..
-        "    Returns a new Vec2 instance representing the rotated vector.\n" ..
-        ":Rotate(angle)\n" ..
-        "    param angle (number)\n" ..
-        "        The angle in radians to rotate the vector by.\n" ..
-        "    Rotates the vector in place by the given angle.\n" ..
-        "    Returns self for method chaining.\n" ..
-        ":scale(factor)\n" ..
-        "    param factor (number)\n" ..
-        "        The factor by which to scale the vector's components.\n" ..
-        "    Returns a new Vec2 instance with the vector scaled.\n" ..
-        ":Scale(factor)\n" ..
-        "    param factor (number)\n" ..
-        "        The factor by which to scale the vector's components.\n" ..
-        "    Scales the vector in place by the given factor.\n" ..
-        "    Returns self for method chaining.\n" ..
-        ":Set(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The value to set the x component to or a Vec2 whose x component is used.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The value to set the y component to if a is a number; ignored if a is Vec2.\n" ..
-        "    Sets the vector's components and returns self for method chaining.\n" ..
-        ":Set_X(x)\n" ..
-        "    param x (number)\n" ..
-        "        The value to set the x component to.\n" ..
-        "    Sets the x component of the vector and returns self for method chaining.\n" ..
-        ":Set_Y(y)\n" ..
-        "    param y (number)\n" ..
-        "        The value to set the y component to.\n" ..
-        "    Sets the y component of the vector and returns self for method chaining.\n" ..
-        ":sub(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The number to subtract from x or a Vec2 whose x component is subtracted.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The number to subtract from y if a is a number; ignored if a is Vec2.\n" ..
-        "    Returns a new Vec2 instance with the result of the subtraction.\n" ..
-        ":Sub(a, b)\n" ..
-        "    param a (number | Vec2)\n" ..
-        "        The number to subtract from x or a Vec2 whose x component is subtracted.\n" ..
-        "    param b (number | nil)\n" ..
-        "        The number to subtract from y if a is a number; ignored if a is Vec2.\n" ..
-        "    Subtracts from the vector's components in place and returns self for chaining.\n" ..
-        "\n"
+    local docstring = [[
+-- Vec2 Class Documentation --
+Represents a 2D vector or coordinate pair {x, y}. Commonly used
+in 2D graphics, game development, and physics simulations.
+
+:: Attributes ::
+.type (string)
+    'Vec2'
+.element_id (number)
+    A globally unique integer id incremented from Element.id.
+.class_id: (number)
+    A unique class id incremented from Vec2.id.
+.x (number)
+    x coordinate
+.y (number)
+    y coordinate
+
+:: Static Methods ::
+.is_single_num(a, b)
+    param a (number)
+        The value to check as a potential sole numeric argument.
+    param b (number | nil)
+        An optional second number or nil, to confirm if 'a' stands alone.
+    Returns
+        true if 'a' is a number and 'b' is not provided (nil).
+.is_vec2(obj)
+    param obj (table)
+        The object to be checked if it is an instance of Vec2.
+    Returns
+        true if obj is of type Vec2.
+.is_xy_pair(x, y)
+    param x (number)
+        The x component of the pair to be checked.
+    param y (number)
+        The y component of the pair to be checked.
+    Returns
+        true if x and y are both numbers.
+.parse_other(a, b, func_name)
+    param a (number | Vec2)
+        The first number or Vec2 object to be parsed.
+    param b (number | nil)
+        The second number or nil if not applicable.
+    param func_name (string)
+        The name of the function calling for context in error messages.
+    Returns
+        A new Vec2 instance from the arguments {a, b}.
+
+:: Instance Methods ::
+:add(a, b)
+    param a (number | Vec2)
+        The value or Vec2 to be added to this vector.
+    param b (number | nil)
+        The value to be added to the y component or nil if not applicable.
+    Returns
+        A new Vec2 with added values.
+:Add(a, b)
+    param a (number | Vec2)
+        The value or Vec2 to be added to this vector's components.
+    param b (number | nil)
+        The value to be added to the y component or nil if not applicable.
+    Returns
+        self, after adding the given values.
+:angle(a, b)
+    param a (number | Vec2)
+        The x component of the Vec2 or the Vec2 itself to find the angle with.
+    param b (number | nil)
+        The y component of the Vec2 or nil if 'a' is a Vec2.
+    Returns
+        The angle in radians between this vector and another Vec2 or point.
+:distance(a, b)
+    param a (number | Vec2)
+        The x component of the Vec2 or the Vec2 itself to calculate distance from.
+    param b (number | nil)
+        The y component of the Vec2 or nil if 'a' is a Vec2.
+    Returns
+        The distance as a number from this vector to another Vec2 or point.
+:div(a, b)
+    param a (number | Vec2)
+        The divisor, a number or Vec2's x component.
+    param b (number | nil)
+        The divisor for the y component or nil if 'a' is a Vec2.
+    Returns
+        A new Vec2 resulting from the division.
+:Div(a, b)
+    param a (number | Vec2)
+        The divisor, a number or Vec2's x component.
+    param b (number | nil)
+        The divisor for the y component or nil if 'a' is a Vec2.
+    Returns
+        self, after dividing its components by the given values.
+:dot(a, b)
+    param a (number | Vec2)
+        The x component of the Vec2 or the Vec2 itself to dot with.
+    param b (number | nil)
+        The y component of the Vec2 or nil if 'a' is a Vec2.
+    Returns
+        The dot product as a number with another Vec2 or point.
+:lerp(t, a, b)
+    param t (number)
+        The interpolation parameter between 0 and 1.
+    param a (number | Vec2)
+        The target value to interpolate towards. Can be a single number or a Vec2's x component.
+    param b (number | nil)
+        The target value for the y component if 'a' is a number; ignored if 'a' is a Vec2.
+    Returns
+        A new Vec2 resulting from linear interpolation. If 't' is 0, the result is the original Vec2. If 't' is 1, the result is the target Vec2 or number. For values of 't' between 0 and 1, the result is a Vec2 linearly interpolated between the original Vec2 and the target. 't' values beyond 0 and 1 will continue along the line drawn between the Vec2 and its target.
+
+:magnitude()
+    Returns
+        The magnitude (length) of the vector as a number.
+:mod(a, b)
+    param a (number | Vec2)
+        The modulus, a number or Vec2's x component.
+    param b (number | nil)
+        The modulus for the y component or nil if 'a' is a Vec2.
+    Returns
+        A new Vec2 resulting from the modulus operation.
+:Mod(a, b)
+    param a (number | Vec2)
+        The modulus, a number or Vec2's x component.
+    param b (number | nil)
+        The modulus for the y component or nil if 'a' is a Vec2.
+    Returns
+        self, after applying the modulus operation to its components.
+:mult(a, b)
+    param a (number | Vec2)
+        The multiplier, a number or Vec2's x component.
+    param b (number | nil)
+        The multiplier for the y component or nil if 'a' is a Vec2.
+    Returns
+        A new Vec2 resulting from the multiplication.
+:Mult(a, b)
+    param a (number | Vec2)
+        The value to multiply the x component by, or a Vec2 whose x component
+        to multiply with this vector's x component.
+    param b (number | nil)
+        The value to multiply the y component by if 'a' is a number;
+        ignored if 'a' is a Vec2.
+    Multiplies the vector's components by the specified values or vector.
+    Modifies the vector in place.
+    Returns self for method chaining.
+:neg()
+    Returns a new Vec2 instance with both x and y components negated.
+:Neg()
+    Negates both x and y components of the vector in place.
+    Returns self for method chaining.
+:normalize()
+    Creates a new Vec2 instance with the vector normalized to unit length.
+:Normalize()
+    Normalizes the vector in place to unit length.
+    Returns self for method chaining.
+:rotate(angle)
+    param angle (number)
+        The angle in radians to rotate the vector by.
+    Returns a new Vec2 instance representing the rotated vector.
+:Rotate(angle)
+    param angle (number)
+        The angle in radians to rotate the vector by.
+    Rotates the vector in place by the given angle.
+    Returns self for method chaining.
+:scale(factor)
+    param factor (number)
+        The factor by which to scale the vector's components.
+    Returns a new Vec2 instance with the vector scaled.
+:Scale(factor)
+    param factor (number)
+        The factor by which to scale the vector's components.
+    Scales the vector in place by the given factor.
+    Returns self for method chaining.
+:Set(a, b)
+    param a (number | Vec2)
+        The value to set the x component to or a Vec2 whose x component is used.
+    param b (number | nil)
+        The value to set the y component to if a is a number; ignored if a is Vec2.
+    Sets the vector's components and returns self for method chaining.
+:Set_X(x)
+    param x (number)
+        The value to set the x component to.
+    Sets the x component of the vector and returns self for method chaining.
+:Set_Y(y)
+    param y (number)
+        The value to set the y component to.
+    Sets the y component of the vector and returns self for method chaining.
+:sub(a, b)
+    param a (number | Vec2)
+        The number to subtract from x or a Vec2 whose x component is subtracted.
+    param b (number | nil)
+        The number to subtract from y if a is a number; ignored if a is Vec2.
+    Returns a new Vec2 instance with the result of the subtraction.
+:Sub(a, b)
+    param a (number | Vec2)
+        The number to subtract from x or a Vec2 whose x component is subtracted.
+    param b (number | nil)
+        The number to subtract from y if a is a number; ignored if a is Vec2.
+    Subtracts from the vector's components in place and returns self for chaining.
+
+:squared_magnitude()
+Calculates the squared magnitude of the vector.
+Returns
+    The squared magnitude of the vector, calculated as the sum of the squares of its x and y components (self.x * self.x + self.y * self.y).
+    This method avoids the computational cost of a square root operation and is useful for comparing vector lengths or performing threshold checks.
+]]
+
     Debug.print_docstring(docstring)
 end

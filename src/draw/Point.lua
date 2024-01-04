@@ -16,7 +16,8 @@ Point.styles = {
     },
     char = {
         char = "o",
-
+        char_nudge = { 0, 0 },
+        char_size = 12,
     },
 }
 
@@ -60,6 +61,8 @@ function Point.new(vec2, options)
 
     return self
 end
+
+-- Instance Methods --
 
 function Point:clone()
     local new_point = Point.new(self.vec2)
@@ -105,4 +108,15 @@ end
 function Point:Rotate(angle, pivot)
     self.vec2:Rotate(angle, pivot)
     return self
+end
+
+function Point:scale(scalar)
+    local new_vec2 = self.vec2:mult(scalar)
+    local new_point = self:clone()
+    new_point.vec2 = new_vec2
+    return new_point
+end
+
+function Point:Scale(scalar)
+    self.vec2:Mult(scalar)
 end
