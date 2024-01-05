@@ -98,6 +98,18 @@ function Point:draw()
     end
 end
 
+function Point:reflect(axis)
+    local new_vec2 = self.vec2:reflect(axis)
+    local new_point = self:clone()
+    new_point.vec2 = new_vec2
+    return new_point
+end
+
+function Point:Reflect(axis)
+    self.vec2:Reflect(axis)
+    return self
+end
+
 function Point:rotate(angle, pivot)
     local new_vec2 = self.vec2:rotate(angle, pivot)
     local new_point = self:clone()
@@ -119,4 +131,16 @@ end
 
 function Point:Scale(scalar)
     self.vec2:Mult(scalar)
+end
+
+function Point:translate(a, b)
+    local new_vec2 = self.vec2:add(a, b)
+    local new_point = self:clone()
+    new_point.vec2 = new_vec2
+    return new_point
+end
+
+function Point:Translate(a, b)
+    self.vec2:Add(a, b)
+    return self
 end
