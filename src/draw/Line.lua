@@ -1,7 +1,55 @@
+-- TODO Refactor the print method
+
 Line = {}
 Line.__index = Line
 
 Line.id = 1
+
+Line.attrs = {
+    color = theme.text
+}
+
+Line.styles = {
+    normal = {
+        width = 1,
+    },
+    dashed = {
+        width = 1,
+        dash_length = 5,
+        space_length = 5,
+    },
+    dotted = {
+        dot_radius = 1,
+        space_length = 5,
+    },
+    char = {
+        char = "+",
+        char_vertex = "+",
+        char_vertex_nudge = { 0, 0 },
+        char_size = 12,
+        space_length = 5,
+    },
+}
+
+Line.__index = function(instance, key)
+    local value = rawget(instance, key)
+    if value ~= nil then
+        return value
+    else
+        local style = rawget(instance, "style") or "normal"
+        local style_val = Line.styles[style][key]
+        if style_val ~= nil then
+            return style_val
+        end
+
+        local attr = Line.attrs[key]
+        if attr ~= nil then
+            return attr
+        end
+    end
+
+    return Line[key]
+end
 
 function Line.new(vec2_a, vec2_b, options)
     local invalid_args = not Vec2.is_vec2(vec2_a) or not Vec2.is_vec2(vec2_b)
@@ -21,16 +69,13 @@ function Line.new(vec2_a, vec2_b, options)
     self.vec2_b = vec2_b or Vec2.new(0, 0)
     self.o = options or {}
 
-    self.color = self.o.color or theme.text
-    self.width = self.o.width or 1
     self.style = self.o.style or "normal"
-    self.dash_length = self.o.dash_length or 5
-    self.dot_radius = self.o.dot_radius or 1
-    self.char = self.o.char or "+"
-    self.char_vertex = self.o.char_vertex or self.char
-    self.char_vertex_nudge = self.o.char_vertex_nudge or { 0, 0 }
-    self.char_size = self.o.char_size or 12
-    self.space_length = self.o.space_length or self.dash_length
+    self.color = self.o.color or Point.attrs.color
+
+    for key, value in pairs(self.o) do
+        self[key] = value
+    end
+
     return self
 end
 

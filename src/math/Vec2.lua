@@ -1,12 +1,3 @@
--- -- TODO Rewrite docs like this:
-
--- local docstring = [[
---     The divisor for the y component or nil if 'a' is a Vec2.
---     Returns
---     self, after dividing its components by the given values.
---     -- More lines here
--- ]]
-
 Vec2 = {}
 Vec2.__index = Vec2
 
@@ -86,11 +77,7 @@ function Vec2.is_single_num(a, b)
 end
 
 function Vec2.is_vec2(obj)
-    if type(obj) == "table" then
-        return obj.type == "Vec2"
-    else
-        return false
-    end
+    return type(obj) == "table" and obj.type == "Vec2"
 end
 
 function Vec2.is_xy_pair(x, y)
@@ -393,6 +380,28 @@ function Vec2:print(places)
     print("")
 end
 
+function Vec2:reflect(axis)
+    if axis == "x" or axis == "X" then
+        return Vec2.new(self.x, -self.y)
+    elseif axis == "y" or axis == "Y" then
+        return Vec2.new(-self.x, self.y)
+    else
+        return Vec2.new(-self.x, -self.y)
+    end
+end
+
+function Vec2:Reflect(axis)
+    if axis == "x" or axis == "X" then
+        self.y = -self.y
+    elseif axis == "y" or axis == "Y" then
+        self.x = -self.x
+    else
+        self.y = -self.y
+        self.x = -self.x
+    end
+    return self
+end
+
 function Vec2:rotate(angle, pivot)
     pivot = pivot or Vec2.new(0, 0)
     local translated = self:sub(pivot)
@@ -666,6 +675,22 @@ in 2D graphics, game development, and physics simulations.
 :Normalize()
     Normalizes the vector in place to unit length.
     Returns self for method chaining.
+:reflect(axis)
+    param axis (string)
+        The axis of reflection. Can be 'x', 'X', 'y', 'Y', or any other value for both axes.
+    Returns
+        A new Vec2 object. Reflects the vector along the specified axis.
+        If 'x' or 'X' is specified, the y component is negated.
+        If 'y' or 'Y' is specified, the x component is negated.
+        For any other value, both x and y components are negated.
+:Reflect(axis)
+    param axis (string)
+        The axis of reflection. Can be 'x', 'X', 'y', 'Y', or any other value for both axes.
+    Returns
+        self (Vec2), after reflecting the vector along the specified axis.
+        If 'x' or 'X' is specified, the y component of the vector is negated.
+        If 'y' or 'Y' is specified, the x component of the vector is negated.
+        For any other value, both x and y components of the vector are negated.
 :rotate(angle)
     param angle (number)
         The angle in radians to rotate the vector by.
