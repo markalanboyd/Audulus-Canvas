@@ -64,3 +64,12 @@ end
 function Color:table()
     return { self.r, self.g, self.b, self.a }
 end
+
+function Color:fade(color2, t)
+    local new_color = {}
+    new_color[1] = self.r + (color2.r - self.r) * t
+    new_color[2] = self.g + (color2.g - self.g) * t
+    new_color[3] = self.b + (color2.b - self.b) * t
+    new_color[4] = self.a + (color2.a - self.a) * t
+    return new_color
+end
