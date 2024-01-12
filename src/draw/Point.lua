@@ -3,7 +3,7 @@ Point = {}
 Point.id = 1
 
 Point.attrs = {
-    color = Utils.deep_copy_color(theme.text),
+    color = theme.text,
     show_coords = false,
     coords_nudge = { 0, 0 }
 }
@@ -60,8 +60,8 @@ function Point.new(vec2, options)
     end
 
     self.style = self.o.style or "normal"
-
-    self.color = Utils.deep_copy_color(self.o.color) or Point.attrs.color
+    local c = self.o.color or Color.new()
+    self.color = Color.assign_color(c)
 
     return self
 end
@@ -89,7 +89,7 @@ function Point:draw_coords()
         self.vec2.x + offset + self.coords_nudge[1],
         self.vec2.y + offset + self.coords_nudge[2]
     }
-    text(coordinate, self.color)
+    text(coordinate, self.color:table())
     restore()
 end
 
@@ -97,17 +97,16 @@ function Point:draw_normal()
     fill_circle(
         { self.vec2.x, self.vec2.y },
         self.radius,
-        color_paint(self.color)
+        color_paint(self.color:table())
     )
 end
 
 function Point:draw_stroke()
-    print(self.color)
     stroke_circle(
         { self.vec2.x, self.vec2.y },
         self.radius,
         self.stroke_width,
-        color_paint(self.color))
+        color_paint(self.color:table()))
 end
 
 function Point:draw_char()
@@ -123,7 +122,7 @@ function Point:draw_char()
         self.vec2.y + self.char_nudge[2]
     }
     scale { char_scale_factor, char_scale_factor }
-    text(self.char, self.color)
+    text(self.char, self.color:table())
     restore()
 end
 
@@ -195,7 +194,7 @@ function Point:print(places)
     local class_id = tostring(self.class_id)
     local x = tostring(Math.truncate(self.vec2.x, places))
     local y = tostring(Math.truncate(self.vec2.y, places))
-    local color = tostring(Utils.table_to_string(self.color, true, places))
+    local color = tostring(Utils.table_to_string(self.color:table(), true, places))
     local style = self.style
 
     print("-- Point " .. element_id .. ":" .. class_id .. " --")
