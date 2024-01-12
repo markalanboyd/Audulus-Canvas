@@ -26,6 +26,14 @@ function Utils.has_non_integer_keys(t)
     return false
 end
 
+function Utils.deep_copy_color(color_table)
+    local copy = {}
+    for i = 1, #color_table do
+        copy[i] = color_table[i]
+    end
+    return copy
+end
+
 function Utils.table_to_string(t, truncate, places)
     truncate = truncate or false
     places = places or 0
