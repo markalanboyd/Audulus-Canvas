@@ -77,11 +77,7 @@ function Vec2.is_single_num(a, b)
 end
 
 function Vec2.is_vec2(obj)
-    if type(obj) == "table" then
-        return obj.type == "Vec2"
-    else
-        return false
-    end
+    return type(obj) == "table" and obj.type == "Vec2"
 end
 
 function Vec2.is_xy_pair(x, y)
