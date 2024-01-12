@@ -1,4 +1,4 @@
--- TODO Refactor this so that it doesn't load all attributes into one instance
+-- TODO Refactor the print method
 
 Line = {}
 Line.__index = Line

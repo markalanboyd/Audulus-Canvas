@@ -1,3 +1,6 @@
+-- TODO Add automatic line breaking
+-- TODO Add a way to parse parameters for a Class.docs("short")
+
 Debug = {}
 
 function Debug.Logger()
@@ -43,7 +46,7 @@ function Debug.Logger()
         translate { 0, -30 }
         text(_VERSION, theme.azureHighlight)
         translate { 0, -20 }
-        text("Memory usage: " .. Utils.get_peak_memory(10) .. "KB", theme.text)
+        text("Memory Usage: " .. Utils.get_peak_memory(10) .. "KB", theme.text)
         translate { 0, -20 }
         text("Print Queue Output", theme.text)
         translate { 0, -4 }
@@ -67,7 +70,7 @@ function Debug.Logger()
                 }
                 text("> " .. s, dim_green)
             elseif s:sub(1, 11) == "    Returns" then
-                local scale_factor = 0.8 -- 50% darker
+                local scale_factor = 0.8
                 local dim_red = {
                     theme.redHighlight[1] * scale_factor,
                     theme.redHighlight[2] * scale_factor,

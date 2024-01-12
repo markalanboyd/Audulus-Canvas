@@ -1,3 +1,5 @@
+-- TODO Add a method to force origin to stay on top
+
 Origin = {}
 Origin.__index = Origin
 
