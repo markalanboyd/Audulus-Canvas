@@ -1,3 +1,5 @@
+-- TODO Combine this with Color class
+
 ColorUtils = {}
 
 ColorUtils.theme_yellow = { 0.83, 1, 0, 1 }

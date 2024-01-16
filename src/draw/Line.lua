@@ -59,7 +59,6 @@ function Line.new(vec2_a, vec2_b, options)
     end
 
     local self = setmetatable({}, Line)
-    self.type = "Line"
     self.element_id = Element.id
     Element.id = Element.id + 1
     self.class_id = Line.id
@@ -327,7 +326,6 @@ function LineGroup.new(vec2s, options)
     end
 
     local self = setmetatable({}, LineGroup)
-    self.type = "LineGroup"
     self.element_id = Element.id
     Element.id = Element.id + 1
     self.class_id = LineGroup.id
