@@ -522,6 +522,10 @@ function Vec2:squared_magnitude()
     return self.x * self.x + self.y * self.y
 end
 
+function Vec2:to_xy_pair()
+    return { self.x, self.y }
+end
+
 function Vec2.docs()
     local docstring = [[
 -- Vec2 Class Documentation --
