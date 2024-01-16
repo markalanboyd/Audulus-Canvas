@@ -19,7 +19,7 @@ echo "\n" >> "$library_file" # Add a newline at the end
 cat << EOF >> "$library_file"
 -- AUDULUS-CANVAS LIBRARY ----------------------------------------------
 -- Version: 0.0.2-alpha
--- Updated: 2023.12.26
+-- Updated: 2024.01.16
 -- URL: https://github.com/markalanboyd/Audulus-Canvas
 
 ----- Instructions -----
@@ -29,7 +29,7 @@ cat << EOF >> "$library_file"
 -- 4. Set a custom W(idth) and H(eight) in the inspector panel
 -- 5. Write your code in the CODE block below
 
-o = Origin.new(\"c\", {show = true, type = \"cross\", width = 4, color = theme.text})
+o = Origin.new("c", {show = true, type = "cross", width = 4, color = theme.text})
 
 -- CODE ----------------------------------------------------------------
 
@@ -40,4 +40,4 @@ print_all()
 EOF
 
 # Create development version of the library file (library-dev.lua)
-awk '/-- AUDULUS-CANVAS LIBRARY/{exit} {print}' "$library_file" > "$dev_library_file"
+awk '/-- CODE ----------------------------------------------------------------/{print; exit} {print}' "$library_file" > "$dev_library_file"
