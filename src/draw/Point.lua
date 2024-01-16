@@ -46,7 +46,6 @@ end
 
 function Point.new(vec2, options)
     local self = setmetatable({}, Point)
-    self.type = "Point"
     self.element_id = Element.id
     Element.id = Element.id + 1
     self.class_id = Point.id
@@ -60,6 +59,7 @@ function Point.new(vec2, options)
     end
 
     self.style = self.o.style or "normal"
+
     local c = self.o.color or Color.new()
     self.color = Color.assign_color(c)
 
