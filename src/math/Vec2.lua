@@ -5,7 +5,6 @@ Vec2.id = 1
 
 function Vec2.new(x, y)
     local self = setmetatable({}, Vec2)
-    self.type = "Vec2"
     self.element_id = Element.id
     Element.id = Element.id + 1
     self.class_id = Vec2.id
@@ -77,7 +76,7 @@ function Vec2.is_single_num(a, b)
 end
 
 function Vec2.is_vec2(obj)
-    return type(obj) == "table" and obj.type == "Vec2"
+    return getmetatable(obj) == Vec2
 end
 
 function Vec2.is_xy_pair(x, y)
