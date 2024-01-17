@@ -26,6 +26,8 @@ function Utils.has_non_integer_keys(t)
     return false
 end
 
+-- TODO Refactor this to be more generic
+
 function Utils.deep_copy_color(color_table)
     local copy = {}
     for i = 1, #color_table do
