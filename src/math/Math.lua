@@ -4,6 +4,10 @@ function Math.clamp(value, min, max)
     return math.min(math.max(value, min), max)
 end
 
+function Math.clamp_normal(value)
+    return math.min(math.max(value, 0), 1)
+end
+
 function Math.deg_to_rad(degrees)
     return degrees * math.pi / 180
 end
@@ -45,6 +49,38 @@ end
 
 function Math.truncate(n, places)
     return math.floor(n * 10 ^ places) / 10 ^ places
+end
+
+function Math.map(array, func)
+    local result = {}
+    for i = 1, #array do
+        table.insert(result, func(array[i]))
+    end
+    return result
+end
+
+function Math.vmap(array1, array2, func)
+    if #array1 ~= #array2 then
+        error("Arrays must be of equal length")
+    end
+
+    local result = {}
+    for i = 1, #array1 do
+        table.insert(result, func(array1[i], array2[i]))
+    end
+    return result
+end
+
+function Math.add(x, y)
+    return x + y
+end
+
+function Math.sub(x, y)
+    return x - y
+end
+
+function Math.mult(x, y)
+    return x * y
 end
 
 function Math.docs()

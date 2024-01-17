@@ -1,6 +1,7 @@
 -- TODO - Set a background that is always the lowest layer
 -- TODO - Set a foreground that is always the highest layer
 -- TODO - Attach origin to background/foreground based on preference
+-- TODO - Global layer system vs local layer system - objects can have their own layers
 Layer = {}
 Layer.__index = Layer
 Layer.layers = {}
