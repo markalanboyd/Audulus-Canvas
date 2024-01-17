@@ -18,6 +18,26 @@ function Color.new(color_table)
     return self
 end
 
+function Color.__add(self, other)
+    return self:clone():add(other)
+end
+
+function Color.__sub(self, other)
+    return self:clone():sub(other)
+end
+
+function Color.__mul(self, other)
+    return self:clone():mult(other)
+end
+
+function Color.__div(self, other)
+    return self:clone():div(other)
+end
+
+function Color.__unm(self)
+    return self:clone():invert()
+end
+
 function Color.is_color(obj)
     return getmetatable(obj) == Color
 end
@@ -118,6 +138,54 @@ function Color.print_swatches(colors)
         local x = -i * size
         fill_rect({ x, 0 }, { x + size, size }, 0, color:to_paint())
     end
+end
+
+function Color.red()
+    return Color.new({ 1, 0, 0, 1 })
+end
+
+function Color.orange()
+    return Color.new({ 1, 0.647, 0, 1 })
+end
+
+function Color.yellow()
+    return Color.new({ 1, 1, 0, 1 })
+end
+
+function Color.green()
+    return Color.new({ 0, 1, 0, 1 })
+end
+
+function Color.purple()
+    return Color.new({ 0.5, 0, 0.5, 1 })
+end
+
+function Color.blue()
+    return Color.new({ 0, 0, 1, 1 })
+end
+
+function Color:add(color)
+    local t = Math.vmap(self:table(), color:table(), Math.add)
+    local color_table = Math.map(t, Math.clamp_normal)
+    return Color.new(color_table)
+end
+
+function Color:sub(color)
+    local t = Math.vmap(self:table(), color:table(), Math.sub)
+    local color_table = Math.map(t, Math.clamp_normal)
+    return Color.new(color_table)
+end
+
+function Color:mult(color)
+    local t = Math.vmap(self:table(), color:table(), Math.mult)
+    local color_table = Math.map(t, Math.clamp_normal)
+    return Color.new(color_table)
+end
+
+function Color:div(color)
+    local t = Math.vmap(self:table(), color:table(), Math.div)
+    local color_table = Math.map(t, Math.clamp_normal)
+    return Color.new(color_table)
 end
 
 function Color:analogous(offset_degrees)
