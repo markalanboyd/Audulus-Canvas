@@ -37,8 +37,6 @@ function Paint.create(color, gradient)
         return color:to_paint()
     end
 end
--- TODO Add gradient
-
 Color = {}
 Color.__index = Color
 
@@ -377,44 +375,33 @@ function Color:print_schemes(origin)
 
     restore()
 end
+
+function Color:print(places)
+    places = places or 2
+
+    local element_id = tostring(self.element_id)
+    local class_id = tostring(self.class_id)
+    local color_table = tostring(Utils.table_to_string(self.color_table, true, places))
+    local r = tostring(Math.truncate(self.r, places))
+    local g = tostring(Math.truncate(self.g, places))
+    local b = tostring(Math.truncate(self.b, places))
+    local a = tostring(Math.truncate(self.a, places))
+
+    print("-- Color " .. element_id .. ":" .. class_id .. " --")
+    print("  element_id: " .. element_id)
+    print("  class_id: " .. class_id)
+    print("  color_table: " .. color_table)
+    print("  r: " .. r)
+    print("  g: " .. g)
+    print("  b: " .. b)
+    print("  a: " .. a)
+    print("")
+end
 ColorTables = {}
 
-ColorTables.htmlColors = { indianred = { 205, 92, 92, 1 }, lightcoral = { 240, 128, 128, 1 }, salmon = { 250, 128, 114, 1 }, darksalmon = { 233, 150, 122, 1 }, lightsalmon = { 255, 160, 122, 1 }, crimson = { 220, 20, 60, 1 }, red = { 255, 0, 0, 1 }, firebrick = { 178, 34, 34, 1 }, darkred = { 139, 0, 0, 1 }, pink = { 255, 192, 203, 1 }, lightpink = { 255, 182, 193, 1 }, hotpink = { 255, 105, 180, 1 }, deeppink = { 255, 20, 147, 1 }, mediumvioletred = { 199, 21, 133, 1 }, palevioletred = { 219, 112, 147, 1 }, coral = { 255, 127, 80, 1 }, tomato = { 255, 99, 71, 1 }, orangered = { 255, 69, 0, 1 }, darkorange = { 255, 140, 0, 1 }, orange = { 255, 165, 0, 1 }, gold = { 255, 215, 0, 1 }, yellow = { 255, 255, 0, 1 }, lightyellow = { 255, 255, 224, 1 }, lemonchiffon = { 255, 250, 205, 1 }, lightgoldenrodyellow = { 250, 250, 210, 1 }, papayawhip = { 255, 239, 213, 1 }, moccasin = { 255, 228, 181, 1 }, peachpuff = { 255, 218, 185, 1 }, palegoldenrod = { 238, 232, 170, 1 }, khaki = { 240, 230, 140, 1 }, darkkhaki = { 189, 183, 107, 1 }, lavender = { 230, 230, 250, 1 }, thistle = { 216, 191, 216, 1 }, plum = { 221, 160, 221, 1 }, violet = { 238, 130, 238, 1 }, orchid = { 218, 112, 214, 1 }, fuchsia = { 255, 0, 255, 1 }, magenta = { 255, 0, 255, 1 }, mediumorchid = { 186, 85, 211, 1 }, mediumpurple = { 147, 112, 219, 1 }, rebeccapurple = { 102, 51, 153, 1 }, blueviolet = { 138, 43, 226, 1 }, darkviolet = { 148, 0, 211, 1 }, darkorchid = { 153, 50, 204, 1 }, darkmagenta = { 139, 0, 139, 1 }, purple = { 128, 0, 128, 1 }, indigo = { 75, 0, 130, 1 }, slateblue = { 106, 90, 205, 1 }, darkslateblue = { 72, 61, 139, 1 }, mediumslateblue = { 123, 104, 238, 1 }, greenyellow = { 173, 255, 47, 1 }, chartreuse = { 127, 255, 0, 1 }, lawngreen = { 124, 252, 0, 1 }, lime = { 0, 255, 0, 1 }, limegreen = { 50, 205, 50, 1 }, palegreen = { 152, 251, 152, 1 }, lightgreen = { 144, 238, 144, 1 }, mediumspringgreen = { 0, 250, 154, 1 }, springgreen = { 0, 255, 127, 1 }, mediumseagreen = { 60, 179, 113, 1 }, seagreen = { 46, 139, 87, 1 }, forestgreen = { 34, 139, 34, 1 }, green = { 0, 128, 0, 1 }, darkgreen = { 0, 100, 0, 1 }, yellowgreen = { 154, 205, 50, 1 }, olivedrab = { 107, 142, 35, 1 }, olive = { 128, 128, 0, 1 }, darkolivegreen = { 85, 107, 47, 1 }, mediumaquamarine = { 102, 205, 170, 1 }, darkseagreen = { 143, 188, 139, 1 }, lightseagreen = { 32, 178, 170, 1 }, darkcyan = { 0, 139, 139, 1 }, teal = { 0, 128, 128, 1 }, aqua = { 0, 255, 255, 1 }, cyan = { 0, 255, 255, 1 }, lightcyan = { 224, 255, 255, 1 }, paleturquoise = { 175, 238, 238, 1 }, aquamarine = { 127, 255, 212, 1 }, turquoise = { 64, 224, 208, 1 }, mediumturquoise = { 72, 209, 204, 1 }, darkturquoise = { 0, 206, 209, 1 }, cadetblue = { 95, 158, 160, 1 }, steelblue = { 70, 130, 180, 1 }, lightsteelblue = { 176, 196, 222, 1 }, powderblue = { 176, 224, 230, 1 }, lightblue = { 173, 216, 230, 1 }, skyblue = { 135, 206, 235, 1 }, lightskyblue = { 135, 206, 250, 1 }, deepskyblue = { 0, 191, 255, 1 }, dodgerblue = { 30, 144, 255, 1 }, cornflowerblue = { 100, 149, 237, 1 }, royalblue = { 65, 105, 225, 1 }, blue = { 0, 0, 255, 1 }, mediumblue = { 0, 0, 205, 1 }, darkblue = { 0, 0, 139, 1 }, navy = { 0, 0, 128, 1 }, midnightblue = { 25, 25, 112, 1 }, cornsilk = { 255, 248, 220, 1 }, blanchedalmond = { 255, 235, 205, 1 }, bisque = { 255, 228, 196, 1 }, navajowhite = { 255, 222, 173, 1 }, wheat = { 245, 222, 179, 1 }, burlywood = { 222, 184, 135, 1 }, tan = { 210, 180, 140, 1 }, rosybrown = { 188, 143, 143, 1 }, sandybrown = { 244, 164, 96, 1 }, goldenrod = { 218, 165, 32, 1 }, darkgoldenrod = { 184, 134, 11, 1 }, peru = { 205, 133, 63, 1 }, chocolate = { 210, 105, 30, 1 }, saddlebrown = { 139, 69, 19, 1 }, sienna = { 160, 82, 45, 1 }, brown = { 165, 42, 42, 1 }, maroon = { 128, 0, 0, 1 }, white = { 255, 255, 255, 1 }, snow = { 255, 250, 250, 1 }, honeydew = { 240, 255, 240, 1 }, mintcream = { 245, 255, 250, 1 }, azure = { 240, 255, 255, 1 }, aliceblue = { 240, 248, 255, 1 }, ghostwhite = { 248, 248, 255, 1 }, whitesmoke = { 245, 245, 245, 1 }, seashell = { 255, 245, 238, 1 }, beige = { 245, 245, 220, 1 }, oldlace = { 253, 245, 230, 1 }, floralwhite = { 255, 250, 240, 1 }, ivory = { 255, 255, 240, 1 }, antiquewhite = { 250, 235, 215, 1 }, linen = { 250, 240, 230, 1 }, lavenderblush = { 255, 240, 245, 1 }, mistyrose = { 255, 228, 225, 1 }, gainsboro = { 220, 220, 220, 1 }, lightgray = { 211, 211, 211, 1 }, silver = { 192, 192, 192, 1 }, darkgray = { 169, 169, 169, 1 }, gray = { 128, 128, 128, 1 }, dimgray = { 105, 105, 105, 1 }, lightslategray = { 119, 136, 153, 1 }, slategray = { 112, 128, 144, 1 }, darkslategray = { 47, 79, 79, 1 }, black = { 0, 0, 0, 1 } }
--- TODO Combine this with Color class
+ColorTables.theme = { yellow = { 0.83, 1, 0, 1 } }
 
-ColorUtils = {}
-
-ColorUtils.theme_yellow = { 0.83, 1, 0, 1 }
-
-function ColorUtils.is_valid_hex_code(s)
-    s = s:gsub("#", "")
-    local invalidChars = string.match(s, "[^0-9a-fA-F]+")
-    local hasValidChars = invalidChars == nil
-    local isValidLen = #s == 3 or #s == 4 or #s == 6 or #s == 8
-    return hasValidChars and isValidLen
-end
-
-function ColorUtils.hex_code_to_color(s)
-    if not ColorUtils.is_valid_hex_code(s) then
-        error("ValueError: Not a valid hex code.")
-    end
-
-    s = tostring(s):gsub("#", "")
-    local color = {}
-    if #s == 3 or #s == 4 then
-        table.insert(color, tonumber(s:sub(1, 1):rep(2), 16) / 255)
-        table.insert(color, tonumber(s:sub(2, 2):rep(2), 16) / 255)
-        table.insert(color, tonumber(s:sub(3, 3):rep(2), 16) / 255)
-        table.insert(color, (#s == 4) and tonumber(s:sub(4, 4):rep(2), 16) / 255 or 1)
-    elseif #s == 6 or #s == 8 then
-        table.insert(color, tonumber(s:sub(1, 2), 16) / 255)
-        table.insert(color, tonumber(s:sub(3, 4), 16) / 255)
-        table.insert(color, tonumber(s:sub(5, 6), 16) / 255)
-        table.insert(color, (#s == 8) and tonumber(s:sub(7, 8), 16) / 255 or 1)
-    end
-
-    return color
-end
+ColorTables.html = { indianred = { 205, 92, 92, 1 }, lightcoral = { 240, 128, 128, 1 }, salmon = { 250, 128, 114, 1 }, darksalmon = { 233, 150, 122, 1 }, lightsalmon = { 255, 160, 122, 1 }, crimson = { 220, 20, 60, 1 }, red = { 255, 0, 0, 1 }, firebrick = { 178, 34, 34, 1 }, darkred = { 139, 0, 0, 1 }, pink = { 255, 192, 203, 1 }, lightpink = { 255, 182, 193, 1 }, hotpink = { 255, 105, 180, 1 }, deeppink = { 255, 20, 147, 1 }, mediumvioletred = { 199, 21, 133, 1 }, palevioletred = { 219, 112, 147, 1 }, coral = { 255, 127, 80, 1 }, tomato = { 255, 99, 71, 1 }, orangered = { 255, 69, 0, 1 }, darkorange = { 255, 140, 0, 1 }, orange = { 255, 165, 0, 1 }, gold = { 255, 215, 0, 1 }, yellow = { 255, 255, 0, 1 }, lightyellow = { 255, 255, 224, 1 }, lemonchiffon = { 255, 250, 205, 1 }, lightgoldenrodyellow = { 250, 250, 210, 1 }, papayawhip = { 255, 239, 213, 1 }, moccasin = { 255, 228, 181, 1 }, peachpuff = { 255, 218, 185, 1 }, palegoldenrod = { 238, 232, 170, 1 }, khaki = { 240, 230, 140, 1 }, darkkhaki = { 189, 183, 107, 1 }, lavender = { 230, 230, 250, 1 }, thistle = { 216, 191, 216, 1 }, plum = { 221, 160, 221, 1 }, violet = { 238, 130, 238, 1 }, orchid = { 218, 112, 214, 1 }, fuchsia = { 255, 0, 255, 1 }, magenta = { 255, 0, 255, 1 }, mediumorchid = { 186, 85, 211, 1 }, mediumpurple = { 147, 112, 219, 1 }, rebeccapurple = { 102, 51, 153, 1 }, blueviolet = { 138, 43, 226, 1 }, darkviolet = { 148, 0, 211, 1 }, darkorchid = { 153, 50, 204, 1 }, darkmagenta = { 139, 0, 139, 1 }, purple = { 128, 0, 128, 1 }, indigo = { 75, 0, 130, 1 }, slateblue = { 106, 90, 205, 1 }, darkslateblue = { 72, 61, 139, 1 }, mediumslateblue = { 123, 104, 238, 1 }, greenyellow = { 173, 255, 47, 1 }, chartreuse = { 127, 255, 0, 1 }, lawngreen = { 124, 252, 0, 1 }, lime = { 0, 255, 0, 1 }, limegreen = { 50, 205, 50, 1 }, palegreen = { 152, 251, 152, 1 }, lightgreen = { 144, 238, 144, 1 }, mediumspringgreen = { 0, 250, 154, 1 }, springgreen = { 0, 255, 127, 1 }, mediumseagreen = { 60, 179, 113, 1 }, seagreen = { 46, 139, 87, 1 }, forestgreen = { 34, 139, 34, 1 }, green = { 0, 128, 0, 1 }, darkgreen = { 0, 100, 0, 1 }, yellowgreen = { 154, 205, 50, 1 }, olivedrab = { 107, 142, 35, 1 }, olive = { 128, 128, 0, 1 }, darkolivegreen = { 85, 107, 47, 1 }, mediumaquamarine = { 102, 205, 170, 1 }, darkseagreen = { 143, 188, 139, 1 }, lightseagreen = { 32, 178, 170, 1 }, darkcyan = { 0, 139, 139, 1 }, teal = { 0, 128, 128, 1 }, aqua = { 0, 255, 255, 1 }, cyan = { 0, 255, 255, 1 }, lightcyan = { 224, 255, 255, 1 }, paleturquoise = { 175, 238, 238, 1 }, aquamarine = { 127, 255, 212, 1 }, turquoise = { 64, 224, 208, 1 }, mediumturquoise = { 72, 209, 204, 1 }, darkturquoise = { 0, 206, 209, 1 }, cadetblue = { 95, 158, 160, 1 }, steelblue = { 70, 130, 180, 1 }, lightsteelblue = { 176, 196, 222, 1 }, powderblue = { 176, 224, 230, 1 }, lightblue = { 173, 216, 230, 1 }, skyblue = { 135, 206, 235, 1 }, lightskyblue = { 135, 206, 250, 1 }, deepskyblue = { 0, 191, 255, 1 }, dodgerblue = { 30, 144, 255, 1 }, cornflowerblue = { 100, 149, 237, 1 }, royalblue = { 65, 105, 225, 1 }, blue = { 0, 0, 255, 1 }, mediumblue = { 0, 0, 205, 1 }, darkblue = { 0, 0, 139, 1 }, navy = { 0, 0, 128, 1 }, midnightblue = { 25, 25, 112, 1 }, cornsilk = { 255, 248, 220, 1 }, blanchedalmond = { 255, 235, 205, 1 }, bisque = { 255, 228, 196, 1 }, navajowhite = { 255, 222, 173, 1 }, wheat = { 245, 222, 179, 1 }, burlywood = { 222, 184, 135, 1 }, tan = { 210, 180, 140, 1 }, rosybrown = { 188, 143, 143, 1 }, sandybrown = { 244, 164, 96, 1 }, goldenrod = { 218, 165, 32, 1 }, darkgoldenrod = { 184, 134, 11, 1 }, peru = { 205, 133, 63, 1 }, chocolate = { 210, 105, 30, 1 }, saddlebrown = { 139, 69, 19, 1 }, sienna = { 160, 82, 45, 1 }, brown = { 165, 42, 42, 1 }, maroon = { 128, 0, 0, 1 }, white = { 255, 255, 255, 1 }, snow = { 255, 250, 250, 1 }, honeydew = { 240, 255, 240, 1 }, mintcream = { 245, 255, 250, 1 }, azure = { 240, 255, 255, 1 }, aliceblue = { 240, 248, 255, 1 }, ghostwhite = { 248, 248, 255, 1 }, whitesmoke = { 245, 245, 245, 1 }, seashell = { 255, 245, 238, 1 }, beige = { 245, 245, 220, 1 }, oldlace = { 253, 245, 230, 1 }, floralwhite = { 255, 250, 240, 1 }, ivory = { 255, 255, 240, 1 }, antiquewhite = { 250, 235, 215, 1 }, linen = { 250, 240, 230, 1 }, lavenderblush = { 255, 240, 245, 1 }, mistyrose = { 255, 228, 225, 1 }, gainsboro = { 220, 220, 220, 1 }, lightgray = { 211, 211, 211, 1 }, silver = { 192, 192, 192, 1 }, darkgray = { 169, 169, 169, 1 }, gray = { 128, 128, 128, 1 }, dimgray = { 105, 105, 105, 1 }, lightslategray = { 119, 136, 153, 1 }, slategray = { 112, 128, 144, 1 }, darkslategray = { 47, 79, 79, 1 }, black = { 0, 0, 0, 1 } }
 Utils = {}
 
 function Utils.process_args(class_meta, ...)
@@ -1388,6 +1375,8 @@ Element = {}
 Element.__index = Element
 
 Element.id = 1
+-- TODO Add docs
+
 Point = {}
 
 Point.id = 1
@@ -1947,15 +1936,12 @@ function Layer:draw()
     end
 end
 -- TODO Refactor the print method
+-- TODO Condense Mirror functions
 
 Line = {}
 Line.__index = Line
 
 Line.id = 1
-
-Line.attrs = {
-    color = theme.text
-}
 
 Line.styles = {
     normal = {
@@ -1989,11 +1975,6 @@ Line.__index = function(instance, key)
         if style_val ~= nil then
             return style_val
         end
-
-        local attr = Line.attrs[key]
-        if attr ~= nil then
-            return attr
-        end
     end
 
     return Line[key]
@@ -2017,7 +1998,8 @@ function Line.new(vec2_a, vec2_b, options)
     self.o = options or {}
 
     self.style = self.o.style or "normal"
-    self.color = self.o.color or Point.attrs.color
+    local c = self.o.color or Color.new()
+    self.color = Color.assign_color(c)
 
     for key, value in pairs(self.o) do
         self[key] = value
@@ -2027,7 +2009,7 @@ function Line.new(vec2_a, vec2_b, options)
 end
 
 function Line:draw_normal()
-    local paint = color_paint(self.color)
+    local paint = Paint.create(self.color, self.gradient)
     stroke_segment(
         { self.vec2_a.x, self.vec2_a.y },
         { self.vec2_b.x, self.vec2_b.y },
@@ -2045,7 +2027,7 @@ function Line:draw_dashed()
         current_distance = math.min(current_distance + self.dash_length, total_distance)
         local end_dash = self.vec2_a:add(direction:mult(current_distance))
 
-        local paint = color_paint(self.color)
+        local paint = Paint.create(self.color, self.gradient)
         stroke_segment(
             { start_dash.x, start_dash.y },
             { end_dash.x, end_dash.y },
@@ -2063,7 +2045,7 @@ function Line:draw_dotted()
     local current_distance = 0
     while current_distance <= total_distance do
         local dot_position = self.vec2_a:add(direction:mult(current_distance))
-        local paint = color_paint(self.color)
+        local paint = Paint.create(self.color, self.gradient)
 
         fill_circle({ dot_position.x, dot_position.y }, self.dot_radius, paint)
 
@@ -2086,7 +2068,7 @@ function Line:draw_char()
         self.vec2_a.y + self.char_vertex_nudge[2]
     }
     scale { char_scale_factor, char_scale_factor }
-    text(self.char_vertex, self.color)
+    text(self.char_vertex, self.color:table())
     restore()
 
     local current_distance = self.space_length
@@ -2096,7 +2078,7 @@ function Line:draw_char()
         save()
         translate { char_position.x, char_position.y }
         scale { char_scale_factor, char_scale_factor }
-        text(self.char, self.color)
+        text(self.char, self.color:table())
         restore()
 
         current_distance = current_distance + self.space_length
@@ -2109,7 +2091,7 @@ function Line:draw_char()
             self.vec2_b.y + self.char_vertex_nudge[2]
         }
         scale { char_scale_factor, char_scale_factor }
-        text(self.char_vertex, self.color)
+        text(self.char_vertex, self.color:table())
         restore()
     end
 end
@@ -2375,6 +2357,10 @@ function LineGroup:print(places)
     print("  space_length: " .. space_length)
     print("")
 end
+-- TODO Add methods for distorting height and width separately
+-- TODO Add style for orientation
+-- TODO Add style for circular
+
 Text = {}
 Text.__index = Text
 
@@ -2386,7 +2372,6 @@ function Text.new(string, options)
     Element.id = Element.id + 1
     self.class_id = Text.id
     Text.id = Text.id + 1
-
 
     self.string = string or ""
     self.o = options or {}
@@ -2588,7 +2573,7 @@ function Debug.Logger()
             elseif s:sub(1, 3) == ":: " then
                 text("> " .. s, theme.azureHighlight)
             elseif string.match(s, "^:%S") then
-                text("> " .. s, ColorUtils.theme_yellow)
+                text("> " .. s, ColorTables.theme.yellow)
             elseif s:sub(1, 9) == "    param" then
                 local scale_factor = 0.75
                 local dim_green = {
