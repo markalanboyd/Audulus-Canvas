@@ -57,6 +57,26 @@ function Color.new(color_table)
     return self
 end
 
+function Color.__add(self, other)
+    return self:clone():add(other)
+end
+
+function Color.__sub(self, other)
+    return self:clone():sub(other)
+end
+
+function Color.__mul(self, other)
+    return self:clone():mult(other)
+end
+
+function Color.__div(self, other)
+    return self:clone():div(other)
+end
+
+function Color.__unm(self)
+    return self:clone():invert()
+end
+
 function Color.is_color(obj)
     return getmetatable(obj) == Color
 end
@@ -157,6 +177,54 @@ function Color.print_swatches(colors)
         local x = -i * size
         fill_rect({ x, 0 }, { x + size, size }, 0, color:to_paint())
     end
+end
+
+function Color.red()
+    return Color.new({ 1, 0, 0, 1 })
+end
+
+function Color.orange()
+    return Color.new({ 1, 0.647, 0, 1 })
+end
+
+function Color.yellow()
+    return Color.new({ 1, 1, 0, 1 })
+end
+
+function Color.green()
+    return Color.new({ 0, 1, 0, 1 })
+end
+
+function Color.purple()
+    return Color.new({ 0.5, 0, 0.5, 1 })
+end
+
+function Color.blue()
+    return Color.new({ 0, 0, 1, 1 })
+end
+
+function Color:add(color)
+    local t = Math.vmap(self:table(), color:table(), Math.add)
+    local color_table = Math.map(t, Math.clamp_normal)
+    return Color.new(color_table)
+end
+
+function Color:sub(color)
+    local t = Math.vmap(self:table(), color:table(), Math.sub)
+    local color_table = Math.map(t, Math.clamp_normal)
+    return Color.new(color_table)
+end
+
+function Color:mult(color)
+    local t = Math.vmap(self:table(), color:table(), Math.mult)
+    local color_table = Math.map(t, Math.clamp_normal)
+    return Color.new(color_table)
+end
+
+function Color:div(color)
+    local t = Math.vmap(self:table(), color:table(), Math.div)
+    local color_table = Math.map(t, Math.clamp_normal)
+    return Color.new(color_table)
 end
 
 function Color:analogous(offset_degrees)
@@ -484,6 +552,17 @@ function Utils.get_peak_memory(interval)
 
     return _PeakMemory
 end
+
+function Utils.add_tables(t1, t2)
+    local result = {}
+    for i = 1, #t1 do
+        local sum = Math.clamp(t1[i] + t2[i], 0, 1)
+        table.insert(result, sum)
+    end
+    return result
+end
+
+
 Vec2 = {}
 Vec2.__index = Vec2
 
@@ -503,58 +582,52 @@ end
 
 -- Metamethods --
 
-function Vec2.__add(a, b)
-    return Vec2.new(a.x + b.x, a.y + b.y)
+function Vec2.__add(self, other)
+    return Vec2.new(self.x + other.x, self.y + other.y)
 end
 
-function Vec2.__sub(a, b)
-    return Vec2.new(a.x - b.x, a.y - b.y)
+function Vec2.__sub(self, other)
+    return Vec2.new(self.x - other.x, self.y - other.y)
 end
 
-function Vec2.__mul(a, b)
-    return Vec2.new(a.x * b.x, a.y * b.y)
+function Vec2.__mul(self, other)
+    return Vec2.new(self.x * other.x, self.y * other.y)
 end
 
-function Vec2.__div(a, b)
-    local x = b.x ~= 0 and a.x / b.x or 0
-    local y = b.y ~= 0 and a.y / b.y or 0
+function Vec2.__div(self, other)
+    local x = other.x ~= 0 and self.x / other.x or 0
+    local y = other.y ~= 0 and self.y / other.y or 0
     return Vec2.new(x, y)
 end
 
-function Vec2.__mod(a, b)
-    local x = b.x ~= 0 and a.x % b.x or 0
-    local y = b.y ~= 0 and a.y % b.y or 0
+function Vec2.__mod(self, other)
+    local x = other.x ~= 0 and self.x % other.x or 0
+    local y = other.y ~= 0 and self.y % other.y or 0
     return Vec2.new(x, y)
 end
 
-function Vec2.__unm(a)
-    return Vec2.new(-a.x, -a.y)
+function Vec2.__unm(self)
+    return Vec2.new(-self.x, -self.y)
 end
 
-function Vec2.__pow(a, b)
-    return Vec2.new(Math.pow(a.x, b.x), Math.pow(a.y, b.y))
+function Vec2.__pow(self, other)
+    return Vec2.new(Math.pow(self.x, other.x), Math.pow(self.y, other.y))
 end
 
-function Vec2.__eq(a, b)
-    return a.x == b.x and a.y == b.y
+function Vec2.__eq(self, other)
+    return self.x == other.x and self.y == other.y
 end
 
-function Vec2.__lt(a, b)
-    return a:magnitude() < b:magnitude()
+function Vec2.__lt(self, other)
+    return self:magnitude() < other:magnitude()
 end
 
-function Vec2.__le(a, b)
-    return a:magnitude() <= b:magnitude()
+function Vec2.__le(self, other)
+    return self:magnitude() <= other:magnitude()
 end
 
-function Vec2.__tostring(a)
-    return "{ x = " .. a.x .. ", y = " .. a.y .. " }"
-end
-
-function Vec2.__concat(a, b)
-    local x = tonumber(tostring(a.x) .. tostring(b.x))
-    local y = tonumber(tostring(a.y) .. tostring(b.y))
-    return Vec2.new(x, y)
+function Vec2.__tostring(self)
+    return "{ x = " .. self.x .. ", y = " .. self.y .. " }"
 end
 
 function Vec2.is_single_num(a, b)
@@ -1240,6 +1313,10 @@ function Math.clamp(value, min, max)
     return math.min(math.max(value, min), max)
 end
 
+function Math.clamp_normal(value)
+    return math.min(math.max(value, 0), 1)
+end
+
 function Math.deg_to_rad(degrees)
     return degrees * math.pi / 180
 end
@@ -1281,6 +1358,38 @@ end
 
 function Math.truncate(n, places)
     return math.floor(n * 10 ^ places) / 10 ^ places
+end
+
+function Math.map(array, func)
+    local result = {}
+    for i = 1, #array do
+        table.insert(result, func(array[i]))
+    end
+    return result
+end
+
+function Math.vmap(array1, array2, func)
+    if #array1 ~= #array2 then
+        error("Arrays must be of equal length")
+    end
+
+    local result = {}
+    for i = 1, #array1 do
+        table.insert(result, func(array1[i], array2[i]))
+    end
+    return result
+end
+
+function Math.add(x, y)
+    return x + y
+end
+
+function Math.sub(x, y)
+    return x - y
+end
+
+function Math.mult(x, y)
+    return x * y
 end
 
 function Math.docs()
@@ -1902,6 +2011,7 @@ end
 -- TODO - Set a background that is always the lowest layer
 -- TODO - Set a foreground that is always the highest layer
 -- TODO - Attach origin to background/foreground based on preference
+-- TODO - Global layer system vs local layer system - objects can have their own layers
 Layer = {}
 Layer.__index = Layer
 Layer.layers = {}
