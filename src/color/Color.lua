@@ -1,5 +1,3 @@
--- TODO Add gradient
-
 Color = {}
 Color.__index = Color
 
@@ -337,4 +335,26 @@ function Color:print_schemes(origin)
 
 
     restore()
+end
+
+function Color:print(places)
+    places = places or 2
+
+    local element_id = tostring(self.element_id)
+    local class_id = tostring(self.class_id)
+    local color_table = tostring(Utils.table_to_string(self.color_table, true, places))
+    local r = tostring(Math.truncate(self.r, places))
+    local g = tostring(Math.truncate(self.g, places))
+    local b = tostring(Math.truncate(self.b, places))
+    local a = tostring(Math.truncate(self.a, places))
+
+    print("-- Color " .. element_id .. ":" .. class_id .. " --")
+    print("  element_id: " .. element_id)
+    print("  class_id: " .. class_id)
+    print("  color_table: " .. color_table)
+    print("  r: " .. r)
+    print("  g: " .. g)
+    print("  b: " .. b)
+    print("  a: " .. a)
+    print("")
 end

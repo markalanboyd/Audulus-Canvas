@@ -1,3 +1,7 @@
+-- TODO Add methods for distorting height and width separately
+-- TODO Add style for orientation
+-- TODO Add style for circular
+
 Text = {}
 Text.__index = Text
 
@@ -9,7 +13,6 @@ function Text.new(string, options)
     Element.id = Element.id + 1
     self.class_id = Text.id
     Text.id = Text.id + 1
-
 
     self.string = string or ""
     self.o = options or {}

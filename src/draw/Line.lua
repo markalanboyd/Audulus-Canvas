@@ -1,13 +1,10 @@
 -- TODO Refactor the print method
+-- TODO Condense Mirror functions
 
 Line = {}
 Line.__index = Line
 
 Line.id = 1
-
-Line.attrs = {
-    color = theme.text
-}
 
 Line.styles = {
     normal = {
@@ -41,11 +38,6 @@ Line.__index = function(instance, key)
         if style_val ~= nil then
             return style_val
         end
-
-        local attr = Line.attrs[key]
-        if attr ~= nil then
-            return attr
-        end
     end
 
     return Line[key]
@@ -69,7 +61,8 @@ function Line.new(vec2_a, vec2_b, options)
     self.o = options or {}
 
     self.style = self.o.style or "normal"
-    self.color = self.o.color or Point.attrs.color
+    local c = self.o.color or Color.new()
+    self.color = Color.assign_color(c)
 
     for key, value in pairs(self.o) do
         self[key] = value
@@ -79,7 +72,7 @@ function Line.new(vec2_a, vec2_b, options)
 end
 
 function Line:draw_normal()
-    local paint = color_paint(self.color)
+    local paint = Paint.create(self.color, self.gradient)
     stroke_segment(
         { self.vec2_a.x, self.vec2_a.y },
         { self.vec2_b.x, self.vec2_b.y },
@@ -97,7 +90,7 @@ function Line:draw_dashed()
         current_distance = math.min(current_distance + self.dash_length, total_distance)
         local end_dash = self.vec2_a:add(direction:mult(current_distance))
 
-        local paint = color_paint(self.color)
+        local paint = Paint.create(self.color, self.gradient)
         stroke_segment(
             { start_dash.x, start_dash.y },
             { end_dash.x, end_dash.y },
@@ -115,7 +108,7 @@ function Line:draw_dotted()
     local current_distance = 0
     while current_distance <= total_distance do
         local dot_position = self.vec2_a:add(direction:mult(current_distance))
-        local paint = color_paint(self.color)
+        local paint = Paint.create(self.color, self.gradient)
 
         fill_circle({ dot_position.x, dot_position.y }, self.dot_radius, paint)
 
@@ -138,7 +131,7 @@ function Line:draw_char()
         self.vec2_a.y + self.char_vertex_nudge[2]
     }
     scale { char_scale_factor, char_scale_factor }
-    text(self.char_vertex, self.color)
+    text(self.char_vertex, self.color:table())
     restore()
 
     local current_distance = self.space_length
@@ -148,7 +141,7 @@ function Line:draw_char()
         save()
         translate { char_position.x, char_position.y }
         scale { char_scale_factor, char_scale_factor }
-        text(self.char, self.color)
+        text(self.char, self.color:table())
         restore()
 
         current_distance = current_distance + self.space_length
@@ -161,7 +154,7 @@ function Line:draw_char()
             self.vec2_b.y + self.char_vertex_nudge[2]
         }
         scale { char_scale_factor, char_scale_factor }
-        text(self.char_vertex, self.color)
+        text(self.char_vertex, self.color:table())
         restore()
     end
 end

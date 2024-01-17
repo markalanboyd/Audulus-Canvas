@@ -59,7 +59,7 @@ function Debug.Logger()
             elseif s:sub(1, 3) == ":: " then
                 text("> " .. s, theme.azureHighlight)
             elseif string.match(s, "^:%S") then
-                text("> " .. s, ColorUtils.theme_yellow)
+                text("> " .. s, ColorTables.theme.yellow)
             elseif s:sub(1, 9) == "    param" then
                 local scale_factor = 0.75
                 local dim_green = {
