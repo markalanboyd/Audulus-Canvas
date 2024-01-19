@@ -49,13 +49,26 @@ function Math.soft_clamp(value, min, max)
 end
 
 function Math.truncate(n, places)
-    return math.floor(n * 10 ^ places) / 10 ^ places
+    local factor = 10 ^ places
+    return math.floor(n * factor) / factor
 end
 
-function Math.map(array, func)
+function Math.map(array, func, args)
+    if #array == 0 then return {} end
+    if type(array[1]) ~= "table" then
+        local result = {}
+        for i = 1, #array do
+            result[i] = args and func(array[i], args) or func(array[i])
+        end
+        return result
+    end
+
     local result = {}
     for i = 1, #array do
-        table.insert(result, func(array[i]))
+        result[i] = {}
+        for j = 1, #array[i] do
+            result[i][j] = args and func(array[i][j], args) or func(array[i][j])
+        end
     end
     return result
 end
