@@ -1,5 +1,3 @@
--- TODO add to overloading type check to be able to divide by numbers
-
 Vec2 = {}
 V = Vec2
 Vec2.__index = Vec2
@@ -21,35 +19,31 @@ end
 -- Metamethods --
 
 function Vec2.__add(self, other)
-    return Vec2.new(self.x + other.x, self.y + other.y)
+    return self:add(other)
 end
 
 function Vec2.__sub(self, other)
-    return Vec2.new(self.x - other.x, self.y - other.y)
+    return self:sub(other)
 end
 
 function Vec2.__mul(self, other)
-    return Vec2.new(self.x * other.x, self.y * other.y)
+    return self:mult(other)
 end
 
 function Vec2.__div(self, other)
-    local x = other.x ~= 0 and self.x / other.x or 0
-    local y = other.y ~= 0 and self.y / other.y or 0
-    return Vec2.new(x, y)
+    return self:div(other)
 end
 
 function Vec2.__mod(self, other)
-    local x = other.x ~= 0 and self.x % other.x or 0
-    local y = other.y ~= 0 and self.y % other.y or 0
-    return Vec2.new(x, y)
+    return self:mod(other)
 end
 
 function Vec2.__unm(self)
-    return Vec2.new(-self.x, -self.y)
+    return self:reflect()
 end
 
 function Vec2.__pow(self, other)
-    return Vec2.new(Math.pow(self.x, other.x), Math.pow(self.y, other.y))
+    return self:pow(other)
 end
 
 function Vec2.__eq(self, other)
