@@ -1,6 +1,7 @@
 -- TODO Add docs
 
 Point = {}
+P = Point
 
 Point.id = 1
 
