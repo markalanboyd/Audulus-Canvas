@@ -1,5 +1,4 @@
 Paint = {}
-Paint.__index = Paint
 
 function Paint.create(color, gradient)
     if gradient ~= nil then
