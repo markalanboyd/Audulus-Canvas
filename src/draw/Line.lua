@@ -2,6 +2,7 @@
 -- TODO Condense Mirror functions
 
 Line = {}
+L = Line
 Line.__index = Line
 
 Line.id = 1

@@ -1,4 +1,5 @@
 Color = {}
+C = Color
 Color.__index = Color
 
 Color.id = 1

@@ -1,4 +1,7 @@
+-- TODO add to overloading type check to be able to divide by numbers
+
 Vec2 = {}
+V = Vec2
 Vec2.__index = Vec2
 
 Vec2.id = 1

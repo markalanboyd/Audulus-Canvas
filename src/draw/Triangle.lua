@@ -1,4 +1,5 @@
 Triangle = {}
+T = Triangle
 Triangle.__index = Triangle
 
 function Triangle.new(vec2_a, vec2_b, vec2_c, color)

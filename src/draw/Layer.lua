@@ -3,6 +3,7 @@
 -- TODO - Attach origin to background/foreground based on preference
 -- TODO - Global layer system vs local layer system - objects can have their own layers
 Layer = {}
+La = Layer
 Layer.__index = Layer
 Layer.layers = {}
 

@@ -1,8 +1,10 @@
 -- TODO Add methods for distorting height and width separately
 -- TODO Add style for orientation
 -- TODO Add style for circular
+-- TODO Maybe this is overkill but would be cool to be able to autosize text
 
 Text = {}
+Tx = Text
 Text.__index = Text
 
 Text.id = 1
