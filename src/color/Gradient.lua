@@ -1,4 +1,5 @@
 Gradient = {}
+G = Gradient
 Gradient.__index = Gradient
 
 Gradient.id = 1
