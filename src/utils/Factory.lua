@@ -33,3 +33,19 @@ function Factory.iter(objects, method, args)
         end
     end
 end
+
+function Factory.clone(objects)
+    local result = {}
+    for i = 1, #objects do
+        result[i] = objects[i]:clone()
+    end
+    return result
+end
+
+function Factory.clone_one(class, object)
+    local new_object = class.new()
+    for key, value in pairs(object) do
+        new_object[key] = value
+    end
+    return new_object
+end

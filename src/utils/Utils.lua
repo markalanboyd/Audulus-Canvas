@@ -1,21 +1,6 @@
+-- TODO Create method that will force numbers as strings to keep zeros to x place
+
 Utils = {}
-
-function Utils.process_args(class_meta, ...)
-    local args = { ... }
-    local processed_args
-
-    if type(args[1]) == "table" then
-        if getmetatable(args[1]) == class_meta then
-            processed_args = args
-        else
-            processed_args = args[1]
-        end
-    else
-        processed_args = args
-    end
-
-    return processed_args
-end
 
 function Utils.has_non_integer_keys(t)
     for k, _ in pairs(t) do

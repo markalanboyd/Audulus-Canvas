@@ -4,19 +4,63 @@ Color.__index = Color
 
 Color.id = 1
 
-function Color.new(color_table)
+function Color.new(...)
     local self = setmetatable({}, Color)
     self.element_id = Element.id
     Element.id = Element.id + 1
     self.class_id = Color.id
     Color.id = Color.id + 1
 
-    self.color_table = color_table or theme.text
+    local args = { ... }
+
+    self.color_table = Color.args_to_color_table(args)
     self.r = self.color_table[1]
     self.g = self.color_table[2]
     self.b = self.color_table[3]
     self.a = self.color_table[4]
     return self
+end
+
+function Color.args_to_color_table(args)
+    if Color.args_are_color_table(args) then
+        return args[1]
+    elseif Color.args_are_rgba(args) then
+        return { args[1], args[2], args[3], args[4] }
+    elseif Color.args_are_rgb(args) then
+        return { args[1], args[2], args[3], 1 }
+    elseif Color.args_are_hex_code(args) then
+        return Color.hex_to_color_table(args[1])
+    else
+        return theme.text
+    end
+end
+
+function Color.args_are_rgb(args)
+    return #args == 3 and
+        type(args[1]) == "number" and
+        type(args[2]) == "number" and
+        type(args[3]) == "number"
+end
+
+function Color.args_are_rgba(args)
+    return #args == 4 and
+        type(args[1]) == "number" and
+        type(args[2]) == "number" and
+        type(args[3]) == "number" and
+        type(args[4]) == "number"
+end
+
+function Color.args_are_color_table(args)
+    return #args == 1 and
+        type(args[1]) == "table" and
+        type(args[1][1]) == "number" and
+        type(args[1][2]) == "number" and
+        type(args[1][3]) == "number" and
+        type(args[1][4]) == "number"
+end
+
+function Color.args_are_hex_code(args)
+    return Color.is_hex_code(args[1])
 end
 
 function Color.__add(self, other)
@@ -41,6 +85,38 @@ end
 
 function Color.is_color(obj)
     return getmetatable(obj) == Color
+end
+
+function Color.is_hex_code(hex_code)
+    local s = tostring(hex_code):gsub("#", "")
+    local invalidChars = string.match(s, "[^0-9a-fA-F]+")
+    local hasValidChars = invalidChars == nil
+    local isValidLen = #s == 3 or #s == 4 or #s == 6 or #s == 8
+    return hasValidChars and isValidLen
+end
+
+function Color.hex_to_color_table(hex_code)
+    local s = tostring(hex_code):gsub("#", "")
+
+    local hex_table = {}
+    if #s == 3 or #s == 4 then
+        hex_table[1] = s:sub(1, 1):rep(2)
+        hex_table[2] = s:sub(2, 2):rep(2)
+        hex_table[3] = s:sub(3, 3):rep(2)
+        hex_table[4] = (#s == 4) and s:sub(4, 4):rep(2) or "FF"
+    elseif #s == 6 or #s == 8 then
+        hex_table[1] = s:sub(1, 2)
+        hex_table[2] = s:sub(3, 4)
+        hex_table[3] = s:sub(5, 6)
+        hex_table[4] = (#s == 8) and s:sub(7, 8) or "FF"
+    end
+
+    local color_table = {}
+    for i = 1, #hex_table do
+        color_table[i] = tonumber(hex_table[i], 16) / 255
+    end
+
+    return color_table
 end
 
 function Color.is_color_table(table)

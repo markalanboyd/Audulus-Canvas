@@ -57,16 +57,13 @@ function Point.new(vec2, options)
     self.vec2 = vec2 or Vec2.new(0, 0)
     self.o = options or {}
 
-    for key, value in pairs(self.o) do
-        self[key] = value
-    end
-
     self.style = self.o.style or "normal"
-
     local c = self.o.color or Color.new()
     self.color = Color.assign_color(c)
 
-    self.gradient = self.o.gradient or nil
+    for key, value in pairs(self.o) do
+        self[key] = value
+    end
 
     return self
 end
@@ -74,13 +71,7 @@ end
 -- Instance Methods --
 
 function Point:clone()
-    local new_point = Point.new(self.vec2)
-    for key, value in pairs(self) do
-        if key ~= "vec2" then
-            new_point[key] = value
-        end
-    end
-    return new_point
+    return Factory.clone_one(Point, self)
 end
 
 function Point:draw_coords()
@@ -148,9 +139,8 @@ function Point:draw()
 end
 
 function Point:reflect(axis)
-    local new_vec2 = self.vec2:reflect(axis)
     local new_point = self:clone()
-    new_point.vec2 = new_vec2
+    new_point.vec2:Reflect(axis)
     return new_point
 end
 
