@@ -1,7 +1,5 @@
 -- SCROLL TO BOTTOM ----------------------------------------------------
 
--- TODO implement operator overloading
-
 Gradient = {}
 G = Gradient
 Gradient.__index = Gradient
@@ -26,22 +24,80 @@ function Gradient.__add(self, other)
     return self:clone():add(other)
 end
 
+function Color.__sub(self, other)
+    return self:clone():sub(other)
+end
+
+function Color.__mul(self, other)
+    return self:clone():mult(other)
+end
+
+function Color.__div(self, other)
+    return self:clone():div(other)
+end
+
+function Color.__unm(self)
+    return self:clone():invert()
+end
+
 function Gradient:add(gradient)
-    local t1 = Math.vmap(
-        self.color1:table(),
-        gradient.color1:table(),
-        Math.add
-    )
-    local t2 = Math.vmap(
-        self.color2:table(),
-        gradient.color2:table(),
-        Math.add
-    )
-    local vec2a = self.vec2a:add(gradient.vec2a)
-    local vec2b = self.vec2b:add(gradient.vec2b)
-    local color1 = Color.new(Math.map(t1, Math.clamp_normal))
-    local color2 = Color.new(Math.map(t2, Math.clamp_normal))
-    return Gradient.new(vec2a, vec2b, color1, color2)
+    local color1 = self.color1:add(gradient.color1)
+    local color2 = self.color2:add(gradient.color2)
+    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
+end
+
+function Gradient:Add(gradient)
+    self.color1:Add(gradient.color1)
+    self.color2:Add(gradient.color2)
+    return self
+end
+
+function Gradient:sub(gradient)
+    local color1 = self.color1:sub(gradient.color1)
+    local color2 = self.color2:sub(gradient.color2)
+    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
+end
+
+function Gradient:Sub(gradient)
+    self.color1:Sub(gradient.color1)
+    self.color2:Sub(gradient.color2)
+    return self
+end
+
+function Gradient:mult(gradient)
+    local color1 = self.color1:mult(gradient.color1)
+    local color2 = self.color2:mult(gradient.color2)
+    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
+end
+
+function Gradient:Mult(gradient)
+    self.color1:Mult(gradient.color1)
+    self.color2:Mult(gradient.color2)
+    return self
+end
+
+function Gradient:div(gradient)
+    local color1 = self.color1:div(gradient.color1)
+    local color2 = self.color2:div(gradient.color2)
+    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
+end
+
+function Gradient:Div(gradient)
+    self.color1:Div(gradient.color1)
+    self.color2:Div(gradient.color2)
+    return self
+end
+
+function Gradient:invert()
+    local color1 = self.color1:invert()
+    local color2 = self.color2:invert()
+    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
+end
+
+function Gradient:Invert()
+    self.color1:Invert()
+    self.color2:Invert()
+    return self
 end
 
 function Gradient:clone()
@@ -71,19 +127,63 @@ Color.__index = Color
 
 Color.id = 1
 
-function Color.new(color_table)
+function Color.new(...)
     local self = setmetatable({}, Color)
     self.element_id = Element.id
     Element.id = Element.id + 1
     self.class_id = Color.id
     Color.id = Color.id + 1
 
-    self.color_table = color_table or theme.text
+    local args = { ... }
+
+    self.color_table = Color.args_to_color_table(args)
     self.r = self.color_table[1]
     self.g = self.color_table[2]
     self.b = self.color_table[3]
     self.a = self.color_table[4]
     return self
+end
+
+function Color.args_to_color_table(args)
+    if Color.args_are_color_table(args) then
+        return args[1]
+    elseif Color.args_are_rgba(args) then
+        return { args[1], args[2], args[3], args[4] }
+    elseif Color.args_are_rgb(args) then
+        return { args[1], args[2], args[3], 1 }
+    elseif Color.args_are_hex_code(args) then
+        return Color.hex_to_color_table(args[1])
+    else
+        return theme.text
+    end
+end
+
+function Color.args_are_rgb(args)
+    return #args == 3 and
+        type(args[1]) == "number" and
+        type(args[2]) == "number" and
+        type(args[3]) == "number"
+end
+
+function Color.args_are_rgba(args)
+    return #args == 4 and
+        type(args[1]) == "number" and
+        type(args[2]) == "number" and
+        type(args[3]) == "number" and
+        type(args[4]) == "number"
+end
+
+function Color.args_are_color_table(args)
+    return #args == 1 and
+        type(args[1]) == "table" and
+        type(args[1][1]) == "number" and
+        type(args[1][2]) == "number" and
+        type(args[1][3]) == "number" and
+        type(args[1][4]) == "number"
+end
+
+function Color.args_are_hex_code(args)
+    return Color.is_hex_code(args[1])
 end
 
 function Color.__add(self, other)
@@ -108,6 +208,38 @@ end
 
 function Color.is_color(obj)
     return getmetatable(obj) == Color
+end
+
+function Color.is_hex_code(hex_code)
+    local s = tostring(hex_code):gsub("#", "")
+    local invalidChars = string.match(s, "[^0-9a-fA-F]+")
+    local hasValidChars = invalidChars == nil
+    local isValidLen = #s == 3 or #s == 4 or #s == 6 or #s == 8
+    return hasValidChars and isValidLen
+end
+
+function Color.hex_to_color_table(hex_code)
+    local s = tostring(hex_code):gsub("#", "")
+
+    local hex_table = {}
+    if #s == 3 or #s == 4 then
+        hex_table[1] = s:sub(1, 1):rep(2)
+        hex_table[2] = s:sub(2, 2):rep(2)
+        hex_table[3] = s:sub(3, 3):rep(2)
+        hex_table[4] = (#s == 4) and s:sub(4, 4):rep(2) or "FF"
+    elseif #s == 6 or #s == 8 then
+        hex_table[1] = s:sub(1, 2)
+        hex_table[2] = s:sub(3, 4)
+        hex_table[3] = s:sub(5, 6)
+        hex_table[4] = (#s == 8) and s:sub(7, 8) or "FF"
+    end
+
+    local color_table = {}
+    for i = 1, #hex_table do
+        color_table[i] = tonumber(hex_table[i], 16) / 255
+    end
+
+    return color_table
 end
 
 function Color.is_color_table(table)
@@ -554,23 +686,6 @@ end
 
 Utils = {}
 
-function Utils.process_args(class_meta, ...)
-    local args = { ... }
-    local processed_args
-
-    if type(args[1]) == "table" then
-        if getmetatable(args[1]) == class_meta then
-            processed_args = args
-        else
-            processed_args = args[1]
-        end
-    else
-        processed_args = args
-    end
-
-    return processed_args
-end
-
 function Utils.has_non_integer_keys(t)
     for k, _ in pairs(t) do
         if type(k) ~= "number" or k ~= math.floor(k) or k < 1 then
@@ -700,62 +815,61 @@ function Vec2.__tostring(self)
     return "{ x = " .. self.x .. ", y = " .. self.y .. " }"
 end
 
-function Vec2.is_single_num(a, b)
-    return type(a) == "number" and not b
+function Vec2.args_are_vec2(args)
+    return #args == 1 and
+        getmetatable(args[1]) == Vec2
 end
 
-function Vec2.is_vec2(obj)
-    return getmetatable(obj) == Vec2
+function Vec2.args_are_xy_pair(args)
+    return #args == 2 and
+        type(args[1]) == "number" and
+        type(args[2]) == "number"
 end
 
-function Vec2.is_xy_pair(x, y)
-    return type(x) == "number" and type(y) == "number"
+function Vec2.args_are_single_number(args)
+    return #args == 1 and
+        type(args[1]) == "number"
 end
 
-function Vec2.parse_other(a, b, func_name)
-    if Vec2.is_single_num(a, b) then
-        return Vec2.new(a, a)
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(a, b)
-    elseif Vec2.is_vec2(a) then
-        return a
-    else
-        error("Invalid arguments to " .. func_name)
+function Vec2.args_to_vec2(args)
+    if Vec2.args_are_vec2(args) then
+        return args[1]
+    elseif Vec2.args_are_xy_pair(args) then
+        return Vec2.new(args[1], args[2])
+    elseif Vec2.args_are_single_number(args) then
+        return Vec2.new(args[1], args[1])
+    end
+end
+
+function Vec2.args_to_xy_table(args)
+    if Vec2.args_are_vec2(args) then
+        return { args[1].x, args[1].y }
+    elseif Vec2.args_are_xy_pair(args) then
+        return { args[1], args[2] }
+    elseif Vec2.args_are_single_number(args) then
+        return { args[1], args[1] }
     end
 end
 
 -- Instance Methods --
 
-function Vec2:add(a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(self.x + a.x, self.y + a.y)
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(self.x + a, self.y + a)
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(self.x + a, self.y + b)
-    else
-        error("Invalid arguments for Vec2:add")
-    end
+function Vec2:add(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(self.x + other[1], self.y + other[2])
 end
 
-function Vec2:Add(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = self.x + a.x
-        self.y = self.y + a.y
-    elseif Vec2.is_single_num(a, b) then
-        self.x = self.x + a
-        self.y = self.y + a
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = self.x + a
-        self.y = self.y + b
-    else
-        error("Invalid arguments for Vec2:Add")
-    end
+function Vec2:Add(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = self.x + other[1]
+    self.y = self.y + other[2]
     return self
 end
 
-function Vec2:angle(a, b)
-    local other = Vec2.parse_other(a, b, "Vec2:angle")
+function Vec2:angle(...)
+    local args = { ... }
+    local other = Vec2.args_to_vec2(args)
     local dot_product = self:dot(other)
     local mag_product = self:magnitude() * other:magnitude()
     if mag_product > 0 then
@@ -769,183 +883,91 @@ function Vec2:clone()
     return Vec2.new(self.x, self.y)
 end
 
-function Vec2:distance(a, b)
-    local dx
-    local dy
-
-    if Vec2.is_vec2(a) then
-        dx = self.x - a.x
-        dy = self.y - a.y
-    elseif Vec2.is_single_num(a, b) then
-        dx = self.x - a
-        dy = self.y - a
-    elseif Vec2.is_xy_pair(a, b) then
-        dx = self.x - a
-        dy = self.y - b
-    else
-        error("Incorrect arguments to Vec2:distance")
-    end
-
+function Vec2:distance(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    local dx = self.x - other[1]
+    local dy = self.y - other[2]
     return math.sqrt(dx * dx + dy * dy)
 end
 
-function Vec2:div(a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(
-            Math.div(self.x, a.x),
-            Math.div(self.y, a.y)
-        )
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(
-            Math.div(self.x, a),
-            Math.div(self.y, a)
-        )
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(
-            Math.div(self.x, a),
-            Math.div(self.y, b)
-        )
-    else
-        error("Invalid arguments for Vec2:div")
-    end
+function Vec2:div(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        Math.div(self.x, other[1]),
+        Math.div(self.x, other[2])
+    )
 end
 
-function Vec2:Div(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = Math.div(self.x, a.x)
-        self.y = Math.div(self.y, a.y)
-    elseif Vec2.is_single_num(a, b) then
-        self.x = Math.div(self.x, a)
-        self.y = Math.div(self.y, a)
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = Math.div(self.x, a)
-        self.y = Math.div(self.y, b)
-    else
-        error("Invalid arguments for Vec2:Div")
-    end
+function Vec2:Div(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = Math.div(self.x, other[1])
+    self.y = Math.div(self.y, other[2])
     return self
 end
 
-function Vec2:dot(a, b)
-    if Vec2.is_vec2(a) then
-        return self.x * a.x + self.y * a.y
-    elseif Vec2.is_single_num(a, b) then
-        return self.x * a + self.y * a
-    elseif Vec2.is_xy_pair(a, b) then
-        return self.x * a + self.y * b
-    else
-        error("Invalid arguments to Vec2:dot")
-    end
+function Vec2:dot(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return self.x * other[1] + self.y * other[2]
 end
 
-function Vec2:lerp(t, a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(
-            (1 - t) * self.x + t * a.x,
-            (1 - t) * self.y + t * a.y
-        )
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(
-            (1 - t) * self.x + t * a,
-            (1 - t) * self.y + t * a
-        )
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(
-            (1 - t) * self.x + t * a,
-            (1 - t) * self.y + t * b
-        )
-    else
-        error("Invalid arguments to Vec2:lerp")
-    end
+function Vec2:lerp(t, ...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        (1 - t) * self.x + t * other[1],
+        (1 - t) * self.y + t * other[2]
+    )
 end
 
-function Vec2:lerp_clamped(t, a, b)
+function Vec2:lerp_clamped(t, ...)
     t = Math.clamp(t, 0, 1)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(
-            (1 - t) * self.x + t * a.x,
-            (1 - t) * self.y + t * a.y
-        )
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(
-            (1 - t) * self.x + t * a,
-            (1 - t) * self.y + t * a
-        )
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(
-            (1 - t) * self.x + t * a,
-            (1 - t) * self.y + t * b
-        )
-    else
-        error("Invalid arguments to Vec2:lerp_clamped")
-    end
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        (1 - t) * self.x + t * other[1],
+        (1 - t) * self.y + t * other[2]
+    )
 end
 
 function Vec2:magnitude()
     return math.sqrt(self.x * self.x + self.y * self.y)
 end
 
-function Vec2:mod(a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(
-            Math.mod(self.x, a.x),
-            Math.mod(self.y, a.y)
-        )
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(
-            Math.mod(self.x, a),
-            Math.mod(self.y, a)
-        )
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(
-            Math.mod(self.x, a),
-            Math.mod(self.y, b)
-        )
-    else
-        error("Invalid arguments for Vec2:mod")
-    end
+function Vec2:mod(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        Math.mod(self.x, other[1]),
+        Math.mod(self.y, other[2])
+    )
 end
 
-function Vec2:Mod(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = Math.mod(self.x, a.x)
-        self.y = Math.mod(self.y, a.y)
-    elseif Vec2.is_single_num(a, b) then
-        self.x = Math.mod(self.x, a)
-        self.y = Math.mod(self.y, a)
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = Math.mod(self.x, a)
-        self.y = Math.mod(self.y, b)
-    else
-        error("Invalid arguments for Vec2:mod")
-    end
+function Vec2:Mod(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = Math.mod(self.x, other[1])
+    self.y = Math.mod(self.y, other[2])
+    return self
 end
 
-function Vec2:mult(a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(self.x * a.x, self.y * a.y)
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(self.x * a, self.y * a)
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(self.x * a, self.y * b)
-    else
-        error("Invalid arguments for Vec2:mult")
-    end
+function Vec2:mult(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        self.x * other[1],
+        self.y * other[2]
+    )
 end
 
-function Vec2:Mult(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = self.x * a.x
-        self.y = self.y * a.y
-    elseif Vec2.is_single_num(a, b) then
-        self.x = self.x * a
-        self.y = self.y * a
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = self.x * a
-        self.y = self.y * b
-    else
-        error("Invalid arguments for Vec2:Mult")
-    end
+function Vec2:Mult(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = self.x * other[1]
+    self.y = self.y * other[2]
     return self
 end
 
@@ -968,31 +990,20 @@ function Vec2:normalize()
     end
 end
 
-function Vec2:pow(a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(self.x ^ a.x, self.y ^ a.y)
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(self.x ^ a, self.y ^ a)
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(self.x ^ a, self.y ^ b)
-    else
-        error("Invalid arguments for Vec2:pow")
-    end
+function Vec2:pow(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        self.x ^ other[1],
+        self.y ^ other[2]
+    )
 end
 
-function Vec2:Pow(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = self.x ^ a.x
-        self.y = self.y ^ a.y
-    elseif Vec2.is_single_num(a, b) then
-        self.x = self.x ^ a
-        self.y = self.y ^ a
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = self.x ^ a
-        self.y = self.y ^ b
-    else
-        error("Invalid arguments for Vec2:Pow")
-    end
+function Vec2:Pow(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = self.x ^ other[1]
+    self.y = self.y ^ other[2]
     return self
 end
 
@@ -1061,93 +1072,55 @@ function Vec2:Rotate(angle, pivot)
     return self
 end
 
-function Vec2:scale_about(scalar, a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(
-            a.x + (self.x - a.x) * scalar,
-            a.y + (self.y - a.y) * scalar
-        )
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(
-            a + (self.x - a) * scalar,
-            a + (self.y - a) * scalar
-        )
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(
-            a + (self.x - a) * scalar,
-            b + (self.y - b) * scalar
-        )
-    else
-        error("Invalid arguments to Vec2:scale_about")
-    end
+function Vec2:scale_about(scalar, ...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        other[1] + (self.x - other[1]) * scalar,
+        other[2] + (self.y - other[2]) * scalar
+    )
 end
 
-function Vec2:Scale_about(scalar, a, b)
-    if Vec2.is_vec2(a) then
-        self.x = a.x + (self.x - a.x) * scalar
-        self.y = a.y + (self.y - a.y) * scalar
-    elseif Vec2.is_single_num(a, b) then
-        self.x = a + (self.x - a) * scalar
-        self.y = a + (self.y - a) * scalar
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = a + (self.x - a) * scalar
-        self.y = b + (self.y - b) * scalar
-    else
-        error("Invalid arguments to Vec2:Scale_about")
-    end
-end
-
-function Vec2:Set(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = a.x
-        self.y = a.y
-    elseif Vec2.is_single_num(a, b) then
-        self.x = a
-        self.y = a
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = a
-        self.y = b
-    else
-        error("Invalid arguments for Vec2:set")
-    end
+function Vec2:Scale_about(scalar, ...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = other[1] + (self.x - other[1]) * scalar
+    self.y = other[2] + (self.y - other[2]) * scalar
     return self
 end
 
-function Vec2:Set_X(x)
+function Vec2:Set(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = other[1]
+    self.y = other[2]
+    return self
+end
+
+function Vec2:Set_x(x)
     self.x = x
     return self
 end
 
-function Vec2:Set_Y(y)
+function Vec2:Set_y(y)
     self.y = y
     return self
 end
 
-function Vec2:sub(a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(self.x - a.x, self.y - a.y)
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(self.x - a, self.y - a)
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(self.x - a, self.y - b)
-    else
-        error("Invalid arguments for Vec2:sub")
-    end
+function Vec2:sub(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        self.x - other[1],
+        self.y - other[2]
+    )
 end
 
-function Vec2:Sub(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = self.x - a.x
-        self.y = self.y - a.y
-    elseif Vec2.is_single_num(a, b) then
-        self.x = self.x - a
-        self.y = self.y - a
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = self.x - a
-        self.y = self.y - b
-    else
-        error("Invalid arguments for Vec2:Sub")
-    end
+function Vec2:Sub(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = self.x - other[1]
+    self.y = self.y - other[2]
     return self
 end
 
@@ -1155,7 +1128,7 @@ function Vec2:squared_magnitude()
     return self.x * self.x + self.y * self.y
 end
 
-function Vec2:to_xy_pair()
+function Vec2:to_xy_table()
     return { self.x, self.y }
 end
 
@@ -2444,14 +2417,14 @@ function Line:Rotate(angle, pivot)
 end
 
 function Line:translate(...)
-    local args = Utils.process_args(Vec2, ...)
+    local args = { ... }
     local translation
 
     if #args == 1 and Vec2.is_vec2(args[1]) then
         translation = args[1]
     elseif #args == 2 and Vec2.is_xy_pair(args[1], args[2]) then
         translation = Vec2.new(args[1], args[2])
-    else
+    elseif #args == 1 and Vec2.is_single_num() then
         error("Invalid arguments for Translate. Expected Vec2 or two numbers.")
     end
 
@@ -2462,8 +2435,18 @@ function Line:translate(...)
     )
 end
 
+function Line.parse_args(args)
+    if #args == 1 and Vec2.is_vec2(args[1]) then
+        return args[1]
+    elseif #args == 2 and Vec2.is_xy_pair(args[1], args[2]) then
+        return Vec2.new(args[1], args[2])
+    else
+        error("Invalid arguments for Translate. Expected Vec2 or two numbers.")
+    end
+end
+
 function Line:Translate(...)
-    local args = Utils.process_args(Vec2, ...)
+    local args = { ... }
     local translation
 
     if #args == 1 and Vec2.is_vec2(args[1]) then
