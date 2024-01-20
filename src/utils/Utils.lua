@@ -1,3 +1,5 @@
+-- TODO Create method that will force numbers as strings to keep zeros to x place
+
 Utils = {}
 
 function Utils.process_args(class_meta, ...)
