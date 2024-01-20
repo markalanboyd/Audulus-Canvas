@@ -200,14 +200,14 @@ function Line:Rotate(angle, pivot)
 end
 
 function Line:translate(...)
-    local args = Utils.process_args(Vec2, ...)
+    local args = { ... }
     local translation
 
     if #args == 1 and Vec2.is_vec2(args[1]) then
         translation = args[1]
     elseif #args == 2 and Vec2.is_xy_pair(args[1], args[2]) then
         translation = Vec2.new(args[1], args[2])
-    else
+    elseif #args == 1 and Vec2.is_single_num() then
         error("Invalid arguments for Translate. Expected Vec2 or two numbers.")
     end
 
@@ -218,8 +218,18 @@ function Line:translate(...)
     )
 end
 
+function Line.parse_args(args)
+    if #args == 1 and Vec2.is_vec2(args[1]) then
+        return args[1]
+    elseif #args == 2 and Vec2.is_xy_pair(args[1], args[2]) then
+        return Vec2.new(args[1], args[2])
+    else
+        error("Invalid arguments for Translate. Expected Vec2 or two numbers.")
+    end
+end
+
 function Line:Translate(...)
-    local args = Utils.process_args(Vec2, ...)
+    local args = { ... }
     local translation
 
     if #args == 1 and Vec2.is_vec2(args[1]) then
