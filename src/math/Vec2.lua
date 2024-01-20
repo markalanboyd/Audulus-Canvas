@@ -127,6 +127,10 @@ function Vec2:angle(a, b)
     end
 end
 
+function Vec2:clone()
+    return Vec2.new(self.x, self.y)
+end
+
 function Vec2:distance(a, b)
     local dx
     local dy
