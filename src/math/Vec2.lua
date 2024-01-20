@@ -62,62 +62,61 @@ function Vec2.__tostring(self)
     return "{ x = " .. self.x .. ", y = " .. self.y .. " }"
 end
 
-function Vec2.is_single_num(a, b)
-    return type(a) == "number" and not b
+function Vec2.args_are_vec2(args)
+    return #args == 1 and
+        getmetatable(args[1]) == Vec2
 end
 
-function Vec2.is_vec2(obj)
-    return getmetatable(obj) == Vec2
+function Vec2.args_are_xy_pair(args)
+    return #args == 2 and
+        type(args[1]) == "number" and
+        type(args[2]) == "number"
 end
 
-function Vec2.is_xy_pair(x, y)
-    return type(x) == "number" and type(y) == "number"
+function Vec2.args_are_single_number(args)
+    return #args == 1 and
+        type(args[1]) == "number"
 end
 
-function Vec2.parse_other(a, b, func_name)
-    if Vec2.is_single_num(a, b) then
-        return Vec2.new(a, a)
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(a, b)
-    elseif Vec2.is_vec2(a) then
-        return a
-    else
-        error("Invalid arguments to " .. func_name)
+function Vec2.args_to_vec2(args)
+    if Vec2.args_are_vec2(args) then
+        return args[1]
+    elseif Vec2.args_are_xy_pair(args) then
+        return Vec2.new(args[1], args[2])
+    elseif Vec2.args_are_single_number(args) then
+        return Vec2.new(args[1], args[1])
+    end
+end
+
+function Vec2.args_to_xy_table(args)
+    if Vec2.args_are_vec2(args) then
+        return { args[1].x, args[1].y }
+    elseif Vec2.args_are_xy_pair(args) then
+        return { args[1], args[2] }
+    elseif Vec2.args_are_single_number(args) then
+        return { args[1], args[1] }
     end
 end
 
 -- Instance Methods --
 
-function Vec2:add(a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(self.x + a.x, self.y + a.y)
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(self.x + a, self.y + a)
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(self.x + a, self.y + b)
-    else
-        error("Invalid arguments for Vec2:add")
-    end
+function Vec2:add(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(self.x + other[1], self.y + other[2])
 end
 
-function Vec2:Add(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = self.x + a.x
-        self.y = self.y + a.y
-    elseif Vec2.is_single_num(a, b) then
-        self.x = self.x + a
-        self.y = self.y + a
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = self.x + a
-        self.y = self.y + b
-    else
-        error("Invalid arguments for Vec2:Add")
-    end
+function Vec2:Add(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = self.x + other[1]
+    self.y = self.y + other[2]
     return self
 end
 
-function Vec2:angle(a, b)
-    local other = Vec2.parse_other(a, b, "Vec2:angle")
+function Vec2:angle(...)
+    local args = { ... }
+    local other = Vec2.args_to_vec2(args)
     local dot_product = self:dot(other)
     local mag_product = self:magnitude() * other:magnitude()
     if mag_product > 0 then
@@ -131,183 +130,91 @@ function Vec2:clone()
     return Vec2.new(self.x, self.y)
 end
 
-function Vec2:distance(a, b)
-    local dx
-    local dy
-
-    if Vec2.is_vec2(a) then
-        dx = self.x - a.x
-        dy = self.y - a.y
-    elseif Vec2.is_single_num(a, b) then
-        dx = self.x - a
-        dy = self.y - a
-    elseif Vec2.is_xy_pair(a, b) then
-        dx = self.x - a
-        dy = self.y - b
-    else
-        error("Incorrect arguments to Vec2:distance")
-    end
-
+function Vec2:distance(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    local dx = self.x - other[1]
+    local dy = self.y - other[2]
     return math.sqrt(dx * dx + dy * dy)
 end
 
-function Vec2:div(a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(
-            Math.div(self.x, a.x),
-            Math.div(self.y, a.y)
-        )
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(
-            Math.div(self.x, a),
-            Math.div(self.y, a)
-        )
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(
-            Math.div(self.x, a),
-            Math.div(self.y, b)
-        )
-    else
-        error("Invalid arguments for Vec2:div")
-    end
+function Vec2:div(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        Math.div(self.x, other[1]),
+        Math.div(self.x, other[2])
+    )
 end
 
-function Vec2:Div(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = Math.div(self.x, a.x)
-        self.y = Math.div(self.y, a.y)
-    elseif Vec2.is_single_num(a, b) then
-        self.x = Math.div(self.x, a)
-        self.y = Math.div(self.y, a)
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = Math.div(self.x, a)
-        self.y = Math.div(self.y, b)
-    else
-        error("Invalid arguments for Vec2:Div")
-    end
+function Vec2:Div(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = Math.div(self.x, other[1])
+    self.y = Math.div(self.y, other[2])
     return self
 end
 
-function Vec2:dot(a, b)
-    if Vec2.is_vec2(a) then
-        return self.x * a.x + self.y * a.y
-    elseif Vec2.is_single_num(a, b) then
-        return self.x * a + self.y * a
-    elseif Vec2.is_xy_pair(a, b) then
-        return self.x * a + self.y * b
-    else
-        error("Invalid arguments to Vec2:dot")
-    end
+function Vec2:dot(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return self.x * other[1] + self.y * other[2]
 end
 
-function Vec2:lerp(t, a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(
-            (1 - t) * self.x + t * a.x,
-            (1 - t) * self.y + t * a.y
-        )
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(
-            (1 - t) * self.x + t * a,
-            (1 - t) * self.y + t * a
-        )
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(
-            (1 - t) * self.x + t * a,
-            (1 - t) * self.y + t * b
-        )
-    else
-        error("Invalid arguments to Vec2:lerp")
-    end
+function Vec2:lerp(t, ...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        (1 - t) * self.x + t * other[1],
+        (1 - t) * self.y + t * other[2]
+    )
 end
 
-function Vec2:lerp_clamped(t, a, b)
+function Vec2:lerp_clamped(t, ...)
     t = Math.clamp(t, 0, 1)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(
-            (1 - t) * self.x + t * a.x,
-            (1 - t) * self.y + t * a.y
-        )
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(
-            (1 - t) * self.x + t * a,
-            (1 - t) * self.y + t * a
-        )
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(
-            (1 - t) * self.x + t * a,
-            (1 - t) * self.y + t * b
-        )
-    else
-        error("Invalid arguments to Vec2:lerp_clamped")
-    end
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        (1 - t) * self.x + t * other[1],
+        (1 - t) * self.y + t * other[2]
+    )
 end
 
 function Vec2:magnitude()
     return math.sqrt(self.x * self.x + self.y * self.y)
 end
 
-function Vec2:mod(a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(
-            Math.mod(self.x, a.x),
-            Math.mod(self.y, a.y)
-        )
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(
-            Math.mod(self.x, a),
-            Math.mod(self.y, a)
-        )
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(
-            Math.mod(self.x, a),
-            Math.mod(self.y, b)
-        )
-    else
-        error("Invalid arguments for Vec2:mod")
-    end
+function Vec2:mod(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        Math.mod(self.x, other[1]),
+        Math.mod(self.y, other[2])
+    )
 end
 
-function Vec2:Mod(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = Math.mod(self.x, a.x)
-        self.y = Math.mod(self.y, a.y)
-    elseif Vec2.is_single_num(a, b) then
-        self.x = Math.mod(self.x, a)
-        self.y = Math.mod(self.y, a)
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = Math.mod(self.x, a)
-        self.y = Math.mod(self.y, b)
-    else
-        error("Invalid arguments for Vec2:mod")
-    end
+function Vec2:Mod(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = Math.mod(self.x, other[1])
+    self.y = Math.mod(self.y, other[2])
+    return self
 end
 
-function Vec2:mult(a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(self.x * a.x, self.y * a.y)
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(self.x * a, self.y * a)
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(self.x * a, self.y * b)
-    else
-        error("Invalid arguments for Vec2:mult")
-    end
+function Vec2:mult(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        self.x * other[1],
+        self.y * other[2]
+    )
 end
 
-function Vec2:Mult(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = self.x * a.x
-        self.y = self.y * a.y
-    elseif Vec2.is_single_num(a, b) then
-        self.x = self.x * a
-        self.y = self.y * a
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = self.x * a
-        self.y = self.y * b
-    else
-        error("Invalid arguments for Vec2:Mult")
-    end
+function Vec2:Mult(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = self.x * other[1]
+    self.y = self.y * other[2]
     return self
 end
 
@@ -330,31 +237,20 @@ function Vec2:normalize()
     end
 end
 
-function Vec2:pow(a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(self.x ^ a.x, self.y ^ a.y)
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(self.x ^ a, self.y ^ a)
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(self.x ^ a, self.y ^ b)
-    else
-        error("Invalid arguments for Vec2:pow")
-    end
+function Vec2:pow(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        self.x ^ other[1],
+        self.y ^ other[2]
+    )
 end
 
-function Vec2:Pow(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = self.x ^ a.x
-        self.y = self.y ^ a.y
-    elseif Vec2.is_single_num(a, b) then
-        self.x = self.x ^ a
-        self.y = self.y ^ a
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = self.x ^ a
-        self.y = self.y ^ b
-    else
-        error("Invalid arguments for Vec2:Pow")
-    end
+function Vec2:Pow(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = self.x ^ other[1]
+    self.y = self.y ^ other[2]
     return self
 end
 
@@ -423,93 +319,55 @@ function Vec2:Rotate(angle, pivot)
     return self
 end
 
-function Vec2:scale_about(scalar, a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(
-            a.x + (self.x - a.x) * scalar,
-            a.y + (self.y - a.y) * scalar
-        )
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(
-            a + (self.x - a) * scalar,
-            a + (self.y - a) * scalar
-        )
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(
-            a + (self.x - a) * scalar,
-            b + (self.y - b) * scalar
-        )
-    else
-        error("Invalid arguments to Vec2:scale_about")
-    end
+function Vec2:scale_about(scalar, ...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        other[1] + (self.x - other[1]) * scalar,
+        other[2] + (self.y - other[2]) * scalar
+    )
 end
 
-function Vec2:Scale_about(scalar, a, b)
-    if Vec2.is_vec2(a) then
-        self.x = a.x + (self.x - a.x) * scalar
-        self.y = a.y + (self.y - a.y) * scalar
-    elseif Vec2.is_single_num(a, b) then
-        self.x = a + (self.x - a) * scalar
-        self.y = a + (self.y - a) * scalar
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = a + (self.x - a) * scalar
-        self.y = b + (self.y - b) * scalar
-    else
-        error("Invalid arguments to Vec2:Scale_about")
-    end
-end
-
-function Vec2:Set(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = a.x
-        self.y = a.y
-    elseif Vec2.is_single_num(a, b) then
-        self.x = a
-        self.y = a
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = a
-        self.y = b
-    else
-        error("Invalid arguments for Vec2:set")
-    end
+function Vec2:Scale_about(scalar, ...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = other[1] + (self.x - other[1]) * scalar
+    self.y = other[2] + (self.y - other[2]) * scalar
     return self
 end
 
-function Vec2:Set_X(x)
+function Vec2:Set(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = other[1]
+    self.y = other[2]
+    return self
+end
+
+function Vec2:Set_x(x)
     self.x = x
     return self
 end
 
-function Vec2:Set_Y(y)
+function Vec2:Set_y(y)
     self.y = y
     return self
 end
 
-function Vec2:sub(a, b)
-    if Vec2.is_vec2(a) then
-        return Vec2.new(self.x - a.x, self.y - a.y)
-    elseif Vec2.is_single_num(a, b) then
-        return Vec2.new(self.x - a, self.y - a)
-    elseif Vec2.is_xy_pair(a, b) then
-        return Vec2.new(self.x - a, self.y - b)
-    else
-        error("Invalid arguments for Vec2:sub")
-    end
+function Vec2:sub(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    return Vec2.new(
+        self.x - other[1],
+        self.y - other[2]
+    )
 end
 
-function Vec2:Sub(a, b)
-    if Vec2.is_vec2(a) then
-        self.x = self.x - a.x
-        self.y = self.y - a.y
-    elseif Vec2.is_single_num(a, b) then
-        self.x = self.x - a
-        self.y = self.y - a
-    elseif Vec2.is_xy_pair(a, b) then
-        self.x = self.x - a
-        self.y = self.y - b
-    else
-        error("Invalid arguments for Vec2:Sub")
-    end
+function Vec2:Sub(...)
+    local args = { ... }
+    local other = Vec2.args_to_xy_table(args)
+    self.x = self.x - other[1]
+    self.y = self.y - other[2]
     return self
 end
 
@@ -517,7 +375,7 @@ function Vec2:squared_magnitude()
     return self.x * self.x + self.y * self.y
 end
 
-function Vec2:to_xy_pair()
+function Vec2:to_xy_table()
     return { self.x, self.y }
 end
 
