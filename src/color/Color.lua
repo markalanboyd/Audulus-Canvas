@@ -128,11 +128,12 @@ function Color.is_color_table(table)
         type(table[4]) == "number"
 end
 
-function Color.assign_color(input)
-    if Color.is_color(input) then
-        return input:clone()
-    elseif Color.is_color_table(input) then
-        return Color.new(input)
+function Color.assign_color(object, options)
+    local c = options.color or Color.new()
+    if Color.is_color(c) then
+        object.color = c:clone()
+    elseif Color.is_color_table(c) then
+        object.color = Color.new(c)
     else
         error("Expected a Color instance or a color table.")
     end
