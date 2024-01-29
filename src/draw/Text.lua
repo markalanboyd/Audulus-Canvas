@@ -28,7 +28,7 @@ end
 function Text:draw()
     local scale_factor = self.size / 12
     save()
-    translate(self.vec2:to_xy_pair())
+    translate(self.vec2:to_xy_table())
     scale { scale_factor, scale_factor }
     text(self.string, self.color:table())
     restore()
