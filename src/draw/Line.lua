@@ -33,6 +33,7 @@ function Line.new(vec2a, vec2b, options)
     self.vec2b = vec2b or Vec2.new(0, 0)
     self.options = options or {}
 
+    self.z_index = self.options.z_index or 0
     self.style = self.options.style or "normal"
     Color.assign_color(self, self.options)
     Utils.assign_options(self, self.options)
@@ -42,7 +43,7 @@ function Line.new(vec2a, vec2b, options)
 end
 
 function Line:clone()
-    return Factory.clone_one(Line, self)
+    return Factory.clone(self)
 end
 
 function Line:draw_normal()
@@ -248,16 +249,19 @@ function Line:print(places)
     local ay = tostring(Math.truncate(self.vec2a.y, places))
     local bx = tostring(Math.truncate(self.vec2b.x, places))
     local by = tostring(Math.truncate(self.vec2b.y, places))
-
+    local z_index = tostring(self.z_index)
     local style = self.style
+    local gradient = self.gradient
+
 
     print("-- Line " .. element_id .. ":" .. class_id .. " --")
     print("  element_id: " .. element_id)
     print("  class_id: " .. class_id)
     print("  vec2_a: { x = " .. ax .. ", y = " .. ay .. " }")
     print("  vec2_b: { x = " .. bx .. ", y = " .. by .. " }")
+    print("  z_index: " .. z_index)
 
-    if self.gradient == nil then
+    if gradient == nil then
         local color = tostring(Utils.table_to_string(
             self.color:table(), true, places
         ))
