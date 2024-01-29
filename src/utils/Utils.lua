@@ -67,3 +67,39 @@ function Utils.get_peak_memory(interval)
 
     return _PeakMemory
 end
+
+function Utils.assign_options(instance, options)
+    for key, value in pairs(options) do
+        instance[key] = value
+    end
+end
+
+function Utils.resolve_property(instance, key)
+    local class = getmetatable(instance)
+    local value = rawget(instance, key)
+    if value ~= nil then return value end
+    if class.styles then
+        local style = rawget(instance, "style") or "normal"
+        local style_val = class.styles[style][key]
+        if style_val ~= nil then return style_val end
+    end
+    if class.methods then
+        local method = rawget(instance, "method")
+        if method ~= nil and class.methods[method] then
+            local method_val = class.methods[method][key]
+            if method_val ~= nil then return method_val end
+        end
+    end
+    if class.attrs then
+        local attr = class.attrs[key]
+        if attr ~= nil then return attr end
+    end
+    return class[key]
+end
+
+function Utils.assign_ids(instance)
+    instance.element_id = Element.id
+    Element.id = Element.id + 1
+    instance.class_id = instance.id
+    getmetatable(instance).id = instance.id + 1
+end

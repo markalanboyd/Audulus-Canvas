@@ -1,6 +1,5 @@
 Line = {}
 L = Line
-Line.__index = Line
 
 Line.id = 1
 
@@ -26,45 +25,25 @@ Line.styles = {
     },
 }
 
-Line.__index = function(instance, key)
-    local value = rawget(instance, key)
-    if value ~= nil then
-        return value
-    else
-        local style = rawget(instance, "style") or "normal"
-        local style_val = Line.styles[style][key]
-        if style_val ~= nil then
-            return style_val
-        end
-    end
-
-    return Line[key]
-end
+Line.__index = Utils.resolve_property
 
 function Line.new(vec2a, vec2b, options)
     local self = setmetatable({}, Line)
-    self.element_id = Element.id
-    Element.id = Element.id + 1
-    self.class_id = Line.id
-    Line.id = Line.id + 1
-
     self.vec2a = vec2a or Vec2.new(0, 0)
     self.vec2b = vec2b or Vec2.new(0, 0)
-    self.o = options or {}
+    self.options = options or {}
 
-    self.style = self.o.style or "normal"
-    local c = self.o.color or Color.new()
-    self.color = Color.assign_color(c)
-
-    for key, value in pairs(self.o) do
-        self[key] = value
-    end
+    self.z_index = self.options.z_index or 0
+    self.style = self.options.style or "normal"
+    Color.assign_color(self, self.options)
+    Utils.assign_options(self, self.options)
+    Utils.assign_ids(self)
 
     return self
 end
 
 function Line:clone()
-    return Factory.clone_one(Line, self)
+    return Factory.clone(self)
 end
 
 function Line:draw_normal()
@@ -79,14 +58,14 @@ end
 function Line:draw_dashed()
     local total_distance = self.vec2a:distance(self.vec2b)
     local direction = self.vec2b:sub(self.vec2a):normalize()
-
+    local paint = Paint.create(self.color, self.gradient)
     local current_distance = 0
+
     while current_distance < total_distance do
         local start_dash = self.vec2a:add(direction:mult(current_distance))
         current_distance = math.min(current_distance + self.dash_length, total_distance)
         local end_dash = self.vec2a:add(direction:mult(current_distance))
 
-        local paint = Paint.create(self.color, self.gradient)
         stroke_segment(
             { start_dash.x, start_dash.y },
             { end_dash.x, end_dash.y },
@@ -100,11 +79,11 @@ end
 function Line:draw_dotted()
     local total_distance = self.vec2a:distance(self.vec2b)
     local direction = self.vec2b:sub(self.vec2a):normalize()
-
+    local paint = Paint.create(self.color, self.gradient)
     local current_distance = 0
+
     while current_distance <= total_distance do
         local dot_position = self.vec2a:add(direction:mult(current_distance))
-        local paint = Paint.create(self.color, self.gradient)
 
         fill_circle({ dot_position.x, dot_position.y }, self.dot_radius, paint)
 
@@ -120,6 +99,7 @@ function Line:draw_char()
     local char_scale_factor = self.char_size / 12
     local total_distance = self.vec2a:distance(self.vec2b)
     local direction = self.vec2b:sub(self.vec2a):normalize()
+    local color_table = self.color:table()
 
     save()
     translate {
@@ -127,7 +107,7 @@ function Line:draw_char()
         self.vec2a.y + self.char_vertex_nudge[2]
     }
     scale { char_scale_factor, char_scale_factor }
-    text(self.char_vertex, self.color:table())
+    text(self.char_vertex, color_table)
     restore()
 
     local current_distance = self.space_length
@@ -137,7 +117,7 @@ function Line:draw_char()
         save()
         translate { char_position.x, char_position.y }
         scale { char_scale_factor, char_scale_factor }
-        text(self.char, self.color:table())
+        text(self.char, color_table)
         restore()
 
         current_distance = current_distance + self.space_length
@@ -150,7 +130,7 @@ function Line:draw_char()
             self.vec2b.y + self.char_vertex_nudge[2]
         }
         scale { char_scale_factor, char_scale_factor }
-        text(self.char_vertex, self.color:table())
+        text(self.char_vertex, color_table)
         restore()
     end
 end
@@ -269,16 +249,19 @@ function Line:print(places)
     local ay = tostring(Math.truncate(self.vec2a.y, places))
     local bx = tostring(Math.truncate(self.vec2b.x, places))
     local by = tostring(Math.truncate(self.vec2b.y, places))
-
+    local z_index = tostring(self.z_index)
     local style = self.style
+    local gradient = self.gradient
+
 
     print("-- Line " .. element_id .. ":" .. class_id .. " --")
     print("  element_id: " .. element_id)
     print("  class_id: " .. class_id)
     print("  vec2_a: { x = " .. ax .. ", y = " .. ay .. " }")
     print("  vec2_b: { x = " .. bx .. ", y = " .. by .. " }")
+    print("  z_index: " .. z_index)
 
-    if self.gradient == nil then
+    if gradient == nil then
         local color = tostring(Utils.table_to_string(
             self.color:table(), true, places
         ))

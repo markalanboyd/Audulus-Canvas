@@ -1,78 +1,105 @@
+-- TODO: triangulation
+
 LineGroup = {}
 LG = LineGroup
 
-LineGroup.__index = LineGroup
-
 LineGroup.id = 1
 
+LineGroup.styles = Line.styles
+
+LineGroup.methods = {
+    grid = {
+        lines = nil,
+        v_lines = 10,
+        h_lines = 10,
+    }
+}
+
+LineGroup.__index = Utils.resolve_property
+
 function LineGroup.new(vec2s, options)
-    for _, vec2 in ipairs(vec2s) do
-        if not Vec2.is_vec2(vec2) then
-            error("All elements in vec2s must be Vec2 instances.")
-        end
-    end
-
     local self = setmetatable({}, LineGroup)
-    self.element_id = Element.id
-    Element.id = Element.id + 1
-    self.class_id = LineGroup.id
-    LineGroup.id = LineGroup.id + 1
-
     self.vec2s = vec2s or { Vec2.new(0, 0) }
-    self.o = options or {}
+    self.options = options or {}
 
-    self.len_vec2s = #vec2s
-    self.color = self.o.color or theme.text
-    self.width = self.o.width or 1
-    self.style = self.o.style or "normal"
-    self.dash_length = self.o.dash_length or 5
-    self.dot_radius = self.o.dot_radius or 1
-    self.char = self.o.char or "+"
-    self.char_vertex = self.o.char_vertex or self.char
-    self.char_vertex_nudge = self.o.char_vertex_nudge or { 0, 0 }
-    self.char_size = self.o.char_size or 12
-    self.space_length = self.o.space_length or self.dash_length
-    self.method = self.o.method or "between"
+    self.z_index = self.options.z_index or 0
+    self.style = self.options.style or "normal"
+    self.method = self.options.method or "graph"
+    self.__len_vec2s = #self.vec2s
+    Color.assign_color(self, self.options)
+    Utils.assign_options(self, self.options)
+    Utils.assign_ids(self)
+
     return self
 end
 
-function LineGroup:draw_between()
-    for i = 1, self.len_vec2s do
-        for j = i + 1, self.len_vec2s do
-            local line = Line.new(self.vec2s[i], self.vec2s[j], self.o)
-            if self.style == "normal" then
-                line:draw_normal()
-            elseif self.style == "dashed" then
-                line:draw_dashed()
-            elseif self.style == "dotted" then
-                line:draw_dotted()
-            elseif self.style == "char" then
-                line:draw_char()
-            end
-        end
-    end
-end
-
-function LineGroup:draw_from_to()
-    for i = 1, self.len_vec2s do
-        local line = Line.new(self.vec2s[1], self.vec2s[i], self.o)
-        if self.style == "normal" then
-            line:draw_normal()
-        elseif self.style == "dashed" then
-            line:draw_dashed()
-        elseif self.style == "dotted" then
-            line:draw_dotted()
-        elseif self.style == "char" then
-            line:draw_char()
-        end
-    end
-end
-
 function LineGroup:draw()
-    if self.method == "between" then
-        self:draw_between()
-    elseif self.method == "from-to" then
-        self:draw_from_to()
+    if self.method == "graph" then
+        self:graph()
+    elseif self.method == "star" then
+        self:star()
+    elseif self.method == "polyline" then
+        self:polyline()
+    elseif self.method == "grid" then
+        self:grid()
+    end
+end
+
+function LineGroup:draw_line(line)
+    if self.style == "normal" then
+        line:draw_normal()
+    elseif self.style == "dashed" then
+        line:draw_dashed()
+    elseif self.style == "dotted" then
+        line:draw_dotted()
+    elseif self.style == "char" then
+        line:draw_char()
+    end
+end
+
+function LineGroup:graph()
+    for i = 1, self.__len_vec2s do
+        for j = i + 1, self.__len_vec2s do
+            local line = Line.new(self.vec2s[i], self.vec2s[j], self.options)
+            self:draw_line(line)
+        end
+    end
+end
+
+function LineGroup:grid()
+    local vec2a = self.vec2s[1]
+    local vec2b = self.vec2s[2]
+    local xd = vec2b.x - vec2a.x
+    local yd = vec2b.y - vec2a.y
+    local v_iters = self.lines ~= nil and self.lines or self.v_lines
+    local h_iters = self.lines ~= nil and self.lines or self.h_lines
+    local x_space = xd / v_iters
+    local y_space = yd / h_iters
+    for i = 0, v_iters do
+        local v1 = Vec2.new(vec2a.x + x_space * i, vec2a.y)
+        local v2 = Vec2.new(vec2a.x + x_space * i, vec2b.y)
+        local v_line = Line.new(v1, v2, self.options)
+        self:draw_line(v_line)
+    end
+    for i = 0, h_iters do
+        local h1 = Vec2.new(vec2a.x, vec2a.y + y_space * i)
+        local h2 = Vec2.new(vec2b.x, vec2a.y + y_space * i)
+        local h_line = Line.new(h1, h2, self.options)
+        self:draw_line(h_line)
+    end
+end
+
+function LineGroup:polyline()
+    for i = 2, self.__len_vec2s do
+        local line = Line.new(self.vec2s[i - 1], self.vec2s[i], self.options)
+        self:draw_line(line)
+    end
+end
+
+function LineGroup:star()
+    for i = 2, self.__len_vec2s do
+        local line = Line.new(self.vec2s[1], self.vec2s[i], self.o)
+        self:draw_line(line)
     end
 end
 
@@ -81,36 +108,51 @@ function LineGroup:print(places)
 
     local element_id = tostring(self.element_id)
     local class_id = tostring(self.class_id)
-    local len_vec2s = tostring(self.len_vec2s)
-    local color = tostring(Utils.table_to_string(self.color, true, places))
-    local width = tostring(Math.truncate(self.width, places))
+    local z_index = tostring(self.z_index)
     local style = self.style
-    local dash_length = tostring(Math.truncate(self.dash_length, places))
-    local dot_radius = tostring(Math.truncate(self.dot_radius, places))
-    local char = self.char
-    local char_vertex = self.char_vertex
-    local char_vertex_nudge = Utils.table_to_string(self.char_vertex_nudge, true, places)
-    local char_size = tostring(Math.truncate(self.char_size, places))
-    local space_length = tostring(Math.truncate(self.space_length, places))
+    local method = self.method
 
     print("-- LineGroup " .. element_id .. ":" .. class_id .. " --")
     print("  element_id: " .. element_id)
     print("  class_id: " .. class_id)
-    print("  len_vec2s: " .. len_vec2s)
+    print("  z_index: " .. z_index)
+    print("  len_vec2s: " .. tostring(self.__len_vec2s))
     for i, vec2 in ipairs(self.vec2s) do
         local x = tostring(Math.truncate(vec2.x, places))
         local y = tostring(Math.truncate(vec2.y, places))
-        print("vec2_" .. i .. ": " .. x .. ", y = " .. y .. " }")
+        print("  vec2_" .. i .. ": { x = " .. x .. ", y = " .. y .. " }")
     end
-    print("  color: " .. color)
-    print("  width: " .. width)
+    print("  method: " .. method)
+    if method == "grid" then
+        if self.lines ~= nil then
+            print("  lines: " .. tostring(self.lines))
+        else
+            print("  v_lines: " .. tostring(self.v_lines))
+            print("  h_lines: " .. tostring(self.h_lines))
+        end
+    end
     print("  style: " .. style)
-    print("  dash_length: " .. dash_length)
-    print("  dot_radius: " .. dot_radius)
-    print("  char: " .. char)
-    print("  char_vertex: " .. char_vertex)
-    print("  char_vertex nudge:" .. char_vertex_nudge)
-    print("  char_size: " .. char_size)
-    print("  space_length: " .. space_length)
+    if style == "normal" then
+        print("  width: " .. tostring(Math.truncate(self.width, places)))
+    elseif style == "dashed" then
+        print("  width: " .. tostring(Math.truncate(self.width, places)))
+        print("  dash_length: " .. tostring(Math.truncate(self.dash_length, places)))
+        print("  space_length: " .. tostring(Math.truncate(self.space_length, places)))
+    elseif style == "dotted" then
+        print("  dot_radius: " .. tostring(Math.truncate(self.dot_radius, places)))
+        print("  space_length: " .. tostring(Math.truncate(self.space_length, places)))
+    elseif style == "char" then
+        print("  char: " .. self.char)
+        print("  char_vertex: " .. self.char_vertex)
+        print("  char_vertex nudge: " .. Utils.table_to_string(self.char_vertex_nudge, true, places))
+        print("  char_size: " .. tostring(Math.truncate(self.char_size, places)))
+        print("  space_length: " .. tostring(Math.truncate(self.space_length, places)))
+    end
+    if self.gradient == nil then
+        print("  color: " .. tostring(Utils.table_to_string(self.color, true, places)))
+    else
+        print("  gradient: " .. tostring(Utils.table_to_string(self.gradient.color1:table(), true, places))
+            .. " → " .. tostring(Utils.table_to_string(self.gradient.color2:table(), true, places)))
+    end
     print("")
 end

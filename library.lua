@@ -101,13 +101,13 @@ function Gradient:Invert()
 end
 
 function Gradient:clone()
-    return Factory.clone_one(Gradient, self)
+    return Factory.clone(self)
 end
 
 function Gradient:to_paint()
     return linear_gradient(
-        self.vec2a:to_xy_pair(),
-        self.vec2b:to_xy_pair(),
+        self.vec2a:to_xy_table(),
+        self.vec2b:to_xy_table(),
         self.color1:table(),
         self.color2:table()
     )
@@ -136,11 +136,12 @@ function Color.new(...)
 
     local args = { ... }
 
-    self.color_table = Color.args_to_color_table(args)
-    self.r = self.color_table[1]
-    self.g = self.color_table[2]
-    self.b = self.color_table[3]
-    self.a = self.color_table[4]
+    -- TODO do we need this intermediary private table?
+    self.__color_table = Color.args_to_color_table(args)
+    self.r = self.__color_table[1]
+    self.g = self.__color_table[2]
+    self.b = self.__color_table[3]
+    self.a = self.__color_table[4]
     return self
 end
 
@@ -251,11 +252,12 @@ function Color.is_color_table(table)
         type(table[4]) == "number"
 end
 
-function Color.assign_color(input)
-    if Color.is_color(input) then
-        return input:clone()
-    elseif Color.is_color_table(input) then
-        return Color.new(input)
+function Color.assign_color(object, options)
+    local c = options.color or Color.new()
+    if Color.is_color(c) then
+        object.color = c:clone()
+    elseif Color.is_color_table(c) then
+        object.color = Color.new(c)
     else
         error("Expected a Color instance or a color table.")
     end
@@ -653,34 +655,55 @@ function Factory.new(class, items, options)
     return result
 end
 
-function Factory.iter(objects, method, args)
-    for i = 1, #objects do
+function Factory.Iter(instances, method, ...)
+    local args = { ... } or nil
+    for i = 1, #instances do
         if args then
             if type(args) == "table" and not getmetatable(args) then
-                objects[i][method](objects[i], unpack(args))
+                instances[i][method](instances[i], unpack(args))
             else
-                objects[i][method](objects[i], args)
+                instances[i][method](instances[i], args)
             end
         else
-            objects[i][method](objects[i])
+            instances[i][method](instances[i])
         end
     end
 end
 
-function Factory.clone(objects)
-    local result = {}
-    for i = 1, #objects do
-        result[i] = objects[i]:clone()
+function Factory.iter(instances, method, ...)
+    local args = { ... } or nil
+    local results = {}
+
+    for i = 1, #instances do
+        local result
+        if args then
+            if type(args) == "table" and not getmetatable(args) then
+                result = instances[i][method](instances[i], unpack(args))
+            else
+                result = instances[i][method](instances[i], args)
+            end
+        else
+            result = instances[i][method](instances[i])
+        end
+        table.insert(results, result)
     end
-    return result
+
+    return results
 end
 
-function Factory.clone_one(class, object)
-    local new_object = class.new()
-    for key, value in pairs(object) do
-        new_object[key] = value
+function Factory.clone(input)
+    if getmetatable(input) then
+        local class = getmetatable(input)
+        local new_instance = class.new()
+        for key, value in pairs(input) do
+            if key ~= "element_id" and key ~= "class_id" then
+                new_instance[key] = value
+            end
+        end
+        return new_instance
     end
-    return new_object
+
+    return Factory.iter(input, "clone", input)
 end
 -- TODO Create method that will force numbers as strings to keep zeros to x place
 
@@ -751,6 +774,42 @@ function Utils.get_peak_memory(interval)
 
     return _PeakMemory
 end
+
+function Utils.assign_options(instance, options)
+    for key, value in pairs(options) do
+        instance[key] = value
+    end
+end
+
+function Utils.resolve_property(instance, key)
+    local class = getmetatable(instance)
+    local value = rawget(instance, key)
+    if value ~= nil then return value end
+    if class.styles then
+        local style = rawget(instance, "style") or "normal"
+        local style_val = class.styles[style][key]
+        if style_val ~= nil then return style_val end
+    end
+    if class.methods then
+        local method = rawget(instance, "method")
+        if method ~= nil and class.methods[method] then
+            local method_val = class.methods[method][key]
+            if method_val ~= nil then return method_val end
+        end
+    end
+    if class.attrs then
+        local attr = class.attrs[key]
+        if attr ~= nil then return attr end
+    end
+    return class[key]
+end
+
+function Utils.assign_ids(instance)
+    instance.element_id = Element.id
+    Element.id = Element.id + 1
+    instance.class_id = instance.id
+    getmetatable(instance).id = instance.id + 1
+end
 Vec2 = {}
 V = Vec2
 Vec2.__index = Vec2
@@ -759,13 +818,11 @@ Vec2.id = 1
 
 function Vec2.new(x, y)
     local self = setmetatable({}, Vec2)
-    self.element_id = Element.id
-    Element.id = Element.id + 1
-    self.class_id = Vec2.id
-    Vec2.id = Vec2.id + 1
-
     self.x = x or 0
     self.y = y or 0
+
+    Utils.assign_ids(self)
+
     return self
 end
 
@@ -1545,6 +1602,52 @@ Element = {}
 Element.__index = Element
 
 Element.id = 1
+Background = {}
+B = Background
+
+Background.id = 1
+Background.created = false
+
+Background.__index = Utils.resolve_property
+
+function Background.new(origin, options)
+    if Background.created == true then
+        error("Only one instance of Background is permitted.")
+    end
+    local self = setmetatable({}, Background)
+    self.options = options or {}
+
+    self.z_index = -math.huge
+    self.origin = origin or Origin.new()
+    self.vec2a = self.origin.bottom_left
+    self.vec2b = self.origin.top_right
+    self.rounded = self.options.rounded or true
+    Color.assign_color(self, self.options)
+    Utils.assign_options(self, self.options)
+    Utils.assign_ids(self)
+    Background.created = true
+    return self
+end
+
+function Background:draw()
+    local paint = Paint.create(self.color, self.gradient)
+    local x1, y1, x2, y2, corner_radius
+
+    if self.rounded == true then
+        x1 = self.vec2a.x - 10
+        y1 = self.vec2a.y - 9.5
+        x2 = self.vec2b.x + 9
+        y2 = self.vec2b.y + 10
+        corner_radius = 6
+    else
+        x1 = self.vec2a.x - 11
+        y1 = self.vec2a.y - 11
+        x2 = self.vec2b.x + 11
+        y2 = self.vec2b.y + 11
+        corner_radius = 0
+    end
+    fill_rect({ x1, y1 }, { x2, y2 }, corner_radius, paint)
+end
 -- TODO Add docs
 
 Point = {}
@@ -1553,7 +1656,6 @@ P = Point
 Point.id = 1
 
 Point.attrs = {
-    color = theme.text,
     show_coords = false,
     coords_nudge = { 0, 0 }
 }
@@ -1574,43 +1676,18 @@ Point.styles = {
     },
 }
 
-Point.__index = function(instance, key)
-    local value = rawget(instance, key)
-    if value ~= nil then
-        return value
-    end
-
-    local style = rawget(instance, "style") or "normal"
-    local style_val = Point.styles[style][key]
-    if style_val ~= nil then
-        return style_val
-    end
-
-    local attr = Point.attrs[key]
-    if attr ~= nil then
-        return attr
-    end
-
-    return Point[key]
-end
+Point.__index = Utils.resolve_property
 
 function Point.new(vec2, options)
     local self = setmetatable({}, Point)
-    self.element_id = Element.id
-    Element.id = Element.id + 1
-    self.class_id = Point.id
-    Point.id = Point.id + 1
-
     self.vec2 = vec2 or Vec2.new(0, 0)
-    self.o = options or {}
+    self.options = options or {}
 
-    self.style = self.o.style or "normal"
-    local c = self.o.color or Color.new()
-    self.color = Color.assign_color(c)
-
-    for key, value in pairs(self.o) do
-        self[key] = value
-    end
+    self.z_index = self.options.z_index or 0
+    self.style = self.options.style or "normal"
+    Color.assign_color(self, self.options)
+    Utils.assign_options(self, self.options)
+    Utils.assign_ids(self)
 
     return self
 end
@@ -1618,7 +1695,7 @@ end
 -- Instance Methods --
 
 function Point:clone()
-    return Factory.clone_one(Point, self)
+    return Factory.clone(self)
 end
 
 function Point:draw_coords()
@@ -1738,6 +1815,7 @@ function Point:print(places)
     local class_id = tostring(self.class_id)
     local x = tostring(Math.truncate(self.vec2.x, places))
     local y = tostring(Math.truncate(self.vec2.y, places))
+    local z_index = tostring(self.z_index)
     local color = tostring(Utils.table_to_string(self.color:table(), true, places))
     local style = self.style
 
@@ -1745,6 +1823,7 @@ function Point:print(places)
     print("  element_id: " .. element_id)
     print("  class_id: " .. class_id)
     print("  vec2: { x = " .. x .. ", y = " .. y .. " }")
+    print("  z_index: " .. z_index)
     print("  color: " .. color)
     print("  style: " .. style)
     if style == "normal" then
@@ -1765,65 +1844,6 @@ function Point:print(places)
     end
     print("")
 end
--- TODO Add a method to force origin to stay on top
-
-Origin = {}
-Origin.__index = Origin
-
-function Origin.new(direction, options)
-    local self = setmetatable({}, Origin)
-    local o = options or {}
-
-    self.direction = direction or "sw"
-    self.show = o.show or false
-    self.type = string.lower(o.type) or "stroke"
-    self.width = o.width or 4
-    self.color = o.color or theme.text
-    self.offset = self.calculate_offset(direction)
-
-    translate(self.offset)
-
-    if self.show then
-        local paint = color_paint(self.color)
-        if self.type == "stroke" or self.type == "outline" then
-            stroke_circle({ 0, 0 }, self.width, 1, paint)
-        elseif self.type == "fill" or self.type == "dot" then
-            fill_circle({ 0, 0 }, self.width, paint)
-        elseif self.type == "+" or self.type == "cross" then
-            stroke_segment({ 0, -self.width }, { 0, self.width }, 1, paint)
-            stroke_segment({ -self.width, 0 }, { self.width, 0 }, 1, paint)
-        end
-    end
-
-    return self
-end
-
-function Origin.calculate_offset(direction)
-    local w = canvas_width
-    local h = canvas_height
-    local hw = w / 2
-    local hh = h / 2
-    local origin_offsets = {
-        sw = { 0, 0 },
-        w  = { 0, hh },
-        nw = { 0, h },
-        n  = { hw, h },
-        ne = { w, h },
-        e  = { w, hh },
-        se = { w, 0 },
-        s  = { hw, 0 },
-        c  = { hw, hw }
-    }
-    local offset = origin_offsets[string.lower(direction)]
-    if type(offset) == nil then
-        error("Invalid direction. Must be 'n', 'ne', 'e', 'se', 's', 'sw', 'w', or 'nw'")
-    end
-    return offset
-end
-
-function Origin:reset()
-    translate { -self.offset[1], -self.offset[2] }
-end
 Triangle = {}
 T = Triangle
 Triangle.__index = Triangle
@@ -1833,7 +1853,10 @@ function Triangle.new(vec2_a, vec2_b, vec2_c, color)
     self.vec2_a = vec2_a or { x = 0, y = 0 }
     self.vec2_b = vec2_b or { x = 0, y = 0 }
     self.vec2_c = vec2_c or { x = 0, y = 0 }
+
+    self.z_index = self.options.z_index or 0
     self.color = color or theme.text
+
     return self
 end
 
@@ -2061,81 +2084,108 @@ function Triangle:circumcircle()
         (cx ^ 2 + cy ^ 2) * (bx - ax)) / D
     return Vec2.new(Ux, Uy), radius
 end
+-- TODO: triangulation
+
 LineGroup = {}
 LG = LineGroup
 
-LineGroup.__index = LineGroup
-
 LineGroup.id = 1
 
+LineGroup.styles = Line.styles
+
+LineGroup.methods = {
+    grid = {
+        lines = nil,
+        v_lines = 10,
+        h_lines = 10,
+    }
+}
+
+LineGroup.__index = Utils.resolve_property
+
 function LineGroup.new(vec2s, options)
-    for _, vec2 in ipairs(vec2s) do
-        if not Vec2.is_vec2(vec2) then
-            error("All elements in vec2s must be Vec2 instances.")
-        end
-    end
-
     local self = setmetatable({}, LineGroup)
-    self.element_id = Element.id
-    Element.id = Element.id + 1
-    self.class_id = LineGroup.id
-    LineGroup.id = LineGroup.id + 1
-
     self.vec2s = vec2s or { Vec2.new(0, 0) }
-    self.o = options or {}
+    self.options = options or {}
 
-    self.len_vec2s = #vec2s
-    self.color = self.o.color or theme.text
-    self.width = self.o.width or 1
-    self.style = self.o.style or "normal"
-    self.dash_length = self.o.dash_length or 5
-    self.dot_radius = self.o.dot_radius or 1
-    self.char = self.o.char or "+"
-    self.char_vertex = self.o.char_vertex or self.char
-    self.char_vertex_nudge = self.o.char_vertex_nudge or { 0, 0 }
-    self.char_size = self.o.char_size or 12
-    self.space_length = self.o.space_length or self.dash_length
-    self.method = self.o.method or "between"
+    self.z_index = self.options.z_index or 0
+    self.style = self.options.style or "normal"
+    self.method = self.options.method or "graph"
+    self.__len_vec2s = #self.vec2s
+    Color.assign_color(self, self.options)
+    Utils.assign_options(self, self.options)
+    Utils.assign_ids(self)
+
     return self
 end
 
-function LineGroup:draw_between()
-    for i = 1, self.len_vec2s do
-        for j = i + 1, self.len_vec2s do
-            local line = Line.new(self.vec2s[i], self.vec2s[j], self.o)
-            if self.style == "normal" then
-                line:draw_normal()
-            elseif self.style == "dashed" then
-                line:draw_dashed()
-            elseif self.style == "dotted" then
-                line:draw_dotted()
-            elseif self.style == "char" then
-                line:draw_char()
-            end
-        end
-    end
-end
-
-function LineGroup:draw_from_to()
-    for i = 1, self.len_vec2s do
-        local line = Line.new(self.vec2s[1], self.vec2s[i], self.o)
-        if self.style == "normal" then
-            line:draw_normal()
-        elseif self.style == "dashed" then
-            line:draw_dashed()
-        elseif self.style == "dotted" then
-            line:draw_dotted()
-        elseif self.style == "char" then
-            line:draw_char()
-        end
-    end
-end
-
 function LineGroup:draw()
-    if self.method == "between" then
-        self:draw_between()
-    elseif self.method == "from-to" then
-        self:draw_from_to()
+    if self.method == "graph" then
+        self:graph()
+    elseif self.method == "star" then
+        self:star()
+    elseif self.method == "polyline" then
+        self:polyline()
+    elseif self.method == "grid" then
+        self:grid()
+    end
+end
+
+function LineGroup:draw_line(line)
+    if self.style == "normal" then
+        line:draw_normal()
+    elseif self.style == "dashed" then
+        line:draw_dashed()
+    elseif self.style == "dotted" then
+        line:draw_dotted()
+    elseif self.style == "char" then
+        line:draw_char()
+    end
+end
+
+function LineGroup:graph()
+    for i = 1, self.__len_vec2s do
+        for j = i + 1, self.__len_vec2s do
+            local line = Line.new(self.vec2s[i], self.vec2s[j], self.options)
+            self:draw_line(line)
+        end
+    end
+end
+
+function LineGroup:grid()
+    local vec2a = self.vec2s[1]
+    local vec2b = self.vec2s[2]
+    local xd = vec2b.x - vec2a.x
+    local yd = vec2b.y - vec2a.y
+    local v_iters = self.lines ~= nil and self.lines or self.v_lines
+    local h_iters = self.lines ~= nil and self.lines or self.h_lines
+    local x_space = xd / v_iters
+    local y_space = yd / h_iters
+    for i = 0, v_iters do
+        local v1 = Vec2.new(vec2a.x + x_space * i, vec2a.y)
+        local v2 = Vec2.new(vec2a.x + x_space * i, vec2b.y)
+        local v_line = Line.new(v1, v2, self.options)
+        self:draw_line(v_line)
+    end
+    for i = 0, h_iters do
+        local h1 = Vec2.new(vec2a.x, vec2a.y + y_space * i)
+        local h2 = Vec2.new(vec2b.x, vec2a.y + y_space * i)
+        local h_line = Line.new(h1, h2, self.options)
+        self:draw_line(h_line)
+    end
+end
+
+function LineGroup:polyline()
+    for i = 2, self.__len_vec2s do
+        local line = Line.new(self.vec2s[i - 1], self.vec2s[i], self.options)
+        self:draw_line(line)
+    end
+end
+
+function LineGroup:star()
+    for i = 2, self.__len_vec2s do
+        local line = Line.new(self.vec2s[1], self.vec2s[i], self.o)
+        self:draw_line(line)
     end
 end
 
@@ -2144,37 +2194,52 @@ function LineGroup:print(places)
 
     local element_id = tostring(self.element_id)
     local class_id = tostring(self.class_id)
-    local len_vec2s = tostring(self.len_vec2s)
-    local color = tostring(Utils.table_to_string(self.color, true, places))
-    local width = tostring(Math.truncate(self.width, places))
+    local z_index = tostring(self.z_index)
     local style = self.style
-    local dash_length = tostring(Math.truncate(self.dash_length, places))
-    local dot_radius = tostring(Math.truncate(self.dot_radius, places))
-    local char = self.char
-    local char_vertex = self.char_vertex
-    local char_vertex_nudge = Utils.table_to_string(self.char_vertex_nudge, true, places)
-    local char_size = tostring(Math.truncate(self.char_size, places))
-    local space_length = tostring(Math.truncate(self.space_length, places))
+    local method = self.method
 
     print("-- LineGroup " .. element_id .. ":" .. class_id .. " --")
     print("  element_id: " .. element_id)
     print("  class_id: " .. class_id)
-    print("  len_vec2s: " .. len_vec2s)
+    print("  z_index: " .. z_index)
+    print("  len_vec2s: " .. tostring(self.__len_vec2s))
     for i, vec2 in ipairs(self.vec2s) do
         local x = tostring(Math.truncate(vec2.x, places))
         local y = tostring(Math.truncate(vec2.y, places))
-        print("vec2_" .. i .. ": " .. x .. ", y = " .. y .. " }")
+        print("  vec2_" .. i .. ": { x = " .. x .. ", y = " .. y .. " }")
     end
-    print("  color: " .. color)
-    print("  width: " .. width)
+    print("  method: " .. method)
+    if method == "grid" then
+        if self.lines ~= nil then
+            print("  lines: " .. tostring(self.lines))
+        else
+            print("  v_lines: " .. tostring(self.v_lines))
+            print("  h_lines: " .. tostring(self.h_lines))
+        end
+    end
     print("  style: " .. style)
-    print("  dash_length: " .. dash_length)
-    print("  dot_radius: " .. dot_radius)
-    print("  char: " .. char)
-    print("  char_vertex: " .. char_vertex)
-    print("  char_vertex nudge:" .. char_vertex_nudge)
-    print("  char_size: " .. char_size)
-    print("  space_length: " .. space_length)
+    if style == "normal" then
+        print("  width: " .. tostring(Math.truncate(self.width, places)))
+    elseif style == "dashed" then
+        print("  width: " .. tostring(Math.truncate(self.width, places)))
+        print("  dash_length: " .. tostring(Math.truncate(self.dash_length, places)))
+        print("  space_length: " .. tostring(Math.truncate(self.space_length, places)))
+    elseif style == "dotted" then
+        print("  dot_radius: " .. tostring(Math.truncate(self.dot_radius, places)))
+        print("  space_length: " .. tostring(Math.truncate(self.space_length, places)))
+    elseif style == "char" then
+        print("  char: " .. self.char)
+        print("  char_vertex: " .. self.char_vertex)
+        print("  char_vertex nudge: " .. Utils.table_to_string(self.char_vertex_nudge, true, places))
+        print("  char_size: " .. tostring(Math.truncate(self.char_size, places)))
+        print("  space_length: " .. tostring(Math.truncate(self.space_length, places)))
+    end
+    if self.gradient == nil then
+        print("  color: " .. tostring(Utils.table_to_string(self.color, true, places)))
+    else
+        print("  gradient: " .. tostring(Utils.table_to_string(self.gradient.color1:table(), true, places))
+            .. " → " .. tostring(Utils.table_to_string(self.gradient.color2:table(), true, places)))
+    end
     print("")
 end
 -- TODO - Set a background that is always the lowest layer
@@ -2217,7 +2282,6 @@ function Layer:draw()
 end
 Line = {}
 L = Line
-Line.__index = Line
 
 Line.id = 1
 
@@ -2243,45 +2307,25 @@ Line.styles = {
     },
 }
 
-Line.__index = function(instance, key)
-    local value = rawget(instance, key)
-    if value ~= nil then
-        return value
-    else
-        local style = rawget(instance, "style") or "normal"
-        local style_val = Line.styles[style][key]
-        if style_val ~= nil then
-            return style_val
-        end
-    end
-
-    return Line[key]
-end
+Line.__index = Utils.resolve_property
 
 function Line.new(vec2a, vec2b, options)
     local self = setmetatable({}, Line)
-    self.element_id = Element.id
-    Element.id = Element.id + 1
-    self.class_id = Line.id
-    Line.id = Line.id + 1
-
     self.vec2a = vec2a or Vec2.new(0, 0)
     self.vec2b = vec2b or Vec2.new(0, 0)
-    self.o = options or {}
+    self.options = options or {}
 
-    self.style = self.o.style or "normal"
-    local c = self.o.color or Color.new()
-    self.color = Color.assign_color(c)
-
-    for key, value in pairs(self.o) do
-        self[key] = value
-    end
+    self.z_index = self.options.z_index or 0
+    self.style = self.options.style or "normal"
+    Color.assign_color(self, self.options)
+    Utils.assign_options(self, self.options)
+    Utils.assign_ids(self)
 
     return self
 end
 
 function Line:clone()
-    return Factory.clone_one(Line, self)
+    return Factory.clone(self)
 end
 
 function Line:draw_normal()
@@ -2296,14 +2340,14 @@ end
 function Line:draw_dashed()
     local total_distance = self.vec2a:distance(self.vec2b)
     local direction = self.vec2b:sub(self.vec2a):normalize()
-
+    local paint = Paint.create(self.color, self.gradient)
     local current_distance = 0
+
     while current_distance < total_distance do
         local start_dash = self.vec2a:add(direction:mult(current_distance))
         current_distance = math.min(current_distance + self.dash_length, total_distance)
         local end_dash = self.vec2a:add(direction:mult(current_distance))
 
-        local paint = Paint.create(self.color, self.gradient)
         stroke_segment(
             { start_dash.x, start_dash.y },
             { end_dash.x, end_dash.y },
@@ -2317,11 +2361,11 @@ end
 function Line:draw_dotted()
     local total_distance = self.vec2a:distance(self.vec2b)
     local direction = self.vec2b:sub(self.vec2a):normalize()
-
+    local paint = Paint.create(self.color, self.gradient)
     local current_distance = 0
+
     while current_distance <= total_distance do
         local dot_position = self.vec2a:add(direction:mult(current_distance))
-        local paint = Paint.create(self.color, self.gradient)
 
         fill_circle({ dot_position.x, dot_position.y }, self.dot_radius, paint)
 
@@ -2337,6 +2381,7 @@ function Line:draw_char()
     local char_scale_factor = self.char_size / 12
     local total_distance = self.vec2a:distance(self.vec2b)
     local direction = self.vec2b:sub(self.vec2a):normalize()
+    local color_table = self.color:table()
 
     save()
     translate {
@@ -2344,7 +2389,7 @@ function Line:draw_char()
         self.vec2a.y + self.char_vertex_nudge[2]
     }
     scale { char_scale_factor, char_scale_factor }
-    text(self.char_vertex, self.color:table())
+    text(self.char_vertex, color_table)
     restore()
 
     local current_distance = self.space_length
@@ -2354,7 +2399,7 @@ function Line:draw_char()
         save()
         translate { char_position.x, char_position.y }
         scale { char_scale_factor, char_scale_factor }
-        text(self.char, self.color:table())
+        text(self.char, color_table)
         restore()
 
         current_distance = current_distance + self.space_length
@@ -2367,7 +2412,7 @@ function Line:draw_char()
             self.vec2b.y + self.char_vertex_nudge[2]
         }
         scale { char_scale_factor, char_scale_factor }
-        text(self.char_vertex, self.color:table())
+        text(self.char_vertex, color_table)
         restore()
     end
 end
@@ -2486,16 +2531,19 @@ function Line:print(places)
     local ay = tostring(Math.truncate(self.vec2a.y, places))
     local bx = tostring(Math.truncate(self.vec2b.x, places))
     local by = tostring(Math.truncate(self.vec2b.y, places))
-
+    local z_index = tostring(self.z_index)
     local style = self.style
+    local gradient = self.gradient
+
 
     print("-- Line " .. element_id .. ":" .. class_id .. " --")
     print("  element_id: " .. element_id)
     print("  class_id: " .. class_id)
     print("  vec2_a: { x = " .. ax .. ", y = " .. ay .. " }")
     print("  vec2_b: { x = " .. bx .. ", y = " .. by .. " }")
+    print("  z_index: " .. z_index)
 
-    if self.gradient == nil then
+    if gradient == nil then
         local color = tostring(Utils.table_to_string(
             self.color:table(), true, places
         ))
@@ -2571,7 +2619,7 @@ end
 function Text:draw()
     local scale_factor = self.size / 12
     save()
-    translate(self.vec2:to_xy_pair())
+    translate(self.vec2:to_xy_table())
     scale { scale_factor, scale_factor }
     text(self.string, self.color:table())
     restore()
@@ -2802,6 +2850,106 @@ function Debug.print_docstring(docstring)
         end
     end
 end
+-- TODO Add a method in concert with Layer class to force origin to stay on top
+
+Origin = {}
+
+Origin.id = 1
+Origin.created = false
+
+Origin.__index = Utils.resolve_property
+
+function Origin.new(options)
+    if Origin.created == true then
+        error("Only one instance of Origin is permitted.")
+    end
+    local self = setmetatable({}, Origin)
+    self.options = options or {}
+
+    self.z_index = self.options.z_index or math.huge
+    self.direction = self.options.direction or "c"
+    self.type = self.options.type or "stroke"
+    self.width = self.options.width or 4
+    Color.assign_color(self, self.options)
+    Utils.assign_ids(self)
+    Origin.created = true
+
+    self._offset = Origin._calculate_offset(self.direction)
+    self:_calc_and_assign_corners(self.direction)
+
+    translate(self._offset)
+
+    return self
+end
+
+function Origin:_assign_corners(t)
+    self.top_left = Vec2.new(t[1][1], t[1][2])
+    self.top_right = Vec2.new(t[2][1], t[2][2])
+    self.bottom_right = Vec2.new(t[3][1], t[3][2])
+    self.bottom_left = Vec2.new(t[4][1], t[4][2])
+end
+
+function Origin:_calc_and_assign_corners(direction)
+    local w = canvas_width
+    local h = canvas_height
+    local hw = w * 0.5
+    local hh = h * 0.5
+
+    local coords = {
+        nw = { { 0, 0 }, { w, 0 }, { w, -h }, { 0, -h } },
+        n  = { { -hw, 0 }, { hw, 0 }, { hw, -h }, { -hw, -h } },
+        ne = { { -w, 0 }, { 0, 0 }, { 0, -h }, { -w, -h } },
+        e  = { { -w, hh }, { 0, hh }, { 0, -hh }, { -w, -hh } },
+        se = { { -w, h }, { 0, h }, { 0, 0 }, { -w, 0 } },
+        s  = { { -hw, h }, { hw, h }, { hw, 0 }, { -hw, 0 } },
+        sw = { { 0, h }, { w, h }, { w, 0 }, { 0, 0 } },
+        w  = { { 0, hh }, { w, hh }, { w, -hh }, { 0, -hh } },
+        c  = { { -hw, hh }, { hw, hh }, { hw, -hh }, { -hw, -hh } }
+    }
+
+    self:_assign_corners(coords[direction])
+end
+
+function Origin._calculate_offset(direction)
+    local w = canvas_width
+    local h = canvas_height
+    local hw = w / 2
+    local hh = h / 2
+    local origin_offsets = {
+        sw = { 0, 0 },
+        w  = { 0, hh },
+        nw = { 0, h },
+        n  = { hw, h },
+        ne = { w, h },
+        e  = { w, hh },
+        se = { w, 0 },
+        s  = { hw, 0 },
+        c  = { hw, hh }
+    }
+    local offset = origin_offsets[direction]
+    if type(offset) == nil then
+        error("Invalid direction. Must be 'n', 'ne', 'e', 'se', 's', 'sw', 'w', or 'nw'")
+    end
+    return offset
+end
+
+function Origin:draw()
+    local paint = Paint.create(self.color, self.gradient)
+    if self.type == "stroke" then
+        stroke_circle({ 0, 0 }, self.width, 1, paint)
+    elseif self.type == "dot" then
+        fill_circle({ 0, 0 }, self.width, paint)
+    elseif self.type == "crosshair" then
+        stroke_segment({ 0, -self.width }, { 0, self.width }, 1, paint)
+        stroke_segment({ -self.width, 0 }, { self.width, 0 }, 1, paint)
+    end
+end
+
+function Origin:reset()
+    translate { -self._offset[1], -self._offset[2] }
+end
+-- TODO Rewrite graph so that it uses the LineGroup function but just draws a thicker line across axes
+
 Graph = {}
 Graph.__index = Graph
 
@@ -2828,8 +2976,8 @@ end
 
 
 -- AUDULUS-CANVAS LIBRARY ----------------------------------------------
--- Version: 0.0.2-alpha
--- Updated: 2024.01.16
+-- Version: 0.0.3-alpha
+-- Updated: 2024.01.29
 -- URL: https://github.com/markalanboyd/Audulus-Canvas
 
 ----- Instructions -----
@@ -2839,11 +2987,19 @@ end
 -- 4. Set a custom W(idth) and H(eight) in the inspector panel
 -- 5. Write your code in the CODE block below
 
-o = Origin.new("c", {show = true, type = "cross", width = 4, color = theme.text})
+origin = Origin.new({
+	direction = "c",
+	type = "crosshair",
+	width = 4,
+	color = theme.text
+})
+
+origin:draw()
+
 
 -- CODE ----------------------------------------------------------------
 
 -- PRINT CONSOLE -------------------------------------------------------
 
-o:reset()
+origin:reset()
 print_all()

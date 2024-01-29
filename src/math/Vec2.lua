@@ -6,13 +6,11 @@ Vec2.id = 1
 
 function Vec2.new(x, y)
     local self = setmetatable({}, Vec2)
-    self.element_id = Element.id
-    Element.id = Element.id + 1
-    self.class_id = Vec2.id
-    Vec2.id = Vec2.id + 1
-
     self.x = x or 0
     self.y = y or 0
+
+    Utils.assign_ids(self)
+
     return self
 end
 

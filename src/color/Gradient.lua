@@ -99,13 +99,13 @@ function Gradient:Invert()
 end
 
 function Gradient:clone()
-    return Factory.clone_one(Gradient, self)
+    return Factory.clone(self)
 end
 
 function Gradient:to_paint()
     return linear_gradient(
-        self.vec2a:to_xy_pair(),
-        self.vec2b:to_xy_pair(),
+        self.vec2a:to_xy_table(),
+        self.vec2b:to_xy_table(),
         self.color1:table(),
         self.color2:table()
     )

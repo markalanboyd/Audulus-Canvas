@@ -13,11 +13,12 @@ function Color.new(...)
 
     local args = { ... }
 
-    self.color_table = Color.args_to_color_table(args)
-    self.r = self.color_table[1]
-    self.g = self.color_table[2]
-    self.b = self.color_table[3]
-    self.a = self.color_table[4]
+    -- TODO do we need this intermediary private table?
+    self.__color_table = Color.args_to_color_table(args)
+    self.r = self.__color_table[1]
+    self.g = self.__color_table[2]
+    self.b = self.__color_table[3]
+    self.a = self.__color_table[4]
     return self
 end
 
@@ -128,11 +129,12 @@ function Color.is_color_table(table)
         type(table[4]) == "number"
 end
 
-function Color.assign_color(input)
-    if Color.is_color(input) then
-        return input:clone()
-    elseif Color.is_color_table(input) then
-        return Color.new(input)
+function Color.assign_color(object, options)
+    local c = options.color or Color.new()
+    if Color.is_color(c) then
+        object.color = c:clone()
+    elseif Color.is_color_table(c) then
+        object.color = Color.new(c)
     else
         error("Expected a Color instance or a color table.")
     end

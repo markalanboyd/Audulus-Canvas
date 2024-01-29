@@ -6,7 +6,6 @@ P = Point
 Point.id = 1
 
 Point.attrs = {
-    color = theme.text,
     show_coords = false,
     coords_nudge = { 0, 0 }
 }
@@ -27,43 +26,18 @@ Point.styles = {
     },
 }
 
-Point.__index = function(instance, key)
-    local value = rawget(instance, key)
-    if value ~= nil then
-        return value
-    end
-
-    local style = rawget(instance, "style") or "normal"
-    local style_val = Point.styles[style][key]
-    if style_val ~= nil then
-        return style_val
-    end
-
-    local attr = Point.attrs[key]
-    if attr ~= nil then
-        return attr
-    end
-
-    return Point[key]
-end
+Point.__index = Utils.resolve_property
 
 function Point.new(vec2, options)
     local self = setmetatable({}, Point)
-    self.element_id = Element.id
-    Element.id = Element.id + 1
-    self.class_id = Point.id
-    Point.id = Point.id + 1
-
     self.vec2 = vec2 or Vec2.new(0, 0)
-    self.o = options or {}
+    self.options = options or {}
 
-    self.style = self.o.style or "normal"
-    local c = self.o.color or Color.new()
-    self.color = Color.assign_color(c)
-
-    for key, value in pairs(self.o) do
-        self[key] = value
-    end
+    self.z_index = self.options.z_index or 0
+    self.style = self.options.style or "normal"
+    Color.assign_color(self, self.options)
+    Utils.assign_options(self, self.options)
+    Utils.assign_ids(self)
 
     return self
 end
@@ -71,7 +45,7 @@ end
 -- Instance Methods --
 
 function Point:clone()
-    return Factory.clone_one(Point, self)
+    return Factory.clone(self)
 end
 
 function Point:draw_coords()
@@ -191,6 +165,7 @@ function Point:print(places)
     local class_id = tostring(self.class_id)
     local x = tostring(Math.truncate(self.vec2.x, places))
     local y = tostring(Math.truncate(self.vec2.y, places))
+    local z_index = tostring(self.z_index)
     local color = tostring(Utils.table_to_string(self.color:table(), true, places))
     local style = self.style
 
@@ -198,6 +173,7 @@ function Point:print(places)
     print("  element_id: " .. element_id)
     print("  class_id: " .. class_id)
     print("  vec2: { x = " .. x .. ", y = " .. y .. " }")
+    print("  z_index: " .. z_index)
     print("  color: " .. color)
     print("  style: " .. style)
     if style == "normal" then
