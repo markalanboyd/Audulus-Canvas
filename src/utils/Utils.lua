@@ -83,6 +83,13 @@ function Utils.resolve_property(instance, key)
         local style_val = class.styles[style][key]
         if style_val ~= nil then return style_val end
     end
+    if class.methods then
+        local method = rawget(instance, "method")
+        if method ~= nil and class.methods[method] then
+            local method_val = class.methods[method][key]
+            if method_val ~= nil then return method_val end
+        end
+    end
     if class.attrs then
         local attr = class.attrs[key]
         if attr ~= nil then return attr end
@@ -94,5 +101,5 @@ function Utils.assign_ids(instance)
     instance.element_id = Element.id
     Element.id = Element.id + 1
     instance.class_id = instance.id
-    instance.id = instance.id + 1
+    getmetatable(instance).id = instance.id + 1
 end
