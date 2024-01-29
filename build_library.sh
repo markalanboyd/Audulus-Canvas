@@ -18,8 +18,8 @@ echo "\n" >> "$library_file" # Add a newline at the end
 # Add the bottom content to library.lua
 cat << EOF >> "$library_file"
 -- AUDULUS-CANVAS LIBRARY ----------------------------------------------
--- Version: 0.0.2-alpha
--- Updated: 2024.01.16
+-- Version: 0.0.3-alpha
+-- Updated: 2024.01.29
 -- URL: https://github.com/markalanboyd/Audulus-Canvas
 
 ----- Instructions -----
@@ -29,13 +29,21 @@ cat << EOF >> "$library_file"
 -- 4. Set a custom W(idth) and H(eight) in the inspector panel
 -- 5. Write your code in the CODE block below
 
-o = Origin.new("c", {show = true, type = "cross", width = 4, color = theme.text})
+origin = Origin.new({
+	direction = "c",
+	type = "crosshair",
+	width = 4,
+	color = theme.text
+})
+
+origin:draw()
+
 
 -- CODE ----------------------------------------------------------------
 
 -- PRINT CONSOLE -------------------------------------------------------
 
-o:reset()
+origin:reset()
 print_all()
 EOF
 
