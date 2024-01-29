@@ -1,3 +1,5 @@
+-- TODO Rewrite graph so that it uses the LineGroup function but just draws a thicker line across axes
+
 Graph = {}
 Graph.__index = Graph
 
