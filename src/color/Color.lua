@@ -13,11 +13,12 @@ function Color.new(...)
 
     local args = { ... }
 
-    self.color_table = Color.args_to_color_table(args)
-    self.r = self.color_table[1]
-    self.g = self.color_table[2]
-    self.b = self.color_table[3]
-    self.a = self.color_table[4]
+    -- TODO do we need this intermediary private table?
+    self.__color_table = Color.args_to_color_table(args)
+    self.r = self.__color_table[1]
+    self.g = self.__color_table[2]
+    self.b = self.__color_table[3]
+    self.a = self.__color_table[4]
     return self
 end
 
