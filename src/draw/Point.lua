@@ -33,6 +33,7 @@ function Point.new(vec2, options)
     self.vec2 = vec2 or Vec2.new(0, 0)
     self.options = options or {}
 
+    self.z_index = self.options.z_index or 0
     self.style = self.options.style or "normal"
     Color.assign_color(self, self.options)
     Utils.assign_options(self, self.options)
@@ -44,7 +45,7 @@ end
 -- Instance Methods --
 
 function Point:clone()
-    return Factory.clone_one(Point, self)
+    return Factory.clone(self)
 end
 
 function Point:draw_coords()
@@ -164,6 +165,7 @@ function Point:print(places)
     local class_id = tostring(self.class_id)
     local x = tostring(Math.truncate(self.vec2.x, places))
     local y = tostring(Math.truncate(self.vec2.y, places))
+    local z_index = tostring(self.z_index)
     local color = tostring(Utils.table_to_string(self.color:table(), true, places))
     local style = self.style
 
@@ -171,6 +173,7 @@ function Point:print(places)
     print("  element_id: " .. element_id)
     print("  class_id: " .. class_id)
     print("  vec2: { x = " .. x .. ", y = " .. y .. " }")
+    print("  z_index: " .. z_index)
     print("  color: " .. color)
     print("  style: " .. style)
     if style == "normal" then
