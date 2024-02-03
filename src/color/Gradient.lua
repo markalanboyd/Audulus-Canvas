@@ -22,19 +22,19 @@ function Gradient.__add(self, other)
     return self:clone():add(other)
 end
 
-function Color.__sub(self, other)
+function Gradient.__sub(self, other)
     return self:clone():sub(other)
 end
 
-function Color.__mul(self, other)
+function Gradient.__mul(self, other)
     return self:clone():mult(other)
 end
 
-function Color.__div(self, other)
+function Gradient.__div(self, other)
     return self:clone():div(other)
 end
 
-function Color.__unm(self)
+function Gradient.__unm(self)
     return self:clone():invert()
 end
 
