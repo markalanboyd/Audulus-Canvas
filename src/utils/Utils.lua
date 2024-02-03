@@ -103,3 +103,7 @@ function Utils.assign_ids(instance)
     instance.class_id = instance.id
     getmetatable(instance).id = instance.id + 1
 end
+
+function Utils.has_substring(str, substr)
+    return string.find(str, substr) ~= nil
+end

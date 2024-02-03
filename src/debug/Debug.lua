@@ -78,6 +78,11 @@ function Debug.Logger()
                     theme.redHighlight[4]
                 }
                 text("> " .. s, dim_red)
+            elseif Utils.has_substring(s, "\n") then
+                for line in string.gmatch(s, "([^\n]+)") do
+                    text("> " .. line, theme.text)
+                    translate { 0, -14 }
+                end
             else
                 text("> " .. s, theme.text)
             end

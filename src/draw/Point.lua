@@ -33,13 +33,20 @@ function Point.new(vec2, options)
     self.vec2 = vec2 or Vec2.new(0, 0)
     self.options = options or {}
 
+
     self.z_index = self.options.z_index or 0
-    self.style = self.options.style or "normal"
+
     Color.assign_color(self, self.options)
     Utils.assign_options(self, self.options)
     Utils.assign_ids(self)
+    self.style = self.style or "normal"
+    self.name = self.name or ("Point " .. self.element_id .. ":" .. self.class_id)
 
     return self
+end
+
+function Point:__tostring()
+    return self.name
 end
 
 -- Instance Methods --

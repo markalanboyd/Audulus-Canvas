@@ -1,5 +1,3 @@
--- TODO Add a method in concert with Layer class to force origin to stay on top
-
 Origin = {}
 
 Origin.id = 1

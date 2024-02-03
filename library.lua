@@ -1,5 +1,142 @@
 -- SCROLL TO BOTTOM ----------------------------------------------------
 
+Set = {}
+
+Set.__index = Set
+
+function Set.new()
+    local self = setmetatable({}, Set)
+    self.set = {}
+    return self
+end
+
+function Set:add(key)
+    self.set[key] = true
+end
+
+function Set:remove(key)
+    self.set[key] = nil
+end
+
+function Set:sorted()
+    local elements = {}
+    for element in pairs(self.set) do
+        table.insert(elements, element)
+    end
+    table.sort(elements)
+    return elements
+end
+Tree = {}
+
+Tree.__index = Tree
+
+function Tree.new(value)
+    local self = setmetatable({}, Tree)
+    self.val = value
+
+    self.parent = nil
+    self.children = {}
+    return self
+end
+
+function Tree:__call(...)
+    local nodes = { ... }
+
+    for _, node in ipairs(nodes) do
+        self:add_child(node)
+    end
+end
+
+function Tree:__tostring()
+    local function tostring_r(node, depth, childNumber)
+        local indent = (depth > 0) and string.rep("    ", depth - 1) .. "    |- " or ""
+        local prefix = (depth > 0) and ("Child" .. childNumber .. ": ") or "Root: "
+        local str = indent .. prefix .. "val = " .. tostring(node.val)
+
+        for i, child in ipairs(node.children) do
+            str = str .. "\n" .. tostring_r(child, depth + 1, i)
+        end
+
+        return str
+    end
+
+    return tostring_r(self, 0, 0)
+end
+
+function Tree:add_child(node)
+    node.parent = self
+    table.insert(self.children, node)
+    return self
+end
+
+-- TODO Should this return self or the child or both?
+function Tree:remove_child(node)
+    local index
+    for i, v in ipairs(self.children) do
+        if v == node then
+            index = i
+            break
+        end
+    end
+    if index == nil then return end
+    table.remove(self.children, index)
+    return self
+end
+
+function Tree:dfs_pre(t)
+    if not t then t = {} end
+
+    table.insert(t, self)
+
+    for _, node in ipairs(self.children) do
+        node:dfs_pre(t)
+    end
+
+    return t
+end
+
+function Tree:dfs_post(t)
+    if not t then t = {} end
+
+    for _, node in ipairs(self.children) do
+        node:dfs_post(t)
+    end
+
+    table.insert(t, self)
+
+    return t
+end
+
+function Tree:bfs()
+    local function dequeue(t)
+        return table.remove(t, 1)
+    end
+    local visited = {}
+    local to_visit = {}
+    table.insert(to_visit, self)
+    while #to_visit ~= 0 do
+        local node = dequeue(to_visit)
+        table.insert(visited, node)
+        if node.children then
+            for _, child in ipairs(node.children) do
+                table.insert(to_visit, child)
+            end
+        end
+    end
+    return visited
+end
+
+function Tree:add_structure(tree_structure)
+    for _, v in ipairs(tree_structure) do
+        local node = Tree.new(v.val)
+        self:add_child(node)
+        if v.children then
+            node:add_structure(v.children)
+        end
+    end
+
+    return self
+end
 Gradient = {}
 G = Gradient
 Gradient.__index = Gradient
@@ -24,19 +161,19 @@ function Gradient.__add(self, other)
     return self:clone():add(other)
 end
 
-function Color.__sub(self, other)
+function Gradient.__sub(self, other)
     return self:clone():sub(other)
 end
 
-function Color.__mul(self, other)
+function Gradient.__mul(self, other)
     return self:clone():mult(other)
 end
 
-function Color.__div(self, other)
+function Gradient.__div(self, other)
     return self:clone():div(other)
 end
 
-function Color.__unm(self)
+function Gradient.__unm(self)
     return self:clone():invert()
 end
 
@@ -341,6 +478,8 @@ function Color.print_swatches(colors)
         fill_rect({ x, 0 }, { x + size, size }, 0, color:to_paint())
     end
 end
+
+-- TODO Black, grey, white, etc?
 
 function Color.red()
     return Color.new({ 1, 0, 0, 1 })
@@ -809,6 +948,10 @@ function Utils.assign_ids(instance)
     Element.id = Element.id + 1
     instance.class_id = instance.id
     getmetatable(instance).id = instance.id + 1
+end
+
+function Utils.has_substring(str, substr)
+    return string.find(str, substr) ~= nil
 end
 Vec2 = {}
 V = Vec2
@@ -1683,13 +1826,20 @@ function Point.new(vec2, options)
     self.vec2 = vec2 or Vec2.new(0, 0)
     self.options = options or {}
 
+
     self.z_index = self.options.z_index or 0
-    self.style = self.options.style or "normal"
+
     Color.assign_color(self, self.options)
     Utils.assign_options(self, self.options)
     Utils.assign_ids(self)
+    self.style = self.style or "normal"
+    self.name = self.name or ("Point " .. self.element_id .. ":" .. self.class_id)
 
     return self
+end
+
+function Point:__tostring()
+    return self.name
 end
 
 -- Instance Methods --
@@ -2246,40 +2396,99 @@ end
 -- TODO - Set a foreground that is always the highest layer
 -- TODO - Attach origin to background/foreground based on preference
 -- TODO - Global layer system vs local layer system - objects can have their own layers
+-- TODO - Guard against directly putting things into layers that can't be drawn
+
 Layer = {}
 La = Layer
 Layer.__index = Layer
 Layer.layers = {}
 
-function Layer.new(z_index)
-    local self = setmetatable({}, Layer)
+setmetatable(Layer, { __index = Tree })
+
+function Layer.new(z_index, val)
+    local self = Tree.new(val)
+    setmetatable(self, {
+        __index = Layer,
+        __call = Tree.__call,
+        __tostring = Layer.__tostring,
+    })
+
     self.z_index = z_index or 0
-    self.objects = {}
-    table.insert(Layer.layers, self)
+
     return self
 end
 
-function Layer.draw_all()
-    table.sort(Layer.layers, function(a, b) return a.z_index < b.z_index end)
-    for _, layer in ipairs(Layer.layers) do
-        layer:draw()
+function Layer:__tostring()
+    local function tostring_r(node, depth, childNumber)
+        local indent = (depth > 0) and string.rep("  ", depth - 1) .. "  |- " or ""
+        local prefix = (depth > 0) and ("Child" .. childNumber .. ": ") or "Root: "
+        local str = indent .. prefix .. "z_index = " .. tostring(node.z_index) .. ", contents = " .. tostring(node.val)
+
+        for i, child in ipairs(node.children) do
+            str = str .. "\n" .. tostring_r(child, depth + 1, i)
+        end
+
+        return str
     end
+
+    return tostring_r(self, 0, 0)
 end
 
-function Layer:add(object, draw_function_name)
-    draw_function_name = draw_function_name or "draw"
-    table.insert(self.objects, { object = object, draw_function = draw_function_name })
+function Layer:sort_children()
+    table.sort(self.children, function(a, b)
+        return a.z_index < b.z_index
+    end)
+end
+
+-- TODO Make this work with call method?
+-- TODO Shorten z_index and contents?
+function Layer:add_structure(tree_structure)
+    for _, v in ipairs(tree_structure) do
+        local z_index = v.z_index or v.z or 0
+        local contents = v.contents or v.c
+        local sublayers = v.sublayers or v.sl
+        local node = Layer.new(z_index, contents)
+        self:add_child(node)
+        if sublayers then
+            node:add_structure(sublayers)
+        end
+    end
+
+    return self
+end
+
+function Layer:_dfs_sort_and_collect(t)
+    if not t then t = {} end
+    if self.children then
+        self:sort_children()
+    end
+    for _, node in ipairs(self.children) do
+        node:_dfs_sort_and_collect(t)
+    end
+    table.insert(t, self)
+    return t
 end
 
 function Layer:draw()
-    for _, item in ipairs(self.objects) do
-        local obj = item.object
-        local draw_function = item.draw_function
-        if obj[draw_function] then
-            obj[draw_function](obj)
+    local to_draw = self:_dfs_sort_and_collect()
+    for _, node in ipairs(to_draw) do
+        if node.val ~= nil then
+            if node.val.draw ~= nil then
+                node.val:draw()
+            else
+                for _, obj in ipairs(node.val) do
+                    obj:draw()
+                end
+            end
         end
     end
 end
+
+-- tree = {
+--     { z_index = 0, val = { p1, p2 } },
+--     { z_index = 0, val = { p3, p4 } },
+--     { z_index = 0, val = { p5, p6, p7 } },
+-- }
 Line = {}
 L = Line
 
@@ -2826,6 +3035,11 @@ function Debug.Logger()
                     theme.redHighlight[4]
                 }
                 text("> " .. s, dim_red)
+            elseif Utils.has_substring(s, "\n") then
+                for line in string.gmatch(s, "([^\n]+)") do
+                    text("> " .. line, theme.text)
+                    translate { 0, -14 }
+                end
             else
                 text("> " .. s, theme.text)
             end
@@ -2850,8 +3064,6 @@ function Debug.print_docstring(docstring)
         end
     end
 end
--- TODO Add a method in concert with Layer class to force origin to stay on top
-
 Origin = {}
 
 Origin.id = 1
@@ -2995,11 +3207,12 @@ origin = Origin.new({
 })
 
 origin:draw()
-
+root = Layer.new(0, nil)
 
 -- CODE ----------------------------------------------------------------
 
 -- PRINT CONSOLE -------------------------------------------------------
 
+root:draw()
 origin:reset()
 print_all()

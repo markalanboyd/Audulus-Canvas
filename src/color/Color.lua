@@ -219,6 +219,8 @@ function Color.print_swatches(colors)
     end
 end
 
+-- TODO Black, grey, white, etc?
+
 function Color.red()
     return Color.new({ 1, 0, 0, 1 })
 end
