@@ -37,12 +37,13 @@ origin = Origin.new({
 })
 
 origin:draw()
-
+root = Layer.new(0, nil)
 
 -- CODE ----------------------------------------------------------------
 
 -- PRINT CONSOLE -------------------------------------------------------
 
+root:draw()
 origin:reset()
 print_all()
 EOF
