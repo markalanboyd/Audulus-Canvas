@@ -36,14 +36,41 @@ origin = Origin.new({
 	color = theme.text
 })
 
-origin:draw()
-root = Layer.new(0, nil)
+root = Layer.new("ROOT", 0, nil)
+bg = Background.new({color=Color.new(theme.modules)})
 
 -- CODE ----------------------------------------------------------------
 
+
+
+
+
 -- PRINT CONSOLE -------------------------------------------------------
 
-root:draw()
+
+layer_tree = {
+	{name = "BACKGROUND",
+	 	z_index = -math.huge,
+		contents = {background}},
+	{name = "LAYER1",
+		z_index = 0,
+		contents = {},
+		sublayers {
+			{name = "NESTED LAYER",
+				z_index = 0,
+				contents = {},
+				sublayers = {} }
+		}
+	{name = "LAYER2",
+		z_index = 0,
+		contents = {},
+		sublayers = {} },
+		
+}
+
+root(layer_tree):draw()
+origin:draw()
+-- print(tostring(root))
 origin:reset()
 print_all()
 EOF
