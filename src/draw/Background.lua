@@ -6,15 +6,15 @@ Background.created = false
 
 Background.__index = Utils.resolve_property
 
-function Background.new(origin, options)
+function Background.new(options)
     if Background.created == true then
         error("Only one instance of Background is permitted.")
     end
     local self = setmetatable({}, Background)
+    self.origin = origin
     self.options = options or {}
 
     self.z_index = -math.huge
-    self.origin = origin or Origin.new()
     self.vec2a = self.origin.bottom_left
     self.vec2b = self.origin.top_right
     self.rounded = self.options.rounded or true
