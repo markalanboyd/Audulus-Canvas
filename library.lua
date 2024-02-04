@@ -1753,15 +1753,15 @@ Background.created = false
 
 Background.__index = Utils.resolve_property
 
-function Background.new(origin, options)
+function Background.new(options)
     if Background.created == true then
         error("Only one instance of Background is permitted.")
     end
     local self = setmetatable({}, Background)
+    self.origin = origin
     self.options = options or {}
 
     self.z_index = -math.huge
-    self.origin = origin or Origin.new()
     self.vec2a = self.origin.bottom_left
     self.vec2b = self.origin.top_right
     self.rounded = self.options.rounded or true
@@ -2392,65 +2392,117 @@ function LineGroup:print(places)
     end
     print("")
 end
--- TODO - Set a background that is always the lowest layer
--- TODO - Set a foreground that is always the highest layer
 -- TODO - Attach origin to background/foreground based on preference
--- TODO - Global layer system vs local layer system - objects can have their own layers
--- TODO - Guard against directly putting things into layers that can't be drawn
+-- TODO - Implement transforms
+-- TODO - Implement bounding_box
+-- TODO - Add opacity
+-- TODO - Add background and foreground to the tree
+-- TODO - Layer panel on right side of node
 
 Layer = {}
 La = Layer
 Layer.__index = Layer
-Layer.layers = {}
 
-setmetatable(Layer, { __index = Tree })
-
-function Layer.new(z_index, val)
-    local self = Tree.new(val)
-    setmetatable(self, {
-        __index = Layer,
-        __call = Tree.__call,
-        __tostring = Layer.__tostring,
-    })
-
+function Layer.new(name, z_index, contents)
+    local self = setmetatable({}, Layer)
+    if name ~= nil then
+        self.name = tostring(name)
+    else
+        self.name = "Layer"
+    end
     self.z_index = z_index or 0
+    self.contents = contents or {}
+
+    self.superlayer = nil
+    self.sublayers = {}
 
     return self
 end
 
-function Layer:__tostring()
-    local function tostring_r(node, depth, childNumber)
-        local indent = (depth > 0) and string.rep("  ", depth - 1) .. "  |- " or ""
-        local prefix = (depth > 0) and ("Child" .. childNumber .. ": ") or "Root: "
-        local str = indent .. prefix .. "z_index = " .. tostring(node.z_index) .. ", contents = " .. tostring(node.val)
+function Layer:__call(...)
+    local args = { ... }
 
-        for i, child in ipairs(node.children) do
-            str = str .. "\n" .. tostring_r(child, depth + 1, i)
+    if #args == 1 then
+        local arg = args[1]
+        if type(arg) == "table" and arg.contents then
+            self:add_sublayer(arg)
+        else
+            self:add_tree(arg)
+        end
+        return self
+    end
+
+    for _, layer in ipairs(args) do
+        self:add_sublayer(layer)
+    end
+    return self
+end
+
+-- TODO Actually print out tables in contents
+-- TODO Add check of __tostring() defined to help print method?
+function Layer:__tostring()
+    local function tostring_r(layer, depth)
+        local indent = (depth > 0) and string.rep("  ", depth - 1) .. "  |- " or ""
+        local prefix = (depth > 0) and (layer.name .. ": ") or layer.name .. ": "
+        local str = indent ..
+            prefix .. "z_index = " .. tostring(layer.z_index) .. ", contents = " .. tostring(layer.contents)
+
+        for i, sublayer in ipairs(layer.sublayers) do
+            str = str .. "\n" .. tostring_r(sublayer, depth + 1)
         end
 
         return str
     end
 
-    return tostring_r(self, 0, 0)
+    return tostring_r(self, 0)
 end
 
-function Layer:sort_children()
-    table.sort(self.children, function(a, b)
-        return a.z_index < b.z_index
-    end)
+function Layer:add_sublayer(layer)
+    layer.superlayer = self
+    table.insert(self.sublayers, layer)
+    return self
+end
+
+function Layer:remove_sublayer(layer)
+    local index
+    for i, v in ipairs(self.sublayers) do
+        if v == layer then
+            index = i
+            break
+        end
+    end
+    if index == nil then return end
+    table.remove(self.sublayers, index)
+    return self
+end
+
+function Layer:sort_sublayers()
+    if self.sublayers then
+        table.sort(self.sublayers, function(a, b)
+            return a.z_index < b.z_index
+        end)
+    end
+end
+
+function Layer:sort_contents()
+    if self.contents then
+        table.sort(self.contents, function(a, b)
+            return a.z_index < b.z_index
+        end)
+    end
 end
 
 -- TODO Make this work with call method?
--- TODO Shorten z_index and contents?
-function Layer:add_structure(tree_structure)
-    for _, v in ipairs(tree_structure) do
-        local z_index = v.z_index or v.z or 0
-        local contents = v.contents or v.c
-        local sublayers = v.sublayers or v.sl
-        local node = Layer.new(z_index, contents)
-        self:add_child(node)
+function Layer:add_tree(tree)
+    for _, l in ipairs(tree) do
+        local name = l.name or l.n or "unnamed"
+        local z_index = l.z_index or l.z or 0
+        local contents = l.contents or l.c or {}
+        local sublayers = l.sublayers or l.sl or {}
+        local layer = Layer.new(name, z_index, contents)
+        self:add_sublayer(layer)
         if sublayers then
-            node:add_structure(sublayers)
+            layer:add_tree(sublayers)
         end
     end
 
@@ -2459,11 +2511,10 @@ end
 
 function Layer:_dfs_sort_and_collect(t)
     if not t then t = {} end
-    if self.children then
-        self:sort_children()
-    end
-    for _, node in ipairs(self.children) do
-        node:_dfs_sort_and_collect(t)
+    self:sort_contents()
+    self:sort_sublayers()
+    for _, layer in ipairs(self.sublayers) do
+        layer:_dfs_sort_and_collect(t)
     end
     table.insert(t, self)
     return t
@@ -2471,24 +2522,18 @@ end
 
 function Layer:draw()
     local to_draw = self:_dfs_sort_and_collect()
-    for _, node in ipairs(to_draw) do
-        if node.val ~= nil then
-            if node.val.draw ~= nil then
-                node.val:draw()
+    for _, layer in ipairs(to_draw) do
+        if layer.contents then
+            if layer.contents.draw then
+                layer.contents:draw()
             else
-                for _, obj in ipairs(node.val) do
+                for _, obj in ipairs(layer.contents) do
                     obj:draw()
                 end
             end
         end
     end
 end
-
--- tree = {
---     { z_index = 0, val = { p1, p2 } },
---     { z_index = 0, val = { p3, p4 } },
---     { z_index = 0, val = { p5, p6, p7 } },
--- }
 Line = {}
 L = Line
 
@@ -3207,12 +3252,39 @@ origin = Origin.new({
 })
 
 origin:draw()
-root = Layer.new(0, nil)
+root = Layer.new("ROOT", 0, nil)
+background = Background.new({color=Color.new(theme.modules)})
 
 -- CODE ----------------------------------------------------------------
 
+
+
+
+
 -- PRINT CONSOLE -------------------------------------------------------
 
-root:draw()
+
+layer_tree = {
+	{name = "BACKGROUND",
+	 	z_index = -math.huge,
+		contents = {background}},
+	{name = "LAYER1",
+		z_index = 0,
+		contents = {},
+		sublayers {
+			{name = "NESTED LAYER",
+				z_index = 0,
+				contents = {},
+				sublayers = {} }
+		}
+	{name = "LAYER2",
+		z_index = 0,
+		contents = {},
+		sublayers = {} },
+		
+}
+
+root(layer_tree):draw()
+-- print(tostring(root))
 origin:reset()
 print_all()
