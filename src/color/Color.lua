@@ -1,3 +1,5 @@
+-- TODO Can you change opacity later not in tree?
+
 Color = {}
 C = Color
 Color.__index = Color
