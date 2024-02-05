@@ -36,8 +36,8 @@ origin = Origin.new({
 	color = theme.text
 })
 
-root = Layer.new("ROOT", 0, nil)
-bg = Background.new({color=Color.new(theme.modules)})
+root = Layer.new({name = "ROOT"})
+bg = Overlay.new({name = "Background", color=Color.new(theme.modules)})
 
 -- CODE ----------------------------------------------------------------
 
@@ -52,6 +52,9 @@ layer_tree = {
 	{name = "BACKGROUND",
 	 	z_index = -math.huge,
 		contents = {background}},
+	{name = "FOREGROUND",
+	 	z_index = math.huge,
+		contents = {origin}},
 	{name = "LAYER1",
 		z_index = 0,
 		contents = {},
@@ -69,9 +72,8 @@ layer_tree = {
 }
 
 root(layer_tree):draw()
-origin:draw()
--- print(tostring(root))
 origin:reset()
+print(root)
 print_all()
 EOF
 
