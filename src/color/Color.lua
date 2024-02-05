@@ -131,10 +131,11 @@ end
 
 function Color.assign_color(object, options)
     local c = options.color or Color.new()
+    local opacity = options.opacity or 1
     if Color.is_color(c) then
-        object.color = c:clone()
+        object.color = c:Opacity(opacity)
     elseif Color.is_color_table(c) then
-        object.color = Color.new(c)
+        object.color = Color.new(c):Opacity(opacity)
     else
         error("Expected a Color instance or a color table.")
     end
