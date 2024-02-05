@@ -13,6 +13,8 @@ function Debug.Logger()
             local arg = select(i, ...)
             if arg == nil then
                 statements[i] = "nil"
+            elseif arg.__tostring then
+                statements[i] = tostring(arg)
             else
                 statements[i] = (type(arg) == "table")
                     and Utils.table_to_string(arg) or tostring(arg)

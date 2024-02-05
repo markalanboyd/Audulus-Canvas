@@ -107,3 +107,11 @@ end
 function Utils.has_substring(str, substr)
     return string.find(str, substr) ~= nil
 end
+
+function Utils.get_names(t)
+    local names = {}
+    for _, obj in ipairs(t) do
+        table.insert(names, obj.name)
+    end
+    return "{ " .. table.concat(names, ", ") .. " }"
+end

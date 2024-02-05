@@ -1,16 +1,14 @@
-Background = {}
-B = Background
+-- TODO Add possibility of reaching into the Hue methods to directly change hue instead of needing to actually overlay a color
 
-Background.id = 1
-Background.created = false
+Overlay = {}
+O = Overlay
 
-Background.__index = Utils.resolve_property
+Overlay.id = 1
 
-function Background.new(options)
-    if Background.created == true then
-        error("Only one instance of Background is permitted.")
-    end
-    local self = setmetatable({}, Background)
+Overlay.__index = Utils.resolve_property
+
+function Overlay.new(options)
+    local self = setmetatable({}, Overlay)
     self.origin = origin
     self.options = options or {}
 
@@ -21,11 +19,11 @@ function Background.new(options)
     Color.assign_color(self, self.options)
     Utils.assign_options(self, self.options)
     Utils.assign_ids(self)
-    Background.created = true
+    self.name = self.name or ("Overlay " .. self.element_id .. ":" .. self.class_id)
     return self
 end
 
-function Background:draw()
+function Overlay:draw()
     local paint = Paint.create(self.color, self.gradient)
     local x1, y1, x2, y2, corner_radius
 

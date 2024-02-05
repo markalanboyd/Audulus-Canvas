@@ -391,10 +391,11 @@ end
 
 function Color.assign_color(object, options)
     local c = options.color or Color.new()
+    local opacity = options.opacity or 1
     if Color.is_color(c) then
-        object.color = c:clone()
+        object.color = c:Opacity(opacity)
     elseif Color.is_color_table(c) then
-        object.color = Color.new(c)
+        object.color = Color.new(c):Opacity(opacity)
     else
         error("Expected a Color instance or a color table.")
     end
@@ -952,6 +953,14 @@ end
 
 function Utils.has_substring(str, substr)
     return string.find(str, substr) ~= nil
+end
+
+function Utils.get_names(t)
+    local names = {}
+    for _, obj in ipairs(t) do
+        table.insert(names, obj.name)
+    end
+    return "{ " .. table.concat(names, ", ") .. " }"
 end
 Vec2 = {}
 V = Vec2
@@ -1745,52 +1754,6 @@ Element = {}
 Element.__index = Element
 
 Element.id = 1
-Background = {}
-B = Background
-
-Background.id = 1
-Background.created = false
-
-Background.__index = Utils.resolve_property
-
-function Background.new(options)
-    if Background.created == true then
-        error("Only one instance of Background is permitted.")
-    end
-    local self = setmetatable({}, Background)
-    self.origin = origin
-    self.options = options or {}
-
-    self.z_index = -math.huge
-    self.vec2a = self.origin.bottom_left
-    self.vec2b = self.origin.top_right
-    self.rounded = self.options.rounded or true
-    Color.assign_color(self, self.options)
-    Utils.assign_options(self, self.options)
-    Utils.assign_ids(self)
-    Background.created = true
-    return self
-end
-
-function Background:draw()
-    local paint = Paint.create(self.color, self.gradient)
-    local x1, y1, x2, y2, corner_radius
-
-    if self.rounded == true then
-        x1 = self.vec2a.x - 10
-        y1 = self.vec2a.y - 9.5
-        x2 = self.vec2b.x + 9
-        y2 = self.vec2b.y + 10
-        corner_radius = 6
-    else
-        x1 = self.vec2a.x - 11
-        y1 = self.vec2a.y - 11
-        x2 = self.vec2b.x + 11
-        y2 = self.vec2b.y + 11
-        corner_radius = 0
-    end
-    fill_rect({ x1, y1 }, { x2, y2 }, corner_radius, paint)
-end
 -- TODO Add docs
 
 Point = {}
@@ -1800,7 +1763,7 @@ Point.id = 1
 
 Point.attrs = {
     show_coords = false,
-    coords_nudge = { 0, 0 }
+    coords_nudge = { 0, 0 },
 }
 
 Point.styles = {
@@ -1826,7 +1789,6 @@ function Point.new(vec2, options)
     self.vec2 = vec2 or Vec2.new(0, 0)
     self.options = options or {}
 
-
     self.z_index = self.options.z_index or 0
 
     Color.assign_color(self, self.options)
@@ -1841,8 +1803,6 @@ end
 function Point:__tostring()
     return self.name
 end
-
--- Instance Methods --
 
 function Point:clone()
     return Factory.clone(self)
@@ -2392,26 +2352,22 @@ function LineGroup:print(places)
     end
     print("")
 end
--- TODO - Attach origin to background/foreground based on preference
 -- TODO - Implement transforms
 -- TODO - Implement bounding_box
--- TODO - Add opacity
--- TODO - Add background and foreground to the tree
--- TODO - Layer panel on right side of node
 
 Layer = {}
 La = Layer
 Layer.__index = Layer
 
-function Layer.new(name, z_index, contents)
+
+function Layer.new(options)
     local self = setmetatable({}, Layer)
-    if name ~= nil then
-        self.name = tostring(name)
-    else
-        self.name = "Layer"
-    end
-    self.z_index = z_index or 0
-    self.contents = contents or {}
+    self.options = options or {}
+
+    self.name = tostring(options.name) or "Layer"
+    self.z_index = options.z_index or 0
+    self.contents = options.contents or {}
+    self.opacity = options.opacity or 1
 
     self.superlayer = nil
     self.sublayers = {}
@@ -2438,16 +2394,25 @@ function Layer:__call(...)
     return self
 end
 
--- TODO Actually print out tables in contents
--- TODO Add check of __tostring() defined to help print method?
+-- TODO Inline mode vs expanded
+-- TODO Add opacity
 function Layer:__tostring()
     local function tostring_r(layer, depth)
         local indent = (depth > 0) and string.rep("  ", depth - 1) .. "  |- " or ""
         local prefix = (depth > 0) and (layer.name .. ": ") or layer.name .. ": "
+        local contents
+        if layer.contents.name then
+            contents = tostring(layer.contents)
+        else
+            contents = Utils.get_names(layer.contents)
+        end
         local str = indent ..
-            prefix .. "z_index = " .. tostring(layer.z_index) .. ", contents = " .. tostring(layer.contents)
+            prefix ..
+            "z_index = " .. tostring(layer.z_index) ..
+            ", opacity = " .. tostring(layer.opacity) ..
+            ", contents = " .. tostring(contents)
 
-        for i, sublayer in ipairs(layer.sublayers) do
+        for _, sublayer in ipairs(layer.sublayers) do
             str = str .. "\n" .. tostring_r(sublayer, depth + 1)
         end
 
@@ -2492,14 +2457,21 @@ function Layer:sort_contents()
     end
 end
 
--- TODO Make this work with call method?
 function Layer:add_tree(tree)
     for _, l in ipairs(tree) do
-        local name = l.name or l.n or "unnamed"
-        local z_index = l.z_index or l.z or 0
-        local contents = l.contents or l.c or {}
+        local name = l.name or l.n
+        local z_index = l.z_index or l.z
+        local contents = l.contents or l.c
+        local opacity = l.opacity or l.o
+        local options = {
+            name = name,
+            z_index = z_index,
+            contents = contents,
+            opacity = opacity,
+        }
+        local layer = Layer.new(options)
+
         local sublayers = l.sublayers or l.sl or {}
-        local layer = Layer.new(name, z_index, contents)
         self:add_sublayer(layer)
         if sublayers then
             layer:add_tree(sublayers)
@@ -2520,19 +2492,76 @@ function Layer:_dfs_sort_and_collect(t)
     return t
 end
 
-function Layer:draw()
+function Layer:draw(options)
+    options = options or {}
+    local sl_opacity = options.sl_opacity or 1
+
     local to_draw = self:_dfs_sort_and_collect()
     for _, layer in ipairs(to_draw) do
+        local opacity = sl_opacity * (layer.opacity or 1)
+
         if layer.contents then
             if layer.contents.draw then
+                layer.contents.color:Opacity(opacity)
                 layer.contents:draw()
             else
                 for _, obj in ipairs(layer.contents) do
+                    obj.color:Opacity(opacity)
                     obj:draw()
                 end
             end
         end
+        if layer.sublayers then
+            for _, sublayer in ipairs(layer.sublayers) do
+                options = {
+                    sl_opacity = opacity
+                }
+                sublayer:draw(options)
+            end
+        end
     end
+end
+Overlay = {}
+O = Overlay
+
+Overlay.id = 1
+
+Overlay.__index = Utils.resolve_property
+
+function Overlay.new(options)
+    local self = setmetatable({}, Overlay)
+    self.origin = origin
+    self.options = options or {}
+
+    self.z_index = -math.huge
+    self.vec2a = self.origin.bottom_left
+    self.vec2b = self.origin.top_right
+    self.rounded = self.options.rounded or true
+    Color.assign_color(self, self.options)
+    Utils.assign_options(self, self.options)
+    Utils.assign_ids(self)
+    self.name = self.name or ("Overlay " .. self.element_id .. ":" .. self.class_id)
+    return self
+end
+
+function Overlay:draw()
+    local paint = Paint.create(self.color, self.gradient)
+    local x1, y1, x2, y2, corner_radius
+
+    if self.rounded == true then
+        x1 = self.vec2a.x - 10
+        y1 = self.vec2a.y - 9.5
+        x2 = self.vec2b.x + 9
+        y2 = self.vec2b.y + 10
+        corner_radius = 6
+    else
+        x1 = self.vec2a.x - 11
+        y1 = self.vec2a.y - 11
+        x2 = self.vec2b.x + 11
+        y2 = self.vec2b.y + 11
+        corner_radius = 0
+    end
+    fill_rect({ x1, y1 }, { x2, y2 }, corner_radius, paint)
 end
 Line = {}
 L = Line
@@ -3015,6 +3044,8 @@ function Debug.Logger()
             local arg = select(i, ...)
             if arg == nil then
                 statements[i] = "nil"
+            elseif arg.__tostring then
+                statements[i] = tostring(arg)
             else
                 statements[i] = (type(arg) == "table")
                     and Utils.table_to_string(arg) or tostring(arg)
@@ -3251,9 +3282,8 @@ origin = Origin.new({
 	color = theme.text
 })
 
-origin:draw()
-root = Layer.new("ROOT", 0, nil)
-background = Background.new({color=Color.new(theme.modules)})
+root = Layer.new({name = "ROOT"})
+bg = Overlay.new({name = "Background", color=Color.new(theme.modules)})
 
 -- CODE ----------------------------------------------------------------
 
@@ -3268,6 +3298,9 @@ layer_tree = {
 	{name = "BACKGROUND",
 	 	z_index = -math.huge,
 		contents = {background}},
+	{name = "FOREGROUND",
+	 	z_index = math.huge,
+		contents = {origin}},
 	{name = "LAYER1",
 		z_index = 0,
 		contents = {},
@@ -3285,6 +3318,6 @@ layer_tree = {
 }
 
 root(layer_tree):draw()
--- print(tostring(root))
 origin:reset()
+print(root)
 print_all()

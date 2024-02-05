@@ -1,23 +1,19 @@
--- TODO - Attach origin to background/foreground based on preference
 -- TODO - Implement transforms
 -- TODO - Implement bounding_box
--- TODO - Add opacity
--- TODO - Add background and foreground to the tree
--- TODO - Layer panel on right side of node
 
 Layer = {}
 La = Layer
 Layer.__index = Layer
 
-function Layer.new(name, z_index, contents)
+
+function Layer.new(options)
     local self = setmetatable({}, Layer)
-    if name ~= nil then
-        self.name = tostring(name)
-    else
-        self.name = "Layer"
-    end
-    self.z_index = z_index or 0
-    self.contents = contents or {}
+    self.options = options or {}
+
+    self.name = tostring(options.name) or "Layer"
+    self.z_index = options.z_index or 0
+    self.contents = options.contents or {}
+    self.opacity = options.opacity or 1
 
     self.superlayer = nil
     self.sublayers = {}
@@ -44,16 +40,25 @@ function Layer:__call(...)
     return self
 end
 
--- TODO Actually print out tables in contents
--- TODO Add check of __tostring() defined to help print method?
+-- TODO Inline mode vs expanded
+-- TODO Add opacity
 function Layer:__tostring()
     local function tostring_r(layer, depth)
         local indent = (depth > 0) and string.rep("  ", depth - 1) .. "  |- " or ""
         local prefix = (depth > 0) and (layer.name .. ": ") or layer.name .. ": "
+        local contents
+        if layer.contents.name then
+            contents = tostring(layer.contents)
+        else
+            contents = Utils.get_names(layer.contents)
+        end
         local str = indent ..
-            prefix .. "z_index = " .. tostring(layer.z_index) .. ", contents = " .. tostring(layer.contents)
+            prefix ..
+            "z_index = " .. tostring(layer.z_index) ..
+            ", opacity = " .. tostring(layer.opacity) ..
+            ", contents = " .. tostring(contents)
 
-        for i, sublayer in ipairs(layer.sublayers) do
+        for _, sublayer in ipairs(layer.sublayers) do
             str = str .. "\n" .. tostring_r(sublayer, depth + 1)
         end
 
@@ -98,14 +103,21 @@ function Layer:sort_contents()
     end
 end
 
--- TODO Make this work with call method?
 function Layer:add_tree(tree)
     for _, l in ipairs(tree) do
-        local name = l.name or l.n or "unnamed"
-        local z_index = l.z_index or l.z or 0
-        local contents = l.contents or l.c or {}
+        local name = l.name or l.n
+        local z_index = l.z_index or l.z
+        local contents = l.contents or l.c
+        local opacity = l.opacity or l.o
+        local options = {
+            name = name,
+            z_index = z_index,
+            contents = contents,
+            opacity = opacity,
+        }
+        local layer = Layer.new(options)
+
         local sublayers = l.sublayers or l.sl or {}
-        local layer = Layer.new(name, z_index, contents)
         self:add_sublayer(layer)
         if sublayers then
             layer:add_tree(sublayers)
@@ -126,16 +138,31 @@ function Layer:_dfs_sort_and_collect(t)
     return t
 end
 
-function Layer:draw()
+function Layer:draw(options)
+    options = options or {}
+    local sl_opacity = options.sl_opacity or 1
+
     local to_draw = self:_dfs_sort_and_collect()
     for _, layer in ipairs(to_draw) do
+        local opacity = sl_opacity * (layer.opacity or 1)
+
         if layer.contents then
             if layer.contents.draw then
+                layer.contents.color:Opacity(opacity)
                 layer.contents:draw()
             else
                 for _, obj in ipairs(layer.contents) do
+                    obj.color:Opacity(opacity)
                     obj:draw()
                 end
+            end
+        end
+        if layer.sublayers then
+            for _, sublayer in ipairs(layer.sublayers) do
+                options = {
+                    sl_opacity = opacity
+                }
+                sublayer:draw(options)
             end
         end
     end
