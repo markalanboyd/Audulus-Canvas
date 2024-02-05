@@ -7,7 +7,7 @@ Point.id = 1
 
 Point.attrs = {
     show_coords = false,
-    coords_nudge = { 0, 0 }
+    coords_nudge = { 0, 0 },
 }
 
 Point.styles = {
@@ -33,7 +33,6 @@ function Point.new(vec2, options)
     self.vec2 = vec2 or Vec2.new(0, 0)
     self.options = options or {}
 
-
     self.z_index = self.options.z_index or 0
 
     Color.assign_color(self, self.options)
@@ -48,8 +47,6 @@ end
 function Point:__tostring()
     return self.name
 end
-
--- Instance Methods --
 
 function Point:clone()
     return Factory.clone(self)
