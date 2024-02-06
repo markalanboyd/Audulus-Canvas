@@ -1,8 +1,8 @@
 #!/bin/zsh
-# Concatenate all Lua files in the current directory into one except for builtins.
 
 library_file="library.lua"
 dev_library_file="library-dev.lua"
+build_order_file="build_order.txt"
 
 # Delete the existing library files if they exist
 [ -f "$library_file" ] && rm "$library_file"
@@ -11,11 +11,24 @@ dev_library_file="library-dev.lua"
 # Add the top content to library.lua
 echo "-- SCROLL TO BOTTOM ----------------------------------------------------\n" > "$library_file"
 
-# Concatenate the Lua files into library.lua using find
-find . -name '*.lua' -not -name "$library_file" -not -name 'builtins.lua' -not -name 'temp_library.lua' -exec cat {} + >> "$library_file"
-echo "\n" >> "$library_file" # Add a newline at the end
+# Concatenate the Lua files in the order specified in build_order.txt
+while IFS= read -r file; do
+    # Check if the file exists and is not one of the special cases
+    if [ -f "$file" ] && [ "$file" != "$library_file" ] && [ "$file" != "builtins.lua" ] && [ "$file" != "temp_library.lua" ]; then
+        cat "$file" >> "$library_file"
+        echo "\n" >> "$library_file" # Add a newline for separation
+    fi
+done < "$build_order_file"
 
-# Add the bottom content to library.lua
+# Find all Lua files that are not in build_order.txt and not excluded
+find . -type f -name '*.lua' ! -name "$library_file" ! -name 'builtins.lua' ! -name 'temp_library.lua' ! -name "$(basename "$0")" | while read file; do
+    if ! grep -Fxq "$file" "$build_order_file"; then
+        cat "$file" >> "$library_file"
+        echo "\n" >> "$library_file"
+    fi
+done
+
+# Append the provided block of content to the end of library.lua
 cat << EOF >> "$library_file"
 -- AUDULUS-CANVAS LIBRARY ----------------------------------------------
 -- Version: 0.0.3-alpha
@@ -51,19 +64,19 @@ bg = Overlay.new(origin, {name = "Background", color=Color.new(theme.modules)})
 layer_tree = {
 	{name = "BACKGROUND",
 	 	z_index = -math.huge,
-		contents = {background}},
+		contents = {bg}},
 	{name = "FOREGROUND",
 	 	z_index = math.huge,
 		contents = {origin}},
 	{name = "LAYER1",
 		z_index = 0,
 		contents = {},
-		sublayers {
+		sublayers = {
 			{name = "NESTED LAYER",
 				z_index = 0,
 				contents = {},
 				sublayers = {} }
-		}
+		}},
 	{name = "LAYER2",
 		z_index = 0,
 		contents = {},

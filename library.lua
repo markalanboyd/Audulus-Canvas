@@ -1,263 +1,5 @@
 -- SCROLL TO BOTTOM ----------------------------------------------------
 
-Set = {}
-
-Set.__index = Set
-
-function Set.new()
-    local self = setmetatable({}, Set)
-    self.set = {}
-    return self
-end
-
-function Set:add(key)
-    self.set[key] = true
-end
-
-function Set:remove(key)
-    self.set[key] = nil
-end
-
-function Set:sorted()
-    local elements = {}
-    for element in pairs(self.set) do
-        table.insert(elements, element)
-    end
-    table.sort(elements)
-    return elements
-end
-Tree = {}
-
-Tree.__index = Tree
-
-function Tree.new(value)
-    local self = setmetatable({}, Tree)
-    self.val = value
-
-    self.parent = nil
-    self.children = {}
-    return self
-end
-
-function Tree:__call(...)
-    local nodes = { ... }
-
-    for _, node in ipairs(nodes) do
-        self:add_child(node)
-    end
-end
-
-function Tree:__tostring()
-    local function tostring_r(node, depth, childNumber)
-        local indent = (depth > 0) and string.rep("    ", depth - 1) .. "    |- " or ""
-        local prefix = (depth > 0) and ("Child" .. childNumber .. ": ") or "Root: "
-        local str = indent .. prefix .. "val = " .. tostring(node.val)
-
-        for i, child in ipairs(node.children) do
-            str = str .. "\n" .. tostring_r(child, depth + 1, i)
-        end
-
-        return str
-    end
-
-    return tostring_r(self, 0, 0)
-end
-
-function Tree:add_child(node)
-    node.parent = self
-    table.insert(self.children, node)
-    return self
-end
-
--- TODO Should this return self or the child or both?
-function Tree:remove_child(node)
-    local index
-    for i, v in ipairs(self.children) do
-        if v == node then
-            index = i
-            break
-        end
-    end
-    if index == nil then return end
-    table.remove(self.children, index)
-    return self
-end
-
-function Tree:dfs_pre(t)
-    if not t then t = {} end
-
-    table.insert(t, self)
-
-    for _, node in ipairs(self.children) do
-        node:dfs_pre(t)
-    end
-
-    return t
-end
-
-function Tree:dfs_post(t)
-    if not t then t = {} end
-
-    for _, node in ipairs(self.children) do
-        node:dfs_post(t)
-    end
-
-    table.insert(t, self)
-
-    return t
-end
-
-function Tree:bfs()
-    local function dequeue(t)
-        return table.remove(t, 1)
-    end
-    local visited = {}
-    local to_visit = {}
-    table.insert(to_visit, self)
-    while #to_visit ~= 0 do
-        local node = dequeue(to_visit)
-        table.insert(visited, node)
-        if node.children then
-            for _, child in ipairs(node.children) do
-                table.insert(to_visit, child)
-            end
-        end
-    end
-    return visited
-end
-
-function Tree:add_structure(tree_structure)
-    for _, v in ipairs(tree_structure) do
-        local node = Tree.new(v.val)
-        self:add_child(node)
-        if v.children then
-            node:add_structure(v.children)
-        end
-    end
-
-    return self
-end
-Gradient = {}
-G = Gradient
-Gradient.__index = Gradient
-
-Gradient.id = 1
-
-function Gradient.new(vec2a, vec2b, color1, color2)
-    local self = setmetatable({}, Gradient)
-    self.element_id = Element.id
-    Element.id = Element.id + 1
-    self.class_id = Gradient.id
-    Gradient.id = Gradient.id + 1
-
-    self.vec2a = vec2a or Vec2.new()
-    self.vec2b = vec2b or Vec2.new()
-    self.color1 = color1 or Color.new()
-    self.color2 = color2 or Color.new()
-    return self
-end
-
-function Gradient.__add(self, other)
-    return self:clone():add(other)
-end
-
-function Gradient.__sub(self, other)
-    return self:clone():sub(other)
-end
-
-function Gradient.__mul(self, other)
-    return self:clone():mult(other)
-end
-
-function Gradient.__div(self, other)
-    return self:clone():div(other)
-end
-
-function Gradient.__unm(self)
-    return self:clone():invert()
-end
-
-function Gradient:add(gradient)
-    local color1 = self.color1:add(gradient.color1)
-    local color2 = self.color2:add(gradient.color2)
-    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
-end
-
-function Gradient:Add(gradient)
-    self.color1:Add(gradient.color1)
-    self.color2:Add(gradient.color2)
-    return self
-end
-
-function Gradient:sub(gradient)
-    local color1 = self.color1:sub(gradient.color1)
-    local color2 = self.color2:sub(gradient.color2)
-    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
-end
-
-function Gradient:Sub(gradient)
-    self.color1:Sub(gradient.color1)
-    self.color2:Sub(gradient.color2)
-    return self
-end
-
-function Gradient:mult(gradient)
-    local color1 = self.color1:mult(gradient.color1)
-    local color2 = self.color2:mult(gradient.color2)
-    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
-end
-
-function Gradient:Mult(gradient)
-    self.color1:Mult(gradient.color1)
-    self.color2:Mult(gradient.color2)
-    return self
-end
-
-function Gradient:div(gradient)
-    local color1 = self.color1:div(gradient.color1)
-    local color2 = self.color2:div(gradient.color2)
-    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
-end
-
-function Gradient:Div(gradient)
-    self.color1:Div(gradient.color1)
-    self.color2:Div(gradient.color2)
-    return self
-end
-
-function Gradient:invert()
-    local color1 = self.color1:invert()
-    local color2 = self.color2:invert()
-    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
-end
-
-function Gradient:Invert()
-    self.color1:Invert()
-    self.color2:Invert()
-    return self
-end
-
-function Gradient:clone()
-    return Factory.clone(self)
-end
-
-function Gradient:to_paint()
-    return linear_gradient(
-        self.vec2a:to_xy_table(),
-        self.vec2b:to_xy_table(),
-        self.color1:table(),
-        self.color2:table()
-    )
-end
-Paint = {}
-
-function Paint.create(color, gradient)
-    if gradient ~= nil then
-        return gradient:to_paint()
-    else
-        return color:to_paint()
-    end
-end
 Color = {}
 C = Color
 Color.__index = Color
@@ -781,11 +523,1119 @@ function Color:print(places)
     print("  a: " .. a)
     print("")
 end
+
+
+Line = {}
+L = Line
+
+Line.id = 1
+
+Line.styles = {
+    normal = {
+        width = 1,
+    },
+    dashed = {
+        width = 1,
+        dash_length = 5,
+        space_length = 5,
+    },
+    dotted = {
+        dot_radius = 1,
+        space_length = 5,
+    },
+    char = {
+        char = "+",
+        char_vertex = "+",
+        char_vertex_nudge = { 0, 0 },
+        char_size = 12,
+        space_length = 5,
+    },
+}
+
+Line.__index = Utils.resolve_property
+
+function Line.new(vec2a, vec2b, options)
+    local self = setmetatable({}, Line)
+    self.vec2a = vec2a or Vec2.new(0, 0)
+    self.vec2b = vec2b or Vec2.new(0, 0)
+    self.options = options or {}
+
+    Utils.assign_ids(self)
+    Utils.assign_options(self, self.options)
+    Color.assign_color(self, self.options)
+
+    self.name = tostring(self.name) or ("Line " .. self.element_id .. ":" .. self.class_id)
+    self.z_index = self.options.z_index or 0
+    self.style = self.options.style or "normal"
+
+    return self
+end
+
+function Line:clone()
+    return Factory.clone(self)
+end
+
+function Line:draw_normal()
+    local paint = Paint.create(self.color, self.gradient)
+    stroke_segment(
+        { self.vec2a.x, self.vec2a.y },
+        { self.vec2b.x, self.vec2b.y },
+        self.width, paint
+    )
+end
+
+function Line:draw_dashed()
+    local total_distance = self.vec2a:distance(self.vec2b)
+    local direction = self.vec2b:sub(self.vec2a):normalize()
+    local paint = Paint.create(self.color, self.gradient)
+    local current_distance = 0
+
+    while current_distance < total_distance do
+        local start_dash = self.vec2a:add(direction:mult(current_distance))
+        current_distance = math.min(current_distance + self.dash_length, total_distance)
+        local end_dash = self.vec2a:add(direction:mult(current_distance))
+
+        stroke_segment(
+            { start_dash.x, start_dash.y },
+            { end_dash.x, end_dash.y },
+            self.width, paint
+        )
+
+        current_distance = current_distance + self.space_length
+    end
+end
+
+function Line:draw_dotted()
+    local total_distance = self.vec2a:distance(self.vec2b)
+    local direction = self.vec2b:sub(self.vec2a):normalize()
+    local paint = Paint.create(self.color, self.gradient)
+    local current_distance = 0
+
+    while current_distance <= total_distance do
+        local dot_position = self.vec2a:add(direction:mult(current_distance))
+
+        fill_circle({ dot_position.x, dot_position.y }, self.dot_radius, paint)
+
+        current_distance = current_distance + self.space_length
+    end
+end
+
+function Line:draw_char()
+    if #self.char > 1 or #self.char_vertex > 1 then
+        error("char and char_vertex must be single characters.")
+    end
+
+    local char_scale_factor = self.char_size / 12
+    local total_distance = self.vec2a:distance(self.vec2b)
+    local direction = self.vec2b:sub(self.vec2a):normalize()
+    local color_table = self.color:table()
+
+    save()
+    translate {
+        self.vec2a.x + self.char_vertex_nudge[1],
+        self.vec2a.y + self.char_vertex_nudge[2]
+    }
+    scale { char_scale_factor, char_scale_factor }
+    text(self.char_vertex, color_table)
+    restore()
+
+    local current_distance = self.space_length
+    while current_distance < total_distance do
+        local char_position = self.vec2a:add(direction:mult(current_distance))
+
+        save()
+        translate { char_position.x, char_position.y }
+        scale { char_scale_factor, char_scale_factor }
+        text(self.char, color_table)
+        restore()
+
+        current_distance = current_distance + self.space_length
+    end
+
+    if total_distance > 0 then
+        save()
+        translate {
+            self.vec2b.x + self.char_vertex_nudge[1],
+            self.vec2b.y + self.char_vertex_nudge[2]
+        }
+        scale { char_scale_factor, char_scale_factor }
+        text(self.char_vertex, color_table)
+        restore()
+    end
+end
+
+function Line:draw()
+    if self.style == "normal" then
+        self:draw_normal()
+    elseif self.style == "dashed" then
+        self:draw_dashed()
+    elseif self.style == "dotted" then
+        self:draw_dotted()
+    elseif self.style == "char" then
+        self:draw_char()
+    end
+end
+
+function Line:get_center()
+    return Vec2.new(
+        (self.vec2a.x + self.vec2b.x) / 2,
+        (self.vec2a.y + self.vec2b.y) / 2
+    )
+end
+
+function Line:reflect(axis)
+    local new_line = self:clone()
+    new_line.vec2a:Reflect(axis)
+    new_line.vec2b:Reflect(axis)
+    return new_line
+end
+
+function Line:rotate(angle, pivot)
+    pivot = pivot or self:get_center()
+
+    local new_vec2a = self.vec2a:rotate(angle, pivot)
+    local new_vec2b = self.vec2b:rotate(angle, pivot)
+
+    return Line.new(new_vec2a, new_vec2b, self.o)
+end
+
+function Line:Rotate(angle, pivot)
+    pivot = pivot or self:get_center()
+
+    self.vec2a:Rotate(angle, pivot)
+    self.vec2b:Rotate(angle, pivot)
+
+    return self
+end
+
+function Line:translate(...)
+    local args = { ... }
+    local translation
+
+    if #args == 1 and Vec2.is_vec2(args[1]) then
+        translation = args[1]
+    elseif #args == 2 and Vec2.is_xy_pair(args[1], args[2]) then
+        translation = Vec2.new(args[1], args[2])
+    elseif #args == 1 and Vec2.is_single_num() then
+        error("Invalid arguments for Translate. Expected Vec2 or two numbers.")
+    end
+
+    return Line.new(
+        self.vec2a:add(translation),
+        self.vec2b:add(translation),
+        self.o
+    )
+end
+
+function Line.parse_args(args)
+    if #args == 1 and Vec2.is_vec2(args[1]) then
+        return args[1]
+    elseif #args == 2 and Vec2.is_xy_pair(args[1], args[2]) then
+        return Vec2.new(args[1], args[2])
+    else
+        error("Invalid arguments for Translate. Expected Vec2 or two numbers.")
+    end
+end
+
+function Line:Translate(...)
+    local args = { ... }
+    local translation
+
+    if #args == 1 and Vec2.is_vec2(args[1]) then
+        translation = args[1]
+    elseif #args == 2 and Vec2.is_xy_pair(args[1], args[2]) then
+        translation = Vec2.new(args[1], args[2])
+    else
+        error("Invalid arguments for Translate. Expected Vec2 or two numbers.")
+    end
+
+    self.vec2a:Add(translation)
+    self.vec2b:Add(translation)
+end
+
+function Line:scale(scaleFactor)
+    local center = self:get_center()
+    local translated_a = self.vec2a:sub(center)
+    local translated_b = self.vec2b:sub(center)
+    translated_a:Mult(scaleFactor):Add(center)
+    translated_b:Mult(scaleFactor):Add(center)
+
+    return Line.new(translated_a, translated_b, self.o)
+end
+
+function Line:Scale(scaleFactor)
+    local center = self:get_center()
+    self.vec2a = self.vec2a:sub(center):Mult(scaleFactor):Add(center)
+    self.vec2b = self.vec2b:sub(center):Mult(scaleFactor):Add(center)
+end
+
+function Line:print(places)
+    places = places or 2
+
+    local element_id = tostring(self.element_id)
+    local class_id = tostring(self.class_id)
+    local ax = tostring(Math.truncate(self.vec2a.x, places))
+    local ay = tostring(Math.truncate(self.vec2a.y, places))
+    local bx = tostring(Math.truncate(self.vec2b.x, places))
+    local by = tostring(Math.truncate(self.vec2b.y, places))
+    local z_index = tostring(self.z_index)
+    local style = self.style
+    local gradient = self.gradient
+
+
+    print("-- Line " .. element_id .. ":" .. class_id .. " --")
+    print("  element_id: " .. element_id)
+    print("  class_id: " .. class_id)
+    print("  vec2_a: { x = " .. ax .. ", y = " .. ay .. " }")
+    print("  vec2_b: { x = " .. bx .. ", y = " .. by .. " }")
+    print("  z_index: " .. z_index)
+
+    if gradient == nil then
+        local color = tostring(Utils.table_to_string(
+            self.color:table(), true, places
+        ))
+        print("  color: " .. color)
+    else
+        local c1 = tostring(Utils.table_to_string(
+            self.gradient.color1:table(), true, places
+        ))
+        local c2 = tostring(Utils.table_to_string(
+            self.gradient.color2:table(), true, places
+        ))
+        print("  gradient: " .. c1 .. " → " .. c2)
+    end
+
+    print("  style: " .. style)
+
+    if style == "normal" then
+        local width = tostring(Math.truncate(self.width, places))
+        print("  width: " .. width)
+    elseif style == "dashed" then
+        local width = tostring(Math.truncate(self.width, places))
+        local dash_length = tostring(Math.truncate(self.dash_length, places))
+        local space_length = tostring(Math.truncate(self.space_length, places))
+        print("  width: " .. width)
+        print("  dash_length: " .. dash_length)
+        print("  space_length: " .. space_length)
+    elseif style == "dotted" then
+        local dot_radius = tostring(Math.truncate(self.dot_radius, places))
+        local space_length = tostring(Math.truncate(self.space_length, places))
+        print("  dot_radius: " .. dot_radius)
+        print("  space_length: " .. space_length)
+    elseif style == "char" then
+        local char = self.char
+        local char_vertex = self.char_vertex
+        local char_vertex_nudge = tostring(Utils.table_to_string(self.char_vertex_nudge, true, places))
+        local char_size = tostring(Math.truncate(self.char_size, places))
+        local space_length = tostring(Math.truncate(self.space_length, places))
+        print("  char: " .. char)
+        print("  char_vertex: " .. char_vertex)
+        print("  char_vertex nudge: " .. char_vertex_nudge)
+        print("  char_size: " .. char_size)
+        print("  space_length: " .. space_length)
+    end
+    print("")
+end
+
+
+Set = {}
+
+Set.__index = Set
+
+function Set.new()
+    local self = setmetatable({}, Set)
+    self.set = {}
+    return self
+end
+
+function Set:add(key)
+    self.set[key] = true
+end
+
+function Set:remove(key)
+    self.set[key] = nil
+end
+
+function Set:sorted()
+    local elements = {}
+    for element in pairs(self.set) do
+        table.insert(elements, element)
+    end
+    table.sort(elements)
+    return elements
+end
+
+
+Tree = {}
+
+Tree.__index = Tree
+
+function Tree.new(value)
+    local self = setmetatable({}, Tree)
+    self.val = value
+
+    self.parent = nil
+    self.children = {}
+    return self
+end
+
+function Tree:__call(...)
+    local nodes = { ... }
+
+    for _, node in ipairs(nodes) do
+        self:add_child(node)
+    end
+end
+
+function Tree:__tostring()
+    local function tostring_r(node, depth, childNumber)
+        local indent = (depth > 0) and string.rep("    ", depth - 1) .. "    |- " or ""
+        local prefix = (depth > 0) and ("Child" .. childNumber .. ": ") or "Root: "
+        local str = indent .. prefix .. "val = " .. tostring(node.val)
+
+        for i, child in ipairs(node.children) do
+            str = str .. "\n" .. tostring_r(child, depth + 1, i)
+        end
+
+        return str
+    end
+
+    return tostring_r(self, 0, 0)
+end
+
+function Tree:add_child(node)
+    node.parent = self
+    table.insert(self.children, node)
+    return self
+end
+
+-- TODO Should this return self or the child or both?
+function Tree:remove_child(node)
+    local index
+    for i, v in ipairs(self.children) do
+        if v == node then
+            index = i
+            break
+        end
+    end
+    if index == nil then return end
+    table.remove(self.children, index)
+    return self
+end
+
+function Tree:dfs_pre(t)
+    if not t then t = {} end
+
+    table.insert(t, self)
+
+    for _, node in ipairs(self.children) do
+        node:dfs_pre(t)
+    end
+
+    return t
+end
+
+function Tree:dfs_post(t)
+    if not t then t = {} end
+
+    for _, node in ipairs(self.children) do
+        node:dfs_post(t)
+    end
+
+    table.insert(t, self)
+
+    return t
+end
+
+function Tree:bfs()
+    local function dequeue(t)
+        return table.remove(t, 1)
+    end
+    local visited = {}
+    local to_visit = {}
+    table.insert(to_visit, self)
+    while #to_visit ~= 0 do
+        local node = dequeue(to_visit)
+        table.insert(visited, node)
+        if node.children then
+            for _, child in ipairs(node.children) do
+                table.insert(to_visit, child)
+            end
+        end
+    end
+    return visited
+end
+
+function Tree:add_structure(tree_structure)
+    for _, v in ipairs(tree_structure) do
+        local node = Tree.new(v.val)
+        self:add_child(node)
+        if v.children then
+            node:add_structure(v.children)
+        end
+    end
+
+    return self
+end
+
+
+Gradient = {}
+G = Gradient
+Gradient.__index = Gradient
+
+Gradient.id = 1
+
+function Gradient.new(vec2a, vec2b, color1, color2)
+    local self = setmetatable({}, Gradient)
+    self.element_id = Element.id
+    Element.id = Element.id + 1
+    self.class_id = Gradient.id
+    Gradient.id = Gradient.id + 1
+
+    self.vec2a = vec2a or Vec2.new()
+    self.vec2b = vec2b or Vec2.new()
+    self.color1 = color1 or Color.new()
+    self.color2 = color2 or Color.new()
+    return self
+end
+
+function Gradient.__add(self, other)
+    return self:clone():add(other)
+end
+
+function Gradient.__sub(self, other)
+    return self:clone():sub(other)
+end
+
+function Gradient.__mul(self, other)
+    return self:clone():mult(other)
+end
+
+function Gradient.__div(self, other)
+    return self:clone():div(other)
+end
+
+function Gradient.__unm(self)
+    return self:clone():invert()
+end
+
+function Gradient:add(gradient)
+    local color1 = self.color1:add(gradient.color1)
+    local color2 = self.color2:add(gradient.color2)
+    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
+end
+
+function Gradient:Add(gradient)
+    self.color1:Add(gradient.color1)
+    self.color2:Add(gradient.color2)
+    return self
+end
+
+function Gradient:sub(gradient)
+    local color1 = self.color1:sub(gradient.color1)
+    local color2 = self.color2:sub(gradient.color2)
+    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
+end
+
+function Gradient:Sub(gradient)
+    self.color1:Sub(gradient.color1)
+    self.color2:Sub(gradient.color2)
+    return self
+end
+
+function Gradient:mult(gradient)
+    local color1 = self.color1:mult(gradient.color1)
+    local color2 = self.color2:mult(gradient.color2)
+    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
+end
+
+function Gradient:Mult(gradient)
+    self.color1:Mult(gradient.color1)
+    self.color2:Mult(gradient.color2)
+    return self
+end
+
+function Gradient:div(gradient)
+    local color1 = self.color1:div(gradient.color1)
+    local color2 = self.color2:div(gradient.color2)
+    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
+end
+
+function Gradient:Div(gradient)
+    self.color1:Div(gradient.color1)
+    self.color2:Div(gradient.color2)
+    return self
+end
+
+function Gradient:invert()
+    local color1 = self.color1:invert()
+    local color2 = self.color2:invert()
+    return Gradient.new(self.vec2a, self.vec2b, color1, color2)
+end
+
+function Gradient:Invert()
+    self.color1:Invert()
+    self.color2:Invert()
+    return self
+end
+
+function Gradient:clone()
+    return Factory.clone(self)
+end
+
+function Gradient:to_paint()
+    return linear_gradient(
+        self.vec2a:to_xy_table(),
+        self.vec2b:to_xy_table(),
+        self.color1:table(),
+        self.color2:table()
+    )
+end
+
+
+Paint = {}
+
+function Paint.create(color, gradient)
+    if gradient ~= nil then
+        return gradient:to_paint()
+    else
+        return color:to_paint()
+    end
+end
+
+
+Color = {}
+C = Color
+Color.__index = Color
+
+Color.id = 1
+
+function Color.new(...)
+    local self = setmetatable({}, Color)
+    local args = { ... }
+
+    Utils.assign_ids(self)
+    -- TODO do we need this intermediary private table?
+    self.__color_table = Color.args_to_color_table(args)
+    self.r = self.__color_table[1]
+    self.g = self.__color_table[2]
+    self.b = self.__color_table[3]
+    self.a = self.__color_table[4]
+
+    return self
+end
+
+function Color.args_to_color_table(args)
+    if Color.args_are_color_table(args) then
+        return args[1]
+    elseif Color.args_are_rgba(args) then
+        return { args[1], args[2], args[3], args[4] }
+    elseif Color.args_are_rgb(args) then
+        return { args[1], args[2], args[3], 1 }
+    elseif Color.args_are_hex_code(args) then
+        return Color.hex_to_color_table(args[1])
+    else
+        return theme.text
+    end
+end
+
+function Color.args_are_rgb(args)
+    return #args == 3 and
+        type(args[1]) == "number" and
+        type(args[2]) == "number" and
+        type(args[3]) == "number"
+end
+
+function Color.args_are_rgba(args)
+    return #args == 4 and
+        type(args[1]) == "number" and
+        type(args[2]) == "number" and
+        type(args[3]) == "number" and
+        type(args[4]) == "number"
+end
+
+function Color.args_are_color_table(args)
+    return #args == 1 and
+        type(args[1]) == "table" and
+        type(args[1][1]) == "number" and
+        type(args[1][2]) == "number" and
+        type(args[1][3]) == "number" and
+        type(args[1][4]) == "number"
+end
+
+function Color.args_are_hex_code(args)
+    return Color.is_hex_code(args[1])
+end
+
+function Color.__add(self, other)
+    return self:clone():add(other)
+end
+
+function Color.__sub(self, other)
+    return self:clone():sub(other)
+end
+
+function Color.__mul(self, other)
+    return self:clone():mult(other)
+end
+
+function Color.__div(self, other)
+    return self:clone():div(other)
+end
+
+function Color.__unm(self)
+    return self:clone():invert()
+end
+
+function Color.is_color(obj)
+    return getmetatable(obj) == Color
+end
+
+function Color.is_hex_code(hex_code)
+    local s = tostring(hex_code):gsub("#", "")
+    local invalidChars = string.match(s, "[^0-9a-fA-F]+")
+    local hasValidChars = invalidChars == nil
+    local isValidLen = #s == 3 or #s == 4 or #s == 6 or #s == 8
+    return hasValidChars and isValidLen
+end
+
+function Color.hex_to_color_table(hex_code)
+    local s = tostring(hex_code):gsub("#", "")
+
+    local hex_table = {}
+    if #s == 3 or #s == 4 then
+        hex_table[1] = s:sub(1, 1):rep(2)
+        hex_table[2] = s:sub(2, 2):rep(2)
+        hex_table[3] = s:sub(3, 3):rep(2)
+        hex_table[4] = (#s == 4) and s:sub(4, 4):rep(2) or "FF"
+    elseif #s == 6 or #s == 8 then
+        hex_table[1] = s:sub(1, 2)
+        hex_table[2] = s:sub(3, 4)
+        hex_table[3] = s:sub(5, 6)
+        hex_table[4] = (#s == 8) and s:sub(7, 8) or "FF"
+    end
+
+    local color_table = {}
+    for i = 1, #hex_table do
+        color_table[i] = tonumber(hex_table[i], 16) / 255
+    end
+
+    return color_table
+end
+
+function Color.is_color_table(table)
+    return type(table) == "table" and
+        #table == 4 and
+        type(table[1]) == "number" and
+        type(table[2]) == "number" and
+        type(table[3]) == "number" and
+        type(table[4]) == "number"
+end
+
+function Color.assign_color(object, options)
+    local c = options.color or Color.new()
+    if Color.is_color(c) then
+        object.color = c:clone()
+    elseif Color.is_color_table(c) then
+        object.color = Color.new(c)
+    else
+        error("Expected a Color instance or a color table.")
+    end
+end
+
+function Color.rgba_to_hsla(color_table)
+    local r = color_table[1]
+    local g = color_table[2]
+    local b = color_table[3]
+    local a = color_table[4]
+
+    local cmin = math.min(r, g, b)
+    local cmax = math.max(r, g, b)
+    local delta = cmax - cmin
+
+    local l = (cmax + cmin) / 2
+
+    local s
+    if delta == 0 then
+        s = 0
+    elseif l < 0.5 then
+        s = delta / (cmax + cmin)
+    else
+        s = delta / (2 - cmax - cmin)
+    end
+
+    local h
+    if delta == 0 then
+        h = 0
+    elseif cmax == r then
+        h = (g - b) / delta
+        if g < b then h = h + 6 end
+    elseif cmax == g then
+        h = (b - r) / delta + 2
+    elseif cmax == b then
+        h = (r - g) / delta + 4
+    end
+    h = h * 60
+
+    return { h, s, l, a }
+end
+
+function Color.hsla_to_rgba(hsla_table)
+    local h = hsla_table[1]
+    local s = hsla_table[2]
+    local l = hsla_table[3]
+    local a = hsla_table[4]
+
+    if s == 0 then
+        return { l, l, l, a }
+    end
+
+    local function hue_to_rgb(p, q, t)
+        if t < 0 then t = t + 1 end
+        if t > 1 then t = t - 1 end
+        if t < 1 / 6 then return p + (q - p) * 6 * t end
+        if t < 1 / 2 then return q end
+        if t < 2 / 3 then return p + (q - p) * (2 / 3 - t) * 6 end
+        return p
+    end
+
+    local q
+    if l < 0.5 then
+        q = l * (1 + s)
+    else
+        q = l + s - l * s
+    end
+    local p = 2 * l - q
+
+    local r = hue_to_rgb(p, q, h / 360 + 1 / 3)
+    local g = hue_to_rgb(p, q, h / 360)
+    local b = hue_to_rgb(p, q, h / 360 - 1 / 3)
+
+    return { r, g, b, a }
+end
+
+function Color.print_swatches(colors)
+    local size = 10
+    for i, color in ipairs(colors) do
+        local x = -i * size
+        fill_rect({ x, 0 }, { x + size, size }, 0, color:to_paint())
+    end
+end
+
+-- TODO Black, grey, white, etc?
+
+function Color.red()
+    return Color.new({ 1, 0, 0, 1 })
+end
+
+function Color.orange()
+    return Color.new({ 1, 0.647, 0, 1 })
+end
+
+function Color.yellow()
+    return Color.new({ 1, 1, 0, 1 })
+end
+
+function Color.green()
+    return Color.new({ 0, 1, 0, 1 })
+end
+
+function Color.purple()
+    return Color.new({ 0.5, 0, 0.5, 1 })
+end
+
+function Color.blue()
+    return Color.new({ 0, 0, 1, 1 })
+end
+
+function Color:add(color)
+    local t = Math.vmap(self:table(), color:table(), Math.add)
+    local color_table = Math.map(t, Math.clamp_normal)
+    return Color.new(color_table)
+end
+
+function Color:sub(color)
+    local t = Math.vmap(self:table(), color:table(), Math.sub)
+    local color_table = Math.map(t, Math.clamp_normal)
+    return Color.new(color_table)
+end
+
+function Color:mult(color)
+    local t = Math.vmap(self:table(), color:table(), Math.mult)
+    local color_table = Math.map(t, Math.clamp_normal)
+    return Color.new(color_table)
+end
+
+function Color:div(color)
+    local t = Math.vmap(self:table(), color:table(), Math.div)
+    local color_table = Math.map(t, Math.clamp_normal)
+    return Color.new(color_table)
+end
+
+function Color:analogous(offset_degrees)
+    local offset = offset_degrees or 30
+    local hsla = Color.rgba_to_hsla(self:table())
+
+    local hsla1 = { (hsla[1] - offset) % 360, hsla[2], hsla[3], hsla[4] }
+    local rgba1 = Color.hsla_to_rgba(hsla1)
+    local color1 = Color.new(rgba1)
+
+    local hsla2 = { (hsla[1] + offset) % 360, hsla[2], hsla[3], hsla[4] }
+    local rgba2 = Color.hsla_to_rgba(hsla2)
+    local color2 = Color.new(rgba2)
+
+    return color1, color2
+end
+
+function Color:brightness(brightness)
+    local r = self.r * brightness
+    local g = self.g * brightness
+    local b = self.b * brightness
+    return Color.new({ r, g, b, self.a })
+end
+
+function Color:Brightness(brightness)
+    self.r = self.r * brightness
+    self.g = self.g * brightness
+    self.b = self.b * brightness
+    return self
+end
+
+function Color:clone()
+    return Color.new({ self.r, self.g, self.b, self.a })
+end
+
+function Color:complementary()
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[1] = (hsla[1] + 180) % 360
+    local rgba = Color.hsla_to_rgba(hsla)
+    return Color.new(rgba)
+end
+
+function Color:Complimentary()
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[1] = (hsla[1] + 180) % 360
+    local rgba = Color.hsla_to_rgba(hsla)
+    self:Set(rgba)
+    return self
+end
+
+function Color:lerp(color2, t)
+    local interpolated_color = {}
+    interpolated_color[1] = self.r + (color2.r - self.r) * t
+    interpolated_color[2] = self.g + (color2.g - self.g) * t
+    interpolated_color[3] = self.b + (color2.b - self.b) * t
+    interpolated_color[4] = self.a + (color2.a - self.a) * t
+    return Color.new(interpolated_color)
+end
+
+function Color:hue(hue_normalized)
+    local h = hue_normalized * 360
+    return self:rotate(h)
+end
+
+function Color:Hue(hue_normalized)
+    local h = hue_normalized * 360
+    self:Rotate(h)
+    return self
+end
+
+function Color:offset_hue(offset_normalized)
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[1] = hsla[1] + offset_normalized * 360
+    local rgba = Color.hsla_to_rgba(hsla)
+    return Color.new(rgba)
+end
+
+function Color:Offset_Hue(offset_normalized)
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[1] = hsla[1] + offset_normalized * 360
+    local rgba = Color.hsla_to_rgba(hsla)
+    self:Set(rgba)
+    return self
+end
+
+function Color:invert()
+    local r = 1 - self.r
+    local g = 1 - self.g
+    local b = 1 - self.b
+    return Color.new({ r, g, b, self.a })
+end
+
+function Color:Invert()
+    self.r = 1 - self.r
+    self.g = 1 - self.g
+    self.b = 1 - self.b
+    return self
+end
+
+function Color:lightness(lightness)
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[3] = lightness
+    local rgba = Color.hsla_to_rgba(hsla)
+    return Color.new(rgba)
+end
+
+function Color:Lightness(lightness)
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[3] = lightness
+    local rgba = Color.hsla_to_rgba(hsla)
+    self:Set(rgba)
+    return self
+end
+
+function Color:opacity(opacity)
+    local a = self.a * opacity
+    return Color.new({ self.r, self.g, self.b, a })
+end
+
+function Color:Opacity(opacity)
+    self.a = self.a * opacity
+    return self
+end
+
+function Color:rotate(degrees)
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[1] = degrees
+    local rgba = Color.hsla_to_rgba(hsla)
+    return Color.new(rgba)
+end
+
+function Color:Rotate(degrees)
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[1] = degrees
+    local rgba = Color.hsla_to_rgba(hsla)
+    self:Set(rgba)
+    return self
+end
+
+function Color:saturation(saturation)
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[2] = saturation
+    local rgba = Color.hsla_to_rgba(hsla)
+    return Color.new(rgba)
+end
+
+function Color:Saturation(saturation)
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[2] = saturation
+    local rgba = Color.hsla_to_rgba(hsla)
+    self:Set(rgba)
+    return self
+end
+
+function Color:Set(color_table)
+    self.r = color_table[1]
+    self.g = color_table[2]
+    self.b = color_table[3]
+    self.a = color_table[4]
+    return self
+end
+
+function Color:split_complementary(offset_degrees)
+    local offset = offset_degrees or 30
+    local complementary = self:complementary()
+    return complementary:analogous(offset)
+end
+
+function Color:square()
+    local left, right = self:analogous(90)
+    return right, self:complementary(), left
+end
+
+function Color:table()
+    return { self.r, self.g, self.b, self.a }
+end
+
+function Color:to_paint()
+    return color_paint(self:table())
+end
+
+function Color:triadic()
+    return self:analogous(120)
+end
+
+function Color:tetradic()
+    local analogous = self:rotate(-60)
+    return analogous:complementary(), self:complementary(), analogous
+end
+
+function Color:print_schemes(origin)
+    origin = origin or { 0, 0 }
+
+    save()
+    translate(origin)
+
+    local vec2 = Vec2.new(5, 2.5)
+
+    Text.new("Complementary", { size = 8, vec2 = vec2 }):draw()
+    local complementary = { self, self:complementary() }
+    Color.print_swatches(complementary)
+
+    translate { 0, -12 }
+
+    Text.new("Analogous", { size = 8, vec2 = vec2 }):draw()
+    local analogous = { self, self:analogous() }
+    Color.print_swatches(analogous)
+
+    translate { 0, -12 }
+
+    Text.new("Split Complementary", { size = 8, vec2 = vec2 }):draw()
+    local split_complementary = { self, self:split_complementary() }
+    Color.print_swatches(split_complementary)
+
+    translate { 0, -12 }
+
+    Text.new("Triadic", { size = 8, vec2 = vec2 }):draw()
+    local triadic = { self, self:triadic() }
+    Color.print_swatches(triadic)
+
+    translate { 0, -12 }
+
+    Text.new("Tetradic", { size = 8, vec2 = vec2 }):draw()
+    local tetradic = { self, self:tetradic() }
+    Color.print_swatches(tetradic)
+
+    translate { 0, -12 }
+
+    Text.new("Square", { size = 8, vec2 = vec2 }):draw()
+    local square = { self, self:square() }
+    Color.print_swatches(square)
+
+
+    restore()
+end
+
+function Color:print(places)
+    places = places or 2
+
+    local element_id = tostring(self.element_id)
+    local class_id = tostring(self.class_id)
+    local color_table = tostring(Utils.table_to_string(self.color_table, true, places))
+    local r = tostring(Math.truncate(self.r, places))
+    local g = tostring(Math.truncate(self.g, places))
+    local b = tostring(Math.truncate(self.b, places))
+    local a = tostring(Math.truncate(self.a, places))
+
+    print("-- Color " .. element_id .. ":" .. class_id .. " --")
+    print("  element_id: " .. element_id)
+    print("  class_id: " .. class_id)
+    print("  color_table: " .. color_table)
+    print("  r: " .. r)
+    print("  g: " .. g)
+    print("  b: " .. b)
+    print("  a: " .. a)
+    print("")
+end
+
+
 ColorTables = {}
 
 ColorTables.theme = { yellow = { 0.83, 1, 0, 1 } }
 
 ColorTables.html = { indianred = { 205, 92, 92, 1 }, lightcoral = { 240, 128, 128, 1 }, salmon = { 250, 128, 114, 1 }, darksalmon = { 233, 150, 122, 1 }, lightsalmon = { 255, 160, 122, 1 }, crimson = { 220, 20, 60, 1 }, red = { 255, 0, 0, 1 }, firebrick = { 178, 34, 34, 1 }, darkred = { 139, 0, 0, 1 }, pink = { 255, 192, 203, 1 }, lightpink = { 255, 182, 193, 1 }, hotpink = { 255, 105, 180, 1 }, deeppink = { 255, 20, 147, 1 }, mediumvioletred = { 199, 21, 133, 1 }, palevioletred = { 219, 112, 147, 1 }, coral = { 255, 127, 80, 1 }, tomato = { 255, 99, 71, 1 }, orangered = { 255, 69, 0, 1 }, darkorange = { 255, 140, 0, 1 }, orange = { 255, 165, 0, 1 }, gold = { 255, 215, 0, 1 }, yellow = { 255, 255, 0, 1 }, lightyellow = { 255, 255, 224, 1 }, lemonchiffon = { 255, 250, 205, 1 }, lightgoldenrodyellow = { 250, 250, 210, 1 }, papayawhip = { 255, 239, 213, 1 }, moccasin = { 255, 228, 181, 1 }, peachpuff = { 255, 218, 185, 1 }, palegoldenrod = { 238, 232, 170, 1 }, khaki = { 240, 230, 140, 1 }, darkkhaki = { 189, 183, 107, 1 }, lavender = { 230, 230, 250, 1 }, thistle = { 216, 191, 216, 1 }, plum = { 221, 160, 221, 1 }, violet = { 238, 130, 238, 1 }, orchid = { 218, 112, 214, 1 }, fuchsia = { 255, 0, 255, 1 }, magenta = { 255, 0, 255, 1 }, mediumorchid = { 186, 85, 211, 1 }, mediumpurple = { 147, 112, 219, 1 }, rebeccapurple = { 102, 51, 153, 1 }, blueviolet = { 138, 43, 226, 1 }, darkviolet = { 148, 0, 211, 1 }, darkorchid = { 153, 50, 204, 1 }, darkmagenta = { 139, 0, 139, 1 }, purple = { 128, 0, 128, 1 }, indigo = { 75, 0, 130, 1 }, slateblue = { 106, 90, 205, 1 }, darkslateblue = { 72, 61, 139, 1 }, mediumslateblue = { 123, 104, 238, 1 }, greenyellow = { 173, 255, 47, 1 }, chartreuse = { 127, 255, 0, 1 }, lawngreen = { 124, 252, 0, 1 }, lime = { 0, 255, 0, 1 }, limegreen = { 50, 205, 50, 1 }, palegreen = { 152, 251, 152, 1 }, lightgreen = { 144, 238, 144, 1 }, mediumspringgreen = { 0, 250, 154, 1 }, springgreen = { 0, 255, 127, 1 }, mediumseagreen = { 60, 179, 113, 1 }, seagreen = { 46, 139, 87, 1 }, forestgreen = { 34, 139, 34, 1 }, green = { 0, 128, 0, 1 }, darkgreen = { 0, 100, 0, 1 }, yellowgreen = { 154, 205, 50, 1 }, olivedrab = { 107, 142, 35, 1 }, olive = { 128, 128, 0, 1 }, darkolivegreen = { 85, 107, 47, 1 }, mediumaquamarine = { 102, 205, 170, 1 }, darkseagreen = { 143, 188, 139, 1 }, lightseagreen = { 32, 178, 170, 1 }, darkcyan = { 0, 139, 139, 1 }, teal = { 0, 128, 128, 1 }, aqua = { 0, 255, 255, 1 }, cyan = { 0, 255, 255, 1 }, lightcyan = { 224, 255, 255, 1 }, paleturquoise = { 175, 238, 238, 1 }, aquamarine = { 127, 255, 212, 1 }, turquoise = { 64, 224, 208, 1 }, mediumturquoise = { 72, 209, 204, 1 }, darkturquoise = { 0, 206, 209, 1 }, cadetblue = { 95, 158, 160, 1 }, steelblue = { 70, 130, 180, 1 }, lightsteelblue = { 176, 196, 222, 1 }, powderblue = { 176, 224, 230, 1 }, lightblue = { 173, 216, 230, 1 }, skyblue = { 135, 206, 235, 1 }, lightskyblue = { 135, 206, 250, 1 }, deepskyblue = { 0, 191, 255, 1 }, dodgerblue = { 30, 144, 255, 1 }, cornflowerblue = { 100, 149, 237, 1 }, royalblue = { 65, 105, 225, 1 }, blue = { 0, 0, 255, 1 }, mediumblue = { 0, 0, 205, 1 }, darkblue = { 0, 0, 139, 1 }, navy = { 0, 0, 128, 1 }, midnightblue = { 25, 25, 112, 1 }, cornsilk = { 255, 248, 220, 1 }, blanchedalmond = { 255, 235, 205, 1 }, bisque = { 255, 228, 196, 1 }, navajowhite = { 255, 222, 173, 1 }, wheat = { 245, 222, 179, 1 }, burlywood = { 222, 184, 135, 1 }, tan = { 210, 180, 140, 1 }, rosybrown = { 188, 143, 143, 1 }, sandybrown = { 244, 164, 96, 1 }, goldenrod = { 218, 165, 32, 1 }, darkgoldenrod = { 184, 134, 11, 1 }, peru = { 205, 133, 63, 1 }, chocolate = { 210, 105, 30, 1 }, saddlebrown = { 139, 69, 19, 1 }, sienna = { 160, 82, 45, 1 }, brown = { 165, 42, 42, 1 }, maroon = { 128, 0, 0, 1 }, white = { 255, 255, 255, 1 }, snow = { 255, 250, 250, 1 }, honeydew = { 240, 255, 240, 1 }, mintcream = { 245, 255, 250, 1 }, azure = { 240, 255, 255, 1 }, aliceblue = { 240, 248, 255, 1 }, ghostwhite = { 248, 248, 255, 1 }, whitesmoke = { 245, 245, 245, 1 }, seashell = { 255, 245, 238, 1 }, beige = { 245, 245, 220, 1 }, oldlace = { 253, 245, 230, 1 }, floralwhite = { 255, 250, 240, 1 }, ivory = { 255, 255, 240, 1 }, antiquewhite = { 250, 235, 215, 1 }, linen = { 250, 240, 230, 1 }, lavenderblush = { 255, 240, 245, 1 }, mistyrose = { 255, 228, 225, 1 }, gainsboro = { 220, 220, 220, 1 }, lightgray = { 211, 211, 211, 1 }, silver = { 192, 192, 192, 1 }, darkgray = { 169, 169, 169, 1 }, gray = { 128, 128, 128, 1 }, dimgray = { 105, 105, 105, 1 }, lightslategray = { 119, 136, 153, 1 }, slategray = { 112, 128, 144, 1 }, darkslategray = { 47, 79, 79, 1 }, black = { 0, 0, 0, 1 } }
+
+
 Factory = {}
 Factory.__index = Factory
 F = Factory
@@ -858,6 +1708,8 @@ function Factory.clone(input)
 
     return Factory.iter(input, "clone", input)
 end
+
+
 -- TODO Create method that will force numbers as strings to keep zeros to x place
 
 Utils = {}
@@ -975,6 +1827,8 @@ function Utils.get_names(t)
     end
     return "{ " .. table.concat(names, ", ") .. " }"
 end
+
+
 Vec2 = {}
 V = Vec2
 Vec2.__index = Vec2
@@ -1576,6 +2430,8 @@ Returns
 
     Debug.print_docstring(docstring)
 end
+
+
 Math = {}
 M = Math
 
@@ -1762,11 +2618,15 @@ A collection of mathematical utility functions extending Lua's built-in math mod
 
     Debug.print_docstring(docstring)
 end
+
+
 Element = {}
 
 Element.__index = Element
 
 Element.id = 1
+
+
 -- TODO Add docs
 
 Point = {}
@@ -1967,6 +2827,8 @@ function Point:print(places)
     end
     print("")
 end
+
+
 Triangle = {}
 T = Triangle
 Triangle.__index = Triangle
@@ -2207,6 +3069,8 @@ function Triangle:circumcircle()
         (cx ^ 2 + cy ^ 2) * (bx - ax)) / D
     return Vec2.new(Ux, Uy), radius
 end
+
+
 -- TODO: triangulation
 
 LineGroup = {}
@@ -2368,6 +3232,8 @@ function LineGroup:print(places)
     end
     print("")
 end
+
+
 -- TODO - Implement transforms
 -- TODO - Implement bounding_box
 -- TODO - Ability to reassign objects from one layer to another
@@ -2561,6 +3427,8 @@ function Layer:draw(options)
         end
     end
 end
+
+
 Overlay = {}
 O = Overlay
 
@@ -2605,6 +3473,8 @@ function Overlay:draw()
     end
     fill_rect({ x1, y1 }, { x2, y2 }, corner_radius, paint)
 end
+
+
 Line = {}
 L = Line
 
@@ -2916,6 +3786,8 @@ function Line:print(places)
     end
     print("")
 end
+
+
 -- TODO Add methods for distorting height and width separately
 -- TODO Add style for orientation
 -- TODO Add style for circular
@@ -2950,6 +3822,8 @@ function Text:draw()
     text(self.string, self.color:table())
     restore()
 end
+
+
 function button(x, y, width, options)
     -- Error Handling
     local function checkMutuallyExclusiveArgs(arg1Name, arg1, arg2Name, arg2)
@@ -3072,6 +3946,8 @@ function tile_button_fn(func, r, c)
         end
     end
 end
+
+
 -- TODO Add automatic line breaking
 -- TODO Add a way to parse parameters for a Class.docs("short")
 -- TODO Add automatic tostring
@@ -3184,6 +4060,8 @@ function Debug.print_docstring(docstring)
         end
     end
 end
+
+
 Origin = {}
 
 Origin.id = 1
@@ -3283,6 +4161,8 @@ end
 function Origin:reset()
     translate { -self._offset[1], -self._offset[2] }
 end
+
+
 -- TODO Rewrite graph so that it uses the LineGroup function but just draws a thicker line across axes
 
 Graph = {}
@@ -3344,19 +4224,19 @@ bg = Overlay.new(origin, {name = "Background", color=Color.new(theme.modules)})
 layer_tree = {
 	{name = "BACKGROUND",
 	 	z_index = -math.huge,
-		contents = {background}},
+		contents = {bg}},
 	{name = "FOREGROUND",
 	 	z_index = math.huge,
 		contents = {origin}},
 	{name = "LAYER1",
 		z_index = 0,
 		contents = {},
-		sublayers {
+		sublayers = {
 			{name = "NESTED LAYER",
 				z_index = 0,
 				contents = {},
 				sublayers = {} }
-		}
+		}},
 	{name = "LAYER2",
 		z_index = 0,
 		contents = {},
