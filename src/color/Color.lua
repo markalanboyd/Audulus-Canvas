@@ -1,5 +1,3 @@
--- TODO Can you change opacity later not in tree?
-
 Color = {}
 C = Color
 Color.__index = Color
@@ -8,19 +6,16 @@ Color.id = 1
 
 function Color.new(...)
     local self = setmetatable({}, Color)
-    self.element_id = Element.id
-    Element.id = Element.id + 1
-    self.class_id = Color.id
-    Color.id = Color.id + 1
-
     local args = { ... }
 
+    Utils.assign_ids(self)
     -- TODO do we need this intermediary private table?
     self.__color_table = Color.args_to_color_table(args)
     self.r = self.__color_table[1]
     self.g = self.__color_table[2]
     self.b = self.__color_table[3]
     self.a = self.__color_table[4]
+
     return self
 end
 
@@ -133,11 +128,10 @@ end
 
 function Color.assign_color(object, options)
     local c = options.color or Color.new()
-    local opacity = options.opacity or 1
     if Color.is_color(c) then
-        object.color = c:Opacity(opacity)
+        object.color = c:clone()
     elseif Color.is_color_table(c) then
-        object.color = Color.new(c):Opacity(opacity)
+        object.color = Color.new(c)
     else
         error("Expected a Color instance or a color table.")
     end
@@ -331,16 +325,25 @@ end
 
 function Color:hue(hue_normalized)
     local h = hue_normalized * 360
-    local hsla = Color.rgba_to_hsla(self:table())
-    hsla[1] = h
-    local rgba = Color.hsla_to_rgba(hsla)
-    return Color.new(rgba)
+    return self:rotate(h)
 end
 
 function Color:Hue(hue_normalized)
     local h = hue_normalized * 360
+    self:Rotate(h)
+    return self
+end
+
+function Color:offset_hue(offset_normalized)
     local hsla = Color.rgba_to_hsla(self:table())
-    hsla[1] = h
+    hsla[1] = hsla[1] + offset_normalized * 360
+    local rgba = Color.hsla_to_rgba(hsla)
+    return Color.new(rgba)
+end
+
+function Color:Offset_Hue(offset_normalized)
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[1] = hsla[1] + offset_normalized * 360
     local rgba = Color.hsla_to_rgba(hsla)
     self:Set(rgba)
     return self
@@ -390,6 +393,14 @@ function Color:rotate(degrees)
     hsla[1] = degrees
     local rgba = Color.hsla_to_rgba(hsla)
     return Color.new(rgba)
+end
+
+function Color:Rotate(degrees)
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[1] = degrees
+    local rgba = Color.hsla_to_rgba(hsla)
+    self:Set(rgba)
+    return self
 end
 
 function Color:saturation(saturation)

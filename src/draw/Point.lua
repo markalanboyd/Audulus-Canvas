@@ -33,13 +33,13 @@ function Point.new(vec2, options)
     self.vec2 = vec2 or Vec2.new(0, 0)
     self.options = options or {}
 
-    self.z_index = self.options.z_index or 0
-
-    Color.assign_color(self, self.options)
-    Utils.assign_options(self, self.options)
     Utils.assign_ids(self)
-    self.style = self.style or "normal"
+    Utils.assign_options(self, self.options)
+    Color.assign_color(self, self.options)
+
     self.name = self.name or ("Point " .. self.element_id .. ":" .. self.class_id)
+    self.z_index = self.options.z_index or 0
+    self.style = self.style or "normal"
 
     return self
 end

@@ -22,13 +22,16 @@ function LineGroup.new(vec2s, options)
     self.vec2s = vec2s or { Vec2.new(0, 0) }
     self.options = options or {}
 
-    self.z_index = self.options.z_index or 0
-    self.style = self.options.style or "normal"
-    self.method = self.options.method or "graph"
-    self.__len_vec2s = #self.vec2s
-    Color.assign_color(self, self.options)
-    Utils.assign_options(self, self.options)
     Utils.assign_ids(self)
+    Utils.assign_options(self, self.options)
+    Color.assign_color(self, self.options)
+
+    self.name = self.name or ("LineGroup " .. self.element_id .. ":" .. self.class_id)
+    self.z_index = self.options.z_index or 0
+    self.method = self.options.method or "graph"
+    self.style = self.options.style or "normal"
+
+    self.__len_vec2s = #self.vec2s
 
     return self
 end

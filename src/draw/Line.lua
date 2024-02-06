@@ -33,11 +33,13 @@ function Line.new(vec2a, vec2b, options)
     self.vec2b = vec2b or Vec2.new(0, 0)
     self.options = options or {}
 
+    Utils.assign_ids(self)
+    Utils.assign_options(self, self.options)
+    Color.assign_color(self, self.options)
+
+    self.name = tostring(self.name) or ("Line " .. self.element_id .. ":" .. self.class_id)
     self.z_index = self.options.z_index or 0
     self.style = self.options.style or "normal"
-    Color.assign_color(self, self.options)
-    Utils.assign_options(self, self.options)
-    Utils.assign_ids(self)
 
     return self
 end

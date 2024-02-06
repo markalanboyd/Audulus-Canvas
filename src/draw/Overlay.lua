@@ -1,5 +1,3 @@
--- TODO Add possibility of reaching into the Hue methods to directly change hue instead of needing to actually overlay a color
-
 Overlay = {}
 O = Overlay
 
@@ -7,19 +5,21 @@ Overlay.id = 1
 
 Overlay.__index = Utils.resolve_property
 
-function Overlay.new(options)
+function Overlay.new(origin, options)
     local self = setmetatable({}, Overlay)
     self.origin = origin
     self.options = options or {}
 
-    self.z_index = -math.huge
+    Utils.assign_ids(self)
+    Utils.assign_options(self, self.options)
+    Color.assign_color(self, self.options)
+
+    self.name = self.name or ("Overlay " .. self.element_id .. ":" .. self.class_id)
+    self.z_index = self.options.z_index or 0
     self.vec2a = self.origin.bottom_left
     self.vec2b = self.origin.top_right
     self.rounded = self.options.rounded or true
-    Color.assign_color(self, self.options)
-    Utils.assign_options(self, self.options)
-    Utils.assign_ids(self)
-    self.name = self.name or ("Overlay " .. self.element_id .. ":" .. self.class_id)
+
     return self
 end
 

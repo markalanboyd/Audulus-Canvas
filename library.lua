@@ -266,19 +266,16 @@ Color.id = 1
 
 function Color.new(...)
     local self = setmetatable({}, Color)
-    self.element_id = Element.id
-    Element.id = Element.id + 1
-    self.class_id = Color.id
-    Color.id = Color.id + 1
-
     local args = { ... }
 
+    Utils.assign_ids(self)
     -- TODO do we need this intermediary private table?
     self.__color_table = Color.args_to_color_table(args)
     self.r = self.__color_table[1]
     self.g = self.__color_table[2]
     self.b = self.__color_table[3]
     self.a = self.__color_table[4]
+
     return self
 end
 
@@ -391,11 +388,10 @@ end
 
 function Color.assign_color(object, options)
     local c = options.color or Color.new()
-    local opacity = options.opacity or 1
     if Color.is_color(c) then
-        object.color = c:Opacity(opacity)
+        object.color = c:clone()
     elseif Color.is_color_table(c) then
-        object.color = Color.new(c):Opacity(opacity)
+        object.color = Color.new(c)
     else
         error("Expected a Color instance or a color table.")
     end
@@ -589,16 +585,25 @@ end
 
 function Color:hue(hue_normalized)
     local h = hue_normalized * 360
-    local hsla = Color.rgba_to_hsla(self:table())
-    hsla[1] = h
-    local rgba = Color.hsla_to_rgba(hsla)
-    return Color.new(rgba)
+    return self:rotate(h)
 end
 
 function Color:Hue(hue_normalized)
     local h = hue_normalized * 360
+    self:Rotate(h)
+    return self
+end
+
+function Color:offset_hue(offset_normalized)
     local hsla = Color.rgba_to_hsla(self:table())
-    hsla[1] = h
+    hsla[1] = hsla[1] + offset_normalized * 360
+    local rgba = Color.hsla_to_rgba(hsla)
+    return Color.new(rgba)
+end
+
+function Color:Offset_Hue(offset_normalized)
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[1] = hsla[1] + offset_normalized * 360
     local rgba = Color.hsla_to_rgba(hsla)
     self:Set(rgba)
     return self
@@ -648,6 +653,14 @@ function Color:rotate(degrees)
     hsla[1] = degrees
     local rgba = Color.hsla_to_rgba(hsla)
     return Color.new(rgba)
+end
+
+function Color:Rotate(degrees)
+    local hsla = Color.rgba_to_hsla(self:table())
+    hsla[1] = degrees
+    local rgba = Color.hsla_to_rgba(hsla)
+    self:Set(rgba)
+    return self
 end
 
 function Color:saturation(saturation)
@@ -1789,13 +1802,13 @@ function Point.new(vec2, options)
     self.vec2 = vec2 or Vec2.new(0, 0)
     self.options = options or {}
 
-    self.z_index = self.options.z_index or 0
-
-    Color.assign_color(self, self.options)
-    Utils.assign_options(self, self.options)
     Utils.assign_ids(self)
-    self.style = self.style or "normal"
+    Utils.assign_options(self, self.options)
+    Color.assign_color(self, self.options)
+
     self.name = self.name or ("Point " .. self.element_id .. ":" .. self.class_id)
+    self.z_index = self.options.z_index or 0
+    self.style = self.style or "normal"
 
     return self
 end
@@ -2218,13 +2231,16 @@ function LineGroup.new(vec2s, options)
     self.vec2s = vec2s or { Vec2.new(0, 0) }
     self.options = options or {}
 
-    self.z_index = self.options.z_index or 0
-    self.style = self.options.style or "normal"
-    self.method = self.options.method or "graph"
-    self.__len_vec2s = #self.vec2s
-    Color.assign_color(self, self.options)
-    Utils.assign_options(self, self.options)
     Utils.assign_ids(self)
+    Utils.assign_options(self, self.options)
+    Color.assign_color(self, self.options)
+
+    self.name = self.name or ("LineGroup " .. self.element_id .. ":" .. self.class_id)
+    self.z_index = self.options.z_index or 0
+    self.method = self.options.method or "graph"
+    self.style = self.options.style or "normal"
+
+    self.__len_vec2s = #self.vec2s
 
     return self
 end
@@ -2354,9 +2370,13 @@ function LineGroup:print(places)
 end
 -- TODO - Implement transforms
 -- TODO - Implement bounding_box
+-- TODO - Ability to reassign objects from one layer to another
 
 Layer = {}
 La = Layer
+
+Layer.id = 1
+
 Layer.__index = Layer
 
 
@@ -2364,10 +2384,16 @@ function Layer.new(options)
     local self = setmetatable({}, Layer)
     self.options = options or {}
 
-    self.name = tostring(options.name) or "Layer"
+    Utils.assign_ids(self)
+    Utils.assign_options(self, self.options)
+
+    self.name = self.name or ("Layer " .. self.element_id .. ":" .. self.class_id)
     self.z_index = options.z_index or 0
     self.contents = options.contents or {}
     self.opacity = options.opacity or 1
+    self.hue = options.hue or 0
+    self.saturation = options.saturation or 1
+    self.lightness = options.lightness or 0.5
 
     self.superlayer = nil
     self.sublayers = {}
@@ -2395,7 +2421,8 @@ function Layer:__call(...)
 end
 
 -- TODO Inline mode vs expanded
--- TODO Add opacity
+-- TODO fewer decimals
+-- TODO print hue
 function Layer:__tostring()
     local function tostring_r(layer, depth)
         local indent = (depth > 0) and string.rep("  ", depth - 1) .. "  |- " or ""
@@ -2463,15 +2490,21 @@ function Layer:add_tree(tree)
         local z_index = l.z_index or l.z
         local contents = l.contents or l.c
         local opacity = l.opacity or l.o
+        local hue = l.hue or l.h
+        local saturation = l.saturation or l.s
+        local lightness = l.lightness or l.l
         local options = {
             name = name,
             z_index = z_index,
             contents = contents,
             opacity = opacity,
+            hue = hue,
+            saturation = saturation,
+            lightness = lightness,
         }
         local layer = Layer.new(options)
 
-        local sublayers = l.sublayers or l.sl or {}
+        local sublayers = l.sublayers or l.sl
         self:add_sublayer(layer)
         if sublayers then
             layer:add_tree(sublayers)
@@ -2495,26 +2528,33 @@ end
 function Layer:draw(options)
     options = options or {}
     local sl_opacity = options.sl_opacity or 1
+    local opacity = sl_opacity * self.opacity
+    local sl_saturation = options.sl_saturation or 1
+    local saturation = sl_saturation * self.saturation
 
     local to_draw = self:_dfs_sort_and_collect()
     for _, layer in ipairs(to_draw) do
-        local opacity = sl_opacity * (layer.opacity or 1)
-
-        if layer.contents then
+        if #layer.contents > 0 then
             if layer.contents.draw then
                 layer.contents.color:Opacity(opacity)
+                layer.contents.color:Offset_Hue(self.hue)
+                layer.contents.color:Saturation(saturation)
                 layer.contents:draw()
             else
                 for _, obj in ipairs(layer.contents) do
                     obj.color:Opacity(opacity)
+                    obj.color:Offset_Hue(self.hue)
+                    obj.color:Saturation(saturation)
                     obj:draw()
                 end
             end
         end
-        if layer.sublayers then
+        if #layer.sublayers > 0 then
             for _, sublayer in ipairs(layer.sublayers) do
                 options = {
-                    sl_opacity = opacity
+                    sl_opacity = opacity,
+                    sl_hue = self.hue,
+                    sl_saturation = saturation
                 }
                 sublayer:draw(options)
             end
@@ -2528,19 +2568,21 @@ Overlay.id = 1
 
 Overlay.__index = Utils.resolve_property
 
-function Overlay.new(options)
+function Overlay.new(origin, options)
     local self = setmetatable({}, Overlay)
     self.origin = origin
     self.options = options or {}
 
-    self.z_index = -math.huge
+    Utils.assign_ids(self)
+    Utils.assign_options(self, self.options)
+    Color.assign_color(self, self.options)
+
+    self.name = self.name or ("Overlay " .. self.element_id .. ":" .. self.class_id)
+    self.z_index = self.options.z_index or 0
     self.vec2a = self.origin.bottom_left
     self.vec2b = self.origin.top_right
     self.rounded = self.options.rounded or true
-    Color.assign_color(self, self.options)
-    Utils.assign_options(self, self.options)
-    Utils.assign_ids(self)
-    self.name = self.name or ("Overlay " .. self.element_id .. ":" .. self.class_id)
+
     return self
 end
 
@@ -2598,11 +2640,13 @@ function Line.new(vec2a, vec2b, options)
     self.vec2b = vec2b or Vec2.new(0, 0)
     self.options = options or {}
 
+    Utils.assign_ids(self)
+    Utils.assign_options(self, self.options)
+    Color.assign_color(self, self.options)
+
+    self.name = tostring(self.name) or ("Line " .. self.element_id .. ":" .. self.class_id)
     self.z_index = self.options.z_index or 0
     self.style = self.options.style or "normal"
-    Color.assign_color(self, self.options)
-    Utils.assign_options(self, self.options)
-    Utils.assign_ids(self)
 
     return self
 end
@@ -2885,17 +2929,16 @@ Text.id = 1
 
 function Text.new(string, options)
     local self = setmetatable({}, Text)
-    self.element_id = Element.id
-    Element.id = Element.id + 1
-    self.class_id = Text.id
-    Text.id = Text.id + 1
-
     self.string = string or ""
-    self.o = options or {}
+    self.options = options or {}
 
-    self.vec2 = self.o.vec2 or Vec2.new()
-    self.size = self.o.size or 12
-    self.color = self.o.color or Color.new(theme.text)
+    Utils.assign_ids(self)
+
+    self.name = self.name or ("Text " .. self.element_id .. ":" .. self.class_id)
+    self.vec2 = self.options.vec2 or Vec2.new()
+    self.size = self.options.size or 12
+    self.color = self.options.color or Color.new(theme.text)
+
     return self
 end
 
@@ -3031,6 +3074,7 @@ function tile_button_fn(func, r, c)
 end
 -- TODO Add automatic line breaking
 -- TODO Add a way to parse parameters for a Class.docs("short")
+-- TODO Add automatic tostring
 
 Debug = {}
 
@@ -3151,15 +3195,18 @@ function Origin.new(options)
     if Origin.created == true then
         error("Only one instance of Origin is permitted.")
     end
+
     local self = setmetatable({}, Origin)
     self.options = options or {}
+
+    Utils.assign_ids(self)
+    Color.assign_color(self, self.options)
 
     self.z_index = self.options.z_index or math.huge
     self.direction = self.options.direction or "c"
     self.type = self.options.type or "stroke"
     self.width = self.options.width or 4
-    Color.assign_color(self, self.options)
-    Utils.assign_ids(self)
+
     Origin.created = true
 
     self._offset = Origin._calculate_offset(self.direction)
@@ -3283,7 +3330,7 @@ origin = Origin.new({
 })
 
 root = Layer.new({name = "ROOT"})
-bg = Overlay.new({name = "Background", color=Color.new(theme.modules)})
+bg = Overlay.new(origin, {name = "Background", color=Color.new(theme.modules)})
 
 -- CODE ----------------------------------------------------------------
 
