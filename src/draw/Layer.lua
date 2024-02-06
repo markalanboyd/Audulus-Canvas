@@ -1,8 +1,12 @@
 -- TODO - Implement transforms
 -- TODO - Implement bounding_box
+-- TODO - Ability to reassign objects from one layer to another
 
 Layer = {}
 La = Layer
+
+Layer.id = 1
+
 Layer.__index = Layer
 
 
@@ -10,10 +14,16 @@ function Layer.new(options)
     local self = setmetatable({}, Layer)
     self.options = options or {}
 
-    self.name = tostring(options.name) or "Layer"
+    Utils.assign_ids(self)
+    Utils.assign_options(self, self.options)
+
+    self.name = self.name or ("Layer " .. self.element_id .. ":" .. self.class_id)
     self.z_index = options.z_index or 0
     self.contents = options.contents or {}
     self.opacity = options.opacity or 1
+    self.hue = options.hue or 0
+    self.saturation = options.saturation or 1
+    self.lightness = options.lightness or 0.5
 
     self.superlayer = nil
     self.sublayers = {}
@@ -41,7 +51,8 @@ function Layer:__call(...)
 end
 
 -- TODO Inline mode vs expanded
--- TODO Add opacity
+-- TODO fewer decimals
+-- TODO print hue
 function Layer:__tostring()
     local function tostring_r(layer, depth)
         local indent = (depth > 0) and string.rep("  ", depth - 1) .. "  |- " or ""
@@ -109,15 +120,21 @@ function Layer:add_tree(tree)
         local z_index = l.z_index or l.z
         local contents = l.contents or l.c
         local opacity = l.opacity or l.o
+        local hue = l.hue or l.h
+        local saturation = l.saturation or l.s
+        local lightness = l.lightness or l.l
         local options = {
             name = name,
             z_index = z_index,
             contents = contents,
             opacity = opacity,
+            hue = hue,
+            saturation = saturation,
+            lightness = lightness,
         }
         local layer = Layer.new(options)
 
-        local sublayers = l.sublayers or l.sl or {}
+        local sublayers = l.sublayers or l.sl
         self:add_sublayer(layer)
         if sublayers then
             layer:add_tree(sublayers)
@@ -141,26 +158,33 @@ end
 function Layer:draw(options)
     options = options or {}
     local sl_opacity = options.sl_opacity or 1
+    local opacity = sl_opacity * self.opacity
+    local sl_saturation = options.sl_saturation or 1
+    local saturation = sl_saturation * self.saturation
 
     local to_draw = self:_dfs_sort_and_collect()
     for _, layer in ipairs(to_draw) do
-        local opacity = sl_opacity * (layer.opacity or 1)
-
-        if layer.contents then
+        if #layer.contents > 0 then
             if layer.contents.draw then
                 layer.contents.color:Opacity(opacity)
+                layer.contents.color:Offset_Hue(self.hue)
+                layer.contents.color:Saturation(saturation)
                 layer.contents:draw()
             else
                 for _, obj in ipairs(layer.contents) do
                     obj.color:Opacity(opacity)
+                    obj.color:Offset_Hue(self.hue)
+                    obj.color:Saturation(saturation)
                     obj:draw()
                 end
             end
         end
-        if layer.sublayers then
+        if #layer.sublayers > 0 then
             for _, sublayer in ipairs(layer.sublayers) do
                 options = {
-                    sl_opacity = opacity
+                    sl_opacity = opacity,
+                    sl_hue = self.hue,
+                    sl_saturation = saturation
                 }
                 sublayer:draw(options)
             end
