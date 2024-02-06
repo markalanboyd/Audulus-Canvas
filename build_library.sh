@@ -37,7 +37,7 @@ origin = Origin.new({
 })
 
 root = Layer.new({name = "ROOT"})
-bg = Overlay.new({name = "Background", color=Color.new(theme.modules)})
+bg = Overlay.new(origin, {name = "Background", color=Color.new(theme.modules)})
 
 -- CODE ----------------------------------------------------------------
 
