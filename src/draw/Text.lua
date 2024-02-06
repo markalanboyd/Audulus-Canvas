@@ -11,17 +11,16 @@ Text.id = 1
 
 function Text.new(string, options)
     local self = setmetatable({}, Text)
-    self.element_id = Element.id
-    Element.id = Element.id + 1
-    self.class_id = Text.id
-    Text.id = Text.id + 1
-
     self.string = string or ""
-    self.o = options or {}
+    self.options = options or {}
 
-    self.vec2 = self.o.vec2 or Vec2.new()
-    self.size = self.o.size or 12
-    self.color = self.o.color or Color.new(theme.text)
+    Utils.assign_ids(self)
+
+    self.name = self.name or ("Text " .. self.element_id .. ":" .. self.class_id)
+    self.vec2 = self.options.vec2 or Vec2.new()
+    self.size = self.options.size or 12
+    self.color = self.options.color or Color.new(theme.text)
+
     return self
 end
 

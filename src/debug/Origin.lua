@@ -9,15 +9,18 @@ function Origin.new(options)
     if Origin.created == true then
         error("Only one instance of Origin is permitted.")
     end
+
     local self = setmetatable({}, Origin)
     self.options = options or {}
+
+    Utils.assign_ids(self)
+    Color.assign_color(self, self.options)
 
     self.z_index = self.options.z_index or math.huge
     self.direction = self.options.direction or "c"
     self.type = self.options.type or "stroke"
     self.width = self.options.width or 4
-    Color.assign_color(self, self.options)
-    Utils.assign_ids(self)
+
     Origin.created = true
 
     self._offset = Origin._calculate_offset(self.direction)
