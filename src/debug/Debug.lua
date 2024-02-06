@@ -1,5 +1,6 @@
 -- TODO Add automatic line breaking
 -- TODO Add a way to parse parameters for a Class.docs("short")
+-- TODO Add automatic tostring
 
 Debug = {}
 
